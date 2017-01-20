@@ -92,11 +92,16 @@ addon/webconsole/sample/main.cpp
 addon/webconsole/webconsole.cpp
 addon/webconsole/webconsole.h
 app/Rules.mk
+app/lib/template/libtempl.a
 app/lib/template/rom.cpp
 app/lib/template/rom.h
 app/makeall
 app/template/kernel.cpp
 app/template/kernel.h
+app/template/kernel7.elf
+app/template/kernel7.img
+app/template/kernel7.lst
+app/template/kernel7.map
 app/template/main.cpp
 circle.ld
 doc/classes.txt
@@ -256,6 +261,7 @@ lib/bcmframebuffer.cpp
 lib/bcmmailbox.cpp
 lib/bcmpropertytags.cpp
 lib/bcmrandom.cpp
+lib/bt/BCM43430A1.h
 lib/bt/BCM43430A1.hcd
 lib/bt/LICENCE.broadcom_bcm43xx
 lib/bt/btdevicemanager.cpp
@@ -266,7 +272,9 @@ lib/bt/btqueue.cpp
 lib/bt/btsubsystem.cpp
 lib/bt/bttask.cpp
 lib/bt/btuarttransport.cpp
+lib/bt/converttool
 lib/bt/converttool.c
+lib/bt/libbluetooth.a
 lib/cache-v7.S
 lib/chargenerator.cpp
 lib/cputhrottle.cpp
@@ -283,6 +291,8 @@ lib/fs/fat/fatcache.cpp
 lib/fs/fat/fatdir.cpp
 lib/fs/fat/fatfs.cpp
 lib/fs/fat/fatinfo.cpp
+lib/fs/fat/libfatfs.a
+lib/fs/libfs.a
 lib/fs/partition.cpp
 lib/fs/partitionmanager.cpp
 lib/gpioclock.cpp
@@ -298,10 +308,12 @@ lib/input/keymap_fr.h
 lib/input/keymap_it.h
 lib/input/keymap_uk.h
 lib/input/keymap_us.h
+lib/input/libinput.a
 lib/input/mousebehaviour.cpp
 lib/input/touchscreen.cpp
 lib/interrupt.cpp
 lib/koptions.cpp
+lib/libcircle.a
 lib/libhelper.cpp
 lib/libstub.S
 lib/logger.cpp
@@ -315,6 +327,7 @@ lib/net/dnsclient.cpp
 lib/net/httpdaemon.cpp
 lib/net/icmphandler.cpp
 lib/net/ipaddress.cpp
+lib/net/libnet.a
 lib/net/linklayer.cpp
 lib/net/netconfig.cpp
 lib/net/netconnection.cpp
@@ -342,6 +355,7 @@ lib/ptrlist.cpp
 lib/purecall.cpp
 lib/pwmoutput.cpp
 lib/pwmsounddevice.cpp
+lib/sched/libsched.a
 lib/sched/scheduler.cpp
 lib/sched/synchronizationevent.cpp
 lib/sched/task.cpp
@@ -366,6 +380,7 @@ lib/usb/dwhciframeschedper.cpp
 lib/usb/dwhciregister.cpp
 lib/usb/dwhcirootport.cpp
 lib/usb/dwhcixferstagedata.cpp
+lib/usb/libusb.a
 lib/usb/macaddress.cpp
 lib/usb/netdevice.cpp
 lib/usb/smsc951x.cpp
@@ -396,6 +411,10 @@ sample/01-gpiosimple/main.cpp
 sample/02-screenpixel/README
 sample/02-screenpixel/kernel.cpp
 sample/02-screenpixel/kernel.h
+sample/02-screenpixel/kernel7.elf
+sample/02-screenpixel/kernel7.img
+sample/02-screenpixel/kernel7.lst
+sample/02-screenpixel/kernel7.map
 sample/02-screenpixel/main.cpp
 sample/03-screentext/README
 sample/03-screentext/kernel.cpp
@@ -535,6 +554,10 @@ sample/27-usbgamepad/main.cpp
 sample/28-touchscreen/README
 sample/28-touchscreen/kernel.cpp
 sample/28-touchscreen/kernel.h
+sample/28-touchscreen/kernel7.elf
+sample/28-touchscreen/kernel7.img
+sample/28-touchscreen/kernel7.lst
+sample/28-touchscreen/kernel7.map
 sample/28-touchscreen/main.cpp
 sample/README
 sample/Rules.mk

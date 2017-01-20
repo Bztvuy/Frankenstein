@@ -30,6 +30,7 @@ include/circle/net
 include/circle/sched
 include/circle/usb
 lib
+lib/bt
 lib/input
 sample/01-gpiosimple
 sample/02-screenpixel
