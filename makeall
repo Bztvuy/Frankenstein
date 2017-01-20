@@ -1,0 +1,39 @@
+#!/bin/sh
+
+cd lib
+make $1 $2 || exit
+
+cd usb
+make $1 $2 || exit
+cd ..
+
+cd input
+make $1 $2 || exit
+cd ..
+
+cd fs
+make $1 $2 || exit
+
+cd fat
+make $1 $2 || exit
+cd ..
+
+cd ..
+
+cd sched
+make $1 $2 || exit
+cd ..
+
+cd net
+make $1 $2 || exit
+cd ..
+
+cd bt
+make $1 $2 || exit
+cd ..
+
+cd ..
+
+cd sample
+./makelatest $1 $2 || exit
+cd ..

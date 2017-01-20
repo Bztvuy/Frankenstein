@@ -1,0 +1,137 @@
+CLASSES
+
+Base library
+
+* CActLED: Switch the Act LED on and off, checks the Raspberry Pi model to use the right LED pin.
+* CBcmFrameBuffer: Frame buffer initialization, setting color palette for 8 bit depth.
+* CBcmMailBox: Simple GPU mailbox interface, currently used for the property interface.
+* CBcmPropertyTags: Get several information from the GPU side or control something on this side.
+* CBcmRandomNumberGenerator: Driver for the built-in hardware random number generator.
+* CCharGenerator: Gives pixel information for console font
+* CCPUThrottle: Manages CPU clock rate depending on user requirements and SoC temperature.
+* CDevice: Base class for all devices
+* CDeviceNameService: Devices can be registered by name and retrieved later by this name
+* CDMAChannel: Platform DMA controller support (I/O read/write, memory copy).
+* CExceptionHandler: Generates a stack-trace and a panic message if an abort exception occurs.
+* CGPIOClock: Using GPIO clocks, initialize, start and stop it.
+* CGPIOManager: Interrupt multiplexer for CGPIOPin (only required if GPIO interrupt is used).
+* CGPIOPin: Encapsulates a GPIO pin, can be read, write or inverted. Supports interrupts. Simple initialization.
+* CI2CMaster: Driver for I2C master device.
+* CI2CSlave: Driver for I2C slave device.
+* CInterruptSystem: Connecting to interrupts, an interrupt handler will be called on interrupt.
+* CKernelOptions: Providing kernel options from file cmdline.txt (see doc/cmdline.txt).
+* CLogger: Writing logging messages to a target device
+* CMachineInfo: Helper class to get different information about the running computer.
+* CMemorySystem: Enabling MMU if requested, switching page tables (not used here).
+* CMultiCoreSupport: Implements multi-core support on the Raspberry Pi 2.
+* CNullDevice: Character device which ignores sent data and returns 0 bytes on read.
+* CPageTable: Encapsulates a page table to be used by MMU.
+* CPtrArray: Container class. Dynamic array of pointers.
+* CPtrList: Container class. List of pointers.
+* CPWMOutput: Pulse Width Modulator output (2 channels).
+* CPWMSoundDevice: Using the PWM device to playback sound samples in different formats.
+* CScreenDevice: Writing characters to screen, some escape sequences (some are not yet implemented)
+* CSerialDevice: Writing characters to UART
+* CSpinLock: Encapsulates a spin lock for synchronizing the concurrent access to a resource from multiple cores.
+* CSPIMaster: Driver for SPI0 master device. Synchronous polling operation.
+* CSPIMasterDMA: Driver for SPI0 master device. Asynchronous DMA operation.
+* CString: Simple string manipulation class, Format() method works like printf() (but has less formating options)
+* CTime: Holds, makes and breaks the time.
+* CTimer: Manages the system clock, supports kernel timers and a calibrated delay loop.
+* CTracer: Collects tracing events in a ring buffer for debugging and dumps them to the logger later.
+* CVirtualGPIOPin: Encapsulates a "virtual" GPIO pin controlled by the VideoCore (Output only).
+
+USB library
+
+* CDWHCIDevice: USB host controller interface (HCI) driver for Raspberry Pi.
+* CDWHCIFrameScheduler: Base class for a simple micro frame scheduler
+* CDWHCIFrameSchedulerNonPeriodic: Schedules the transmission of non-interrupt split frames to non-high-speed devices
+* CDWHCIFrameSchedulerNoSplit: Schedules the transmission of frames to direct attached non-high-speed devices
+* CDWHCIFrameSchedulerPeriodic: Schedules the transmission of interrupt split frames to non-high-speed devices
+* CDWHCIRegister: Supporting class for CDWHCIDevice, encapsulates a register of the HCI.
+* CDWHCIRootPort: Supporting class for CDWHCIDevice, initializes the root port.
+* CDWHCITransferStageData: Holds all the data needed for a transfer stage on one HCI channel.
+* CMACAddress: Encapsulates an Ethernet MAC address.
+* CNetDevice: Base class of CSMSC951xDevice.
+* CSMSC951xDevice: Driver for the on-board USB Ethernet device.
+* CUSBBluetoothDevice: Bluetooth HCI transport driver for USB Bluetooth BR/EDR dongles.
+* CUSBBulkOnlyMassStorageDevice: Driver for USB mass storage devices (bulk only)
+* CUSBConfigurationParser: Parses and validates an USB configuration descriptor.
+* CUSBDevice: Encapsulates a general USB device (detects the functions of this device).
+* CUSBDeviceFactory: Creates the function objects of the different supported USB functions.
+* CUSBEndpoint: Encapsulates an endpoint of an USB device (supports control, bulk and interrupt EPs).
+* CUSBFunction: Encapsulates a function (represented by an interface descriptor) of an USB device.
+* CUSBGamePadDevice: Driver for USB gamepads with USB HID class report interface (3-0-0)
+* CUSBHIDDevice: General USB HID device (e.g. keyboard, mouse, gamepad)
+* CUSBHostController: Base class of CDWHCIDevice, some basic functions for host controllers.
+* CUSBKeyboardDevice: Driver for USB keyboards
+* CUSBMouseDevice: Driver for USB mice
+* CUSBPrinterDevice: Simple communications driver for USB printers (back-channel is not used).
+* CUSBRequest: A request to an USB device (URB).
+* CUSBStandardHub: USB hub driver for LAN9512/9514 and external hubs (max. 8 ports)
+
+Input library
+
+* CKeyboardBehaviour: Generic keyboard function
+* CKeyMap: Keyboard translation map (six selectable default maps at the moment)
+* CMouseBehaviour: Generic mouse function, handles the mouse cursor
+* CTouchScreenDevice: Driver for the official Raspberry Pi touch screen
+
+FS library
+
+* CPartition: Derived from CDevice, restricts access to a storage partition inside its boundaries.
+* CPartitionManager: Creates a CPartition object for each primary (non-EFI) partition.
+
+FAT FS library
+
+* CFAT: Encapsulates the File Allocation Table structure of a FAT storage partition.
+* CFATInfo: Encapsulates the configuration information describing a FAT storage partition (from BPB and FS Info).
+* CFATDirectory: Encapsulates a directory on a FAT partition (currently 8.3-names in the root directory only).
+* CFATFileSystem: File system driver for FAT16 and FAT32 storage partitions.
+* CFATCache: Sector cache for FAT storage partitions.
+
+Scheduler library
+
+* CTask: Overload this class, define the Run() method to implement your own task and call new on it to start it.
+* CScheduler: Cooperative non-preemtive scheduler which controls which task runs at a time.
+* CSynchronizationEvent: Provides a method to synchronize the execution of a task with an event.
+
+Net library
+
+* CARPHandler: Resolves IP addresses to Ethernet MAC addresses and responds to ARP requests.
+* CChecksumCalculator: Calculates checksums in several TCP/IP packets.
+* CDHCPClient: DHCP client task. Gets and maintains an IP address lease for the network device.
+* CDNSClient: Resolves hostnames to IP addresses.
+* CHTTPDaemon: Simple HTTP server class.
+* CICMPHandler: ICMP error message handler and echo (ping) responder.
+* CIPAddress: Encapsulates an IP address.
+* CLinkLayer: Encapsulates the Ethernet MAC layer.
+* CNetConfig: Encapsulates the network configuration.
+* CNetConnection: Virtual transport layer connection (UDP or TCP (not yet available)).
+* CNetDeviceLayer: Encapsulates the network device support layer. Queues TX/RX frames before/after transmission.
+* CNetQueue: Encapsulates a network packet queue.
+* CNetSubSystem: The main network subsystem class. Create an instance of it in the CKernel class.
+* CNetTask: The main networking task running in the background. Processes the different network layers.
+* CNetworkLayer: Encapsulates the IP network layer. Does not support packet fragmentation so far.
+* CNTPClient: A NTP client which gets the current time from an Internet time server.
+* CNTPDaemon: Background task which uses CNTPClient to update the system time every 15 minutes.
+* CRetransmissionQueue: The TCP retransmission queue.
+* CRetransmissionTimeoutCalculator: Calculates the TCP retransmission timeout according to RFC 6298.
+* CRouteCache: Caches special routes, received via ICMP redirect requests.
+* CSocket: Network application interface (socket) class.
+* CTCPConnection: Encapsulates a TCP connection. Derived from CNetConnection.
+* CTCPRejector: Rejects TCP segments which do not address an open connection. Derived from CNetConnection.
+* CTFTPDaemon: TFTP server task.
+* CTransportLayer: Encapsulates the TCP/UDP transport layer.
+* CUDPConnection: Encapsulates a (virtual) UDP connection. Derived from CNetConnection.
+
+Bluetooth library
+
+* CBTDeviceManager: Manages the local Bluetooth device. Part of the HCI layer.
+* CBTHCILayer: Bluetooth HCI layer. Basic communication with the local Bluetooth controller.
+* CBTInquiryResults: Container for the responses of an Inquiry operation.
+* CBTLogicalLayer: Bluetooth logical layer. Handles Inquiry operation only at the moment.
+* CBTQueue: Encapsulates a queue used for incoming and outgoing command, event and data packets.
+* CBTSubSystem: The main Bluetooth subsystem class. Create an instance of it in the CKernel class.
+* CBTTask: Bluetooth background task. Processes the different Bluetooth layers.
+* CBTUARTTransport: Bluetooth UART HCI transport driver for the internal BT device of the Raspberry Pi 3.
