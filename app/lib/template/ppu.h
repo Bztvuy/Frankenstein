@@ -22,8 +22,7 @@ union NESPPUMemoryMap{
     char raw[0x10000];
 };
 
-union NESPPURegisters{
-{
+struct NESPPURegisters{
     struct {
         unsigned char controlRegister1;
         unsigned char controlRegister2;
