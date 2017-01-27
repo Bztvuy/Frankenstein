@@ -4,7 +4,7 @@
 
 CIRCLEHOME = ../../..
 
-OBJS	= rom.o
+OBJS	= rom.o cpu.o
 
 libtempl.a: $(OBJS)
 	rm -f $@

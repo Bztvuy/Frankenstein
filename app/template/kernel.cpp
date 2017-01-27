@@ -61,16 +61,5 @@ TShutdownMode CKernel::Run (void)
 {
 	m_Logger.Write (FromKernel, LogNotice, "Compile time: " __DATE__ " " __TIME__);
 
-    m_Logger.Write(FromKernel, LogNotice, "Dumping NES rom : \n");
-
-    CTimer::SimpleMsDelay (1000);
-
-    for(int i = 0; i < 262160; i++){
-        const char* s = new char[2]{rom.GetData()[i], '\0'};
-        m_Logger.Write(FromKernel, LogNotice, s);
-    }
-
-    m_Logger.Write(FromKernel, LogNotice, "\nDone");
-
 	return ShutdownHalt;
 }

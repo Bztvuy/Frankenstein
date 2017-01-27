@@ -6,14 +6,31 @@
 
 #include <circle/types.h>
 
+union iNesHeader {
+    struct {
+        char magicWord[4];
+        char prgRomSize;
+        char chrRomSize;
+        char flags6;
+        char flags7;
+        char prgRamSize;
+        char flags9;
+        char flags10;
+        char zeros[5];
+    };
+    char raw[16];
+};
+
 class Rom
 {  
 public:
-    const char* GetData();
-    const unsigned int GetLength();
+    const iNesHeader* GetHeader() const;
+    const char* GetRaw() const;
+    const unsigned int GetLength() const;
+
 private:
     const unsigned int length = 262160;
-    const char data[262160] = {
+    const char raw[262160] = {
         '\x4e', '\x45', '\x53', '\x1a', '\x10', '\x00', '\x10', '\x00', '\x00', '\x00', '\x00', '\x00',
         '\x00', '\x00', '\x00', '\x00', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff',
         '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\xff',

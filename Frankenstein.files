@@ -92,9 +92,16 @@ addon/webconsole/sample/main.cpp
 addon/webconsole/webconsole.cpp
 addon/webconsole/webconsole.h
 app/Rules.mk
+app/lib/template/cpu.cpp
+app/lib/template/cpu.h
 app/lib/template/libtempl.a
+app/lib/template/memory.cpp
+app/lib/template/memory.h
+app/lib/template/ppu.cpp
+app/lib/template/ppu.h
 app/lib/template/rom.cpp
 app/lib/template/rom.h
+app/lib/template/romheader.cpp
 app/makeall
 app/template/kernel.cpp
 app/template/kernel.h
