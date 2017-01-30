@@ -2,7 +2,7 @@
 
 cd lib
 
-cd template
+cd emulator
 make $1 $2 || exit
 cd ..
 
@@ -13,7 +13,7 @@ cd ..
 
 cd ..
 
-cd template
+cd kernel
 make $1 $2 || exit
 cd ..
 
