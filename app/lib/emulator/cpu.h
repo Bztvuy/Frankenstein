@@ -2,55 +2,56 @@
 #define CPU_H
 
 #include "rom.h"
+#include <circle/types.h>
 
 union NESCPUMemoryMap{
     struct {
-        unsigned char zeroPage[0x0100];
-        unsigned char stack[0x0100];
-        unsigned char ram[0x0600];
-        unsigned char mirrors1[0x1800];
-        unsigned char ioRegisters1[0x0008];
-        unsigned char mirrors2[0x1FF8];
-        unsigned char ioRegisters2[0x0020];
-        unsigned char expansionRom[0x1FE0];
-        unsigned char sram[0x2000];
-        unsigned char prgRomLowerBank[0x4000];
-        unsigned char prgRomUpperBank[0x4000];
+        u8 zeroPage[0x0100];
+        u8 stack[0x0100];
+        u8 ram[0x0600];
+        u8 mirrors1[0x1800];
+        u8 ioRegisters1[0x0008];
+        u8 mirrors2[0x1FF8];
+        u8 ioRegisters2[0x0020];
+        u8 expansionRom[0x1FE0];
+        u8 sram[0x2000];
+        u8 prgRomLowerBank[0x4000];
+        u8 prgRomUpperBank[0x4000];
     };
-    unsigned char raw[0x10000];
+    u8 raw[0x10000];
 };
 
 union NESCPURegisters{
     struct {
-        unsigned short programCounter;
-        unsigned char stackPointer;
-        unsigned char accumulator;
-        unsigned char indexX;
-        unsigned char indexY;
-        unsigned char processorStatus;
+        u16 programCounter;
+        u8 stackPointer;
+        u8 accumulator;
+        u8 indexX;
+        u8 indexY;
+        u8 processorStatus;
     };
     struct {
-        unsigned short PC;
-        unsigned char SP;
-        unsigned char A;
-        unsigned char X;
-        unsigned char Y;
-        unsigned char P;
+        u16 PC;
+        u8 SP;
+        u8 A;
+        u8 X;
+        u8 Y;
+        u8 P;
     };
 };
 
 class Cpu
 {
 private:
-	NESCPURegisters* registers;
+    NESCPURegisters* registers;
     NESCPUMemoryMap* memory;
 
     //sizes related to hardware (in bytes) :
-	const unsigned int prgRomBankSize = 16 * KILOBYTE;
-	const unsigned int vRomBankSize = 8 * KILOBYTE;
-	const unsigned int prgRamBankSize = 8 * KILOBYTE;
-    const unsigned long instructions[256];
-    const unsigned char instructionSizes[256] =
+    u32 prgRomBankSize = 16 * KILOBYTE;
+    u32 vRomBankSize = 8 * KILOBYTE;
+    u32 prgRamBankSize = 8 * KILOBYTE;
+    u64 instructions[256];
+    u8 instructionSizes[256] =
     {   1, 2, 1, 1, 1, 2, 2, 1, 1, 2, 1, 1, 1, 3, 3, 1, 2, 2, 
         1, 1, 1, 2, 2, 1, 1, 3, 1, 1, 1, 3, 3, 1, 3, 2, 1, 1, 
         2, 2, 2, 1, 1, 2, 1, 1, 3, 3, 3, 1, 2, 2, 1, 1, 1, 2, 
@@ -220,6 +221,21 @@ private:
     void INC_ABS_X();
     void UNIMP();
 
+    
+    u16 Immediate();
+    u16 ZeroPage();
+    u16 Absolute();
+    u16 Implied();
+    u16 Accumulator();
+    u16 Indexed();
+    u16 ZeroPageIndexed();
+    u16 Indirect();
+    u16 PreIndexedIndirect();
+    u16 PostIndexedIndirect();
+    u16 Relative();
+   
+    u16 FromValues(u8 low);
+    u16 FromValues(u8 low, u8 high);
 public:
 	
     Cpu(const Rom* rom);
