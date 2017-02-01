@@ -21,20 +21,181 @@ Cpu::Cpu(const Rom* rom)
 
 unsigned int buildAddress(unsigned char l, unsigned char m)
 {
-
 	unsigned int res = m;
 	res <<= 8;
 	res |= l;
 	return res;
 }
 
+
+
+    void Cpu::BRK(){}
+    
+    /// Logical OR 
+    /// 2 bytes; 6 cycles
+    void Cpu::ORA_IND_X(){
+        auto regX = this->registers->X;
+        PostIndexedIndirect();
+    }
+    
+    void Cpu::ORA_ZP(){}
+    void Cpu::ASL_ZP(){}
+    void Cpu::PHP(){}
+    void Cpu::ORA_IMM(){}
+    void Cpu::ASL_ACC(){}
+    void Cpu::ORA_ABS(){}
+    void Cpu::ASL_ABS(){}
+    void Cpu::BPL(){}
+    void Cpu::ORA_IND_Y(){}
+    void Cpu::ORA_ZP_X(){}
+    void Cpu::ASL_ZP_X(){}
+    void Cpu::CLC(){}
+    void Cpu::ORA_ABS_Y(){}
+    void Cpu::ORA_ABS_X(){}
+    void Cpu::ASL_ABS_X(){}
+    void Cpu::JSR(){}
+    void Cpu::AND_IND_X(){}
+    void Cpu::BIT_ZP(){}
+    void Cpu::AND_ZP(){}
+    void Cpu::ROL_ZP(){}
+    void Cpu::PLP(){}
+    void Cpu::AND_IMM(){}
+    void Cpu::ROL_ACC(){}
+    void Cpu::BIT_ABS(){}
+    void Cpu::AND_ABS(){}
+    void Cpu::ROL_ABS(){}
+    void Cpu::BMI(){}
+    void Cpu::AND_IND_Y(){}
+    void Cpu::AND_ZP_X(){}
+    void Cpu::ROL_ZP_X(){}
+    void Cpu::SEC(){}
+    void Cpu::AND_ABS_Y(){}
+    void Cpu::AND_ABS_X(){}
+    void Cpu::ROL_ABS_X(){}
+    void Cpu::RTI(){}
+    void Cpu::EOR_IND_X(){}
+    void Cpu::EOR_ZP(){}
+    void Cpu::LSR_ZP(){}
+    void Cpu::PHA(){}
+    void Cpu::EOR_IMM(){}
+    void Cpu::LSR_ACC(){}
+    void Cpu::JMP_ABS(){}
+    void Cpu::EOR_ABS(){}
+    void Cpu::LSR_ABS(){}
+    void Cpu::BVC(){}
+    void Cpu::EOR_IND_Y(){}
+    void Cpu::EOR_ZP_X(){}
+    void Cpu::LSR_ZP_X(){}
+    void Cpu::CLI(){}
+    void Cpu::EOR_ABS_Y(){}
+    void Cpu::EOR_ABS_X(){}
+    void Cpu::LSR_ABS_X(){}
+    void Cpu::RTS(){}
+    void Cpu::ADC_IND_X(){}
+    void Cpu::ADC_ZP(){}
+    void Cpu::ROR_ZP(){}
+    void Cpu::PLA(){}
+    void Cpu::ADC_IMM(){}
+    void Cpu::ROR_ACC(){}
+    void Cpu::JMP_IND(){}
+    void Cpu::ADC_ABS(){}
+    void Cpu::ROR_ABS(){}
+    void Cpu::BVS(){}
+    void Cpu::ADC_IND_Y(){}
+    void Cpu::ADC_ZP_X(){}
+    void Cpu::ROR_ZP_X(){}
+    void Cpu::SEI(){}
+    void Cpu::ADC_ABS_Y(){}
+    void Cpu::ADC_ABS_X(){}
+    void Cpu::ROR_ABS_X(){}
+    void Cpu::STA_IND_X(){}
+    void Cpu::STY_ZP(){}
+    void Cpu::STA_ZP(){}
+    void Cpu::STX_ZP(){}
+    void Cpu::DEY(){}
+    void Cpu::TXA(){}
+    void Cpu::STY_ABS(){}
+    void Cpu::STA_ABS(){}
+    void Cpu::STX_ABS(){}
+    void Cpu::BCC(){}
+    void Cpu::STA_IND_Y(){}
+    void Cpu::STY_ZP_X(){}
+    void Cpu::STA_ZP_X(){}
+    void Cpu::STX_ZP_Y(){}
+    void Cpu::TYA(){}
+    void Cpu::STA_ABS_Y(){}
+    void Cpu::TXS(){}
+    void Cpu::STA_ABS_X(){}
+    void Cpu::LDY_IMM(){}
+    void Cpu::LDA_IND_X(){}
+    void Cpu::LDX_IMM(){}
+    void Cpu::LDY_ZP(){}
+    void Cpu::LDA_ZP(){}
+    void Cpu::LDX_ZP(){}
+    void Cpu::TAY(){}
+    void Cpu::LDA_IMM(){}
+    void Cpu::TAX(){}
+    void Cpu::LDY_ABS(){}
+    void Cpu::LDA_ABS(){}
+    void Cpu::LDX_ABS(){}
+    void Cpu::BCS(){}
+    void Cpu::LDA_IND_Y(){}
+    void Cpu::LDY_ZP_X(){}
+    void Cpu::LDA_ZP_X(){}
+    void Cpu::LDX_ZP_Y(){}
+    void Cpu::CLV(){}
+    void Cpu::LDA_ABS_Y(){}
+    void Cpu::TSX(){}
+    void Cpu::LDY_ABS_X(){}
+    void Cpu::LDA_ABS_X(){}
+    void Cpu::LDX_ABS_Y(){}
+    void Cpu::CPY_IMM(){}
+    void Cpu::CMP_IND_X(){}
+    void Cpu::CPY_ZP(){}
+    void Cpu::CMP_ZP(){}
+    void Cpu::DEC_ZP(){}
+    void Cpu::INY(){}
+    void Cpu::CMP_IMM(){}
+    void Cpu::DEX(){}
+    void Cpu::CPY_ABS(){}
+    void Cpu::CMP_ABS(){}
+    void Cpu::DEC_ABS(){}
+    void Cpu::BNE(){}
+    void Cpu::CMP_IND_Y(){}
+    void Cpu::CMP_ZP_X(){}
+    void Cpu::DEC_ZP_X(){}
+    void Cpu::CLD(){}
+    void Cpu::CMP_ABS_Y(){}
+    void Cpu::CMP_ABS_X(){}
+    void Cpu::DEC_ABS_X(){}
+    void Cpu::CPX_IMM(){}
+    void Cpu::SBC_IND_X(){}
+    void Cpu::CPX_ZP(){}
+    void Cpu::SBC_ZP(){}
+    void Cpu::INC_ZP(){}
+    void Cpu::INX(){}
+    void Cpu::SBC_IMM(){}
+    void Cpu::NOP(){}
+    void Cpu::CPX_ABS(){}
+    void Cpu::SBC_ABS(){}
+    void Cpu::INC_ABS(){}
+    void Cpu::BEQ(){}
+    void Cpu::SBC_IND_Y(){}
+    void Cpu::SBC_ZP_X(){}
+    void Cpu::INC_ZP_X(){}
+    void Cpu::SED(){}
+    void Cpu::SBC_ABS_Y(){}
+    void Cpu::SBC_ABS_X(){}
+    void Cpu::INC_ABS_X(){}
+    void Cpu::UNIMP(){}
+
 int IMM_m(NesCPU& cpu, NesMMU& mmu)
 {
-
 	cpu.setOperand(mmu.read(cpu.getPC() + 1));
 	return 1;
 
 }
+
 int ABS_m(NesCPU& cpu, NesMMU& mmu)
 {
 
@@ -49,12 +210,10 @@ int ABS_m(NesCPU& cpu, NesMMU& mmu)
 	}
 
 	return 3;
-
 }
 
 int ABX_m(NesCPU& cpu, NesMMU& mmu)
 {
-
 	unsigned int lsb = mmu.read(cpu.getPC() + 1);
 	unsigned char msb = mmu.read(cpu.getPC() + 2);
 
@@ -68,7 +227,6 @@ int ABX_m(NesCPU& cpu, NesMMU& mmu)
 	}
 
 	return 3 + (lsb >> 8);
-
 }
 
 int ABY_m(NesCPU& cpu, NesMMU& mmu)
