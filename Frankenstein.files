@@ -252,7 +252,6 @@ include/circle/usb/usbhiddevice.h
 include/circle/usb/usbhostcontroller.h
 include/circle/usb/usbhub.h
 include/circle/usb/usbkeyboard.h
-include/circle/usb/usbmassdevice.h
 include/circle/usb/usbmouse.h
 include/circle/usb/usbprinter.h
 include/circle/usb/usbrequest.h
@@ -299,8 +298,6 @@ lib/fs/fat/fatdir.cpp
 lib/fs/fat/fatfs.cpp
 lib/fs/fat/fatinfo.cpp
 lib/fs/fat/libfatfs.a
-lib/fs/libfs.a
-lib/fs/partition.cpp
 lib/fs/partitionmanager.cpp
 lib/gpioclock.cpp
 lib/gpiomanager.cpp
@@ -401,7 +398,6 @@ lib/usb/usbgamepad.cpp
 lib/usb/usbhiddevice.cpp
 lib/usb/usbhostcontroller.cpp
 lib/usb/usbkeyboard.cpp
-lib/usb/usbmassdevice.cpp
 lib/usb/usbmouse.cpp
 lib/usb/usbprinter.cpp
 lib/usb/usbrequest.cpp

@@ -23,11 +23,10 @@ CIRCLEHOME = ../..
 OBJS	= dwhcidevice.o dwhciregister.o dwhcixferstagedata.o \
 	  usbconfigparser.o usbdevice.o usbendpoint.o usbhostcontroller.o usbrequest.o \
 	  smsc951x.o macaddress.o netdevice.o usbdevicefactory.o usbstandardhub.o \
-	  usbmassdevice.o \
-	  dwhciframeschednper.o dwhciframeschedper.o usbkeyboard.o \
-	  dwhcirootport.o usbhiddevice.o usbmouse.o usbgamepad.o \
+	  dwhciframeschednper.o dwhciframeschedper.o \
+	  dwhcirootport.o usbgamepad.o \
 	  usbfunction.o \
-	  dwhciframeschednsplit.o usbprinter.o usbbluetooth.o
+	  dwhciframeschednsplit.o
 
 libusb.a: $(OBJS)
 	rm -f libusb.a

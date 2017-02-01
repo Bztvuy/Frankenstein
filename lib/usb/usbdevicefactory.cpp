@@ -22,7 +22,6 @@
 
 // for factory
 #include <circle/usb/usbstandardhub.h>
-#include <circle/usb/usbmassdevice.h>
 #include <circle/usb/usbkeyboard.h>
 #include <circle/usb/usbmouse.h>
 #include <circle/usb/usbgamepad.h>
@@ -40,11 +39,11 @@ CUSBFunction *CUSBDeviceFactory::GetDevice (CUSBFunction *pParent, CString *pNam
 	if (   pName->Compare ("int9-0-0") == 0
 	    || pName->Compare ("int9-0-2") == 0)
 	{
-		pResult = new CUSBStandardHub (pParent);
-	}
+        pResult = 0; //new CUSBStandardHub (pParent);
+    }
 	else if (pName->Compare ("int8-6-50") == 0)
 	{
-		pResult = new CUSBBulkOnlyMassStorageDevice (pParent);
+        pResult = 0; //new CUSBBulkOnlyMassStorageDevice (pParent);
 	}
 	else if (pName->Compare ("int3-1-1") == 0)
 	{

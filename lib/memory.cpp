@@ -26,22 +26,12 @@
 #include <circle/sysconfig.h>
 #include <assert.h>
 
-#if RASPPI == 1
-#define MMU_MODE	(  ARM_CONTROL_MMU			\
-			 | ARM_CONTROL_L1_CACHE			\
-			 | ARM_CONTROL_L1_INSTRUCTION_CACHE	\
-			 | ARM_CONTROL_BRANCH_PREDICTION	\
-			 | ARM_CONTROL_EXTENDED_PAGE_TABLE)
-
-#define TTBCR_SPLIT	3
-#else
 #define MMU_MODE	(  ARM_CONTROL_MMU			\
 			 | ARM_CONTROL_L1_CACHE			\
 			 | ARM_CONTROL_L1_INSTRUCTION_CACHE	\
 			 | ARM_CONTROL_BRANCH_PREDICTION)
 
 #define TTBCR_SPLIT	2
-#endif
 
 CMemorySystem::CMemorySystem (boolean bEnableMMU)
 #ifndef USE_RPI_STUB_AT
@@ -80,10 +70,6 @@ CMemorySystem::CMemorySystem (boolean bEnableMMU)
 		assert (m_pPageTable1 != 0);
 
 		EnableMMU ();
-
-#ifdef ARM_ALLOW_MULTI_CORE
-		CSpinLock::Enable ();
-#endif
 	}
 }
 
@@ -108,84 +94,10 @@ CMemorySystem::~CMemorySystem (void)
 	m_pPageTable0Default = 0;
 }
 
-#ifdef ARM_ALLOW_MULTI_CORE
-
-void CMemorySystem::InitializeSecondary (void)
-{
-	assert (m_bEnableMMU);		// required to use spin locks
-
-	EnableMMU ();
-}
-
-#endif
-
 u32 CMemorySystem::GetMemSize (void) const
 {
 	return m_nMemSize;
 }
-
-#if RASPPI == 1		// tested on Raspberry Pi 1 only and currently not used in Circle
-
-void CMemorySystem::SetPageTable0 (CPageTable *pPageTable, u32 nContextID)
-{
-	assert (m_bEnableMMU);
-	
-	if (pPageTable == 0)
-	{
-		pPageTable = m_pPageTable0Default;
-	}
-	
-	u32 nOldContextID;
-	asm volatile ("mrc p15, 0, %0, c13, c0,  1" : "=r" (nOldContextID));
-
-	asm volatile ("mcr p15, 0, %0, c2, c0,  0" : : "r" (pPageTable->GetBaseAddress ()) : "memory");
-
-	DataSyncBarrier ();
-	asm volatile ("mcr p15, 0, %0, c13, c0,  1" : : "r" (nContextID) : "memory");
-	InstructionMemBarrier ();
-
-	// invalidate on ASID match unified TLB
-	asm volatile ("mcr p15, 0, %0, c8, c7,  2" : : "r" (nOldContextID & 0xFF) : "memory");
-}
-
-void CMemorySystem::SetPageTable0 (u32 nTTBR0, u32 nContextID)
-{
-	assert (m_bEnableMMU);
-	
-	u32 nOldContextID;
-	asm volatile ("mrc p15, 0, %0, c13, c0,  1" : "=r" (nOldContextID));
-
-	asm volatile ("mcr p15, 0, %0, c2, c0,  0" : : "r" (nTTBR0) : "memory");
-
-	DataSyncBarrier ();
-	asm volatile ("mcr p15, 0, %0, c13, c0,  1" : : "r" (nContextID) : "memory");
-	InstructionMemBarrier ();
-
-	// invalidate on ASID match unified TLB
-	asm volatile ("mcr p15, 0, %0, c8, c7,  2" : : "r" (nOldContextID & 0xFF) : "memory");
-}
-
-u32 CMemorySystem::GetTTBR0 (void) const
-{
-	assert (m_bEnableMMU);
-
-	u32 nTTBR0;
-	asm volatile ("mrc p15, 0, %0, c2, c0,  0" : "=r" (nTTBR0));
-	
-	return nTTBR0;
-}
-
-u32 CMemorySystem::GetContextID (void) const
-{
-	assert (m_bEnableMMU);
-
-	u32 nContextID;
-	asm volatile ("mrc p15, 0, %0, c13, c0,  1" : "=r" (nContextID));
-	
-	return nContextID;
-}
-
-#endif
 
 void CMemorySystem::EnableMMU (void)
 {
@@ -193,11 +105,9 @@ void CMemorySystem::EnableMMU (void)
 
 	u32 nAuxControl;
 	asm volatile ("mrc p15, 0, %0, c1, c0,  1" : "=r" (nAuxControl));
-#if RASPPI == 1
-	nAuxControl |= ARM_AUX_CONTROL_CACHE_SIZE;	// restrict cache size (no page coloring)
-#else
-	nAuxControl |= ARM_AUX_CONTROL_SMP;
-#endif
+
+    nAuxControl |= ARM_AUX_CONTROL_SMP;
+
 	asm volatile ("mcr p15, 0, %0, c1, c0,  1" : : "r" (nAuxControl));
 
 	u32 nTLBType;
@@ -219,11 +129,7 @@ void CMemorySystem::EnableMMU (void)
 	asm volatile ("mcr p15, 0, %0, c3, c0,  0" : : "r" (  DOMAIN_CLIENT << 0
 							    | DOMAIN_CLIENT << 2));
 
-#ifndef ARM_ALLOW_MULTI_CORE
-	InvalidateDataCache ();
-#else
-	InvalidateDataCacheL1Only ();
-#endif
+    InvalidateDataCache ();
 
 	// required if MMU was previously enabled and not properly reset
 	InvalidateInstructionCache ();
@@ -234,16 +140,7 @@ void CMemorySystem::EnableMMU (void)
 
 	// enable MMU
 	u32 nControl;
-	asm volatile ("mrc p15, 0, %0, c1, c0,  0" : "=r" (nControl));
-#if RASPPI == 1
-#ifdef ARM_STRICT_ALIGNMENT
-	nControl &= ~ARM_CONTROL_UNALIGNED_PERMITTED;
-	nControl |= ARM_CONTROL_STRICT_ALIGNMENT;
-#else
-	nControl &= ~ARM_CONTROL_STRICT_ALIGNMENT;
-	nControl |= ARM_CONTROL_UNALIGNED_PERMITTED;
-#endif
-#endif
+    asm volatile ("mrc p15, 0, %0, c1, c0,  0" : "=r" (nControl));
 	nControl |= MMU_MODE;
 	asm volatile ("mcr p15, 0, %0, c1, c0,  0" : : "r" (nControl) : "memory");
 }
