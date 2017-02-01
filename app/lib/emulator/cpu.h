@@ -50,7 +50,6 @@ private:
     const u32 prgRomBankSize = 16 * KILOBYTE;
     const u32 vRomBankSize = 8 * KILOBYTE;
     const u32 prgRamBankSize = 8 * KILOBYTE;
-    const u64 instructions[256];
     const u8 instructionSizes[256] =
     {   1, 2, 1, 1, 1, 2, 2, 1, 1, 2, 1, 1, 1, 3, 3, 1, 2, 2, 
         1, 1, 1, 2, 2, 1, 1, 3, 1, 1, 1, 3, 3, 1, 3, 2, 1, 1, 

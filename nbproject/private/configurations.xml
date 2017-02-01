@@ -126,6 +126,7 @@
         </df>
         <df name="lib">
           <df name="emulator">
+            <in>Addressing.cpp</in>
             <in>cpu.cpp</in>
             <in>cpu.h</in>
             <in>nes.cpp</in>
