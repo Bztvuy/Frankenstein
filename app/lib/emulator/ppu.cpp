@@ -1,6 +1,6 @@
 #include "ppu.h"
 
-PPU::PPU()
+Ppu::Ppu()
 {
 
 }

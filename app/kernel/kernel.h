@@ -16,7 +16,7 @@
 #include <circle/logger.h>
 #include <circle/types.h>
 #include <circle/util.h>
-#include <emulator/rom.h>
+#include <emulator/nes.h>
 
 enum TShutdownMode
 {
@@ -49,7 +49,7 @@ private:
 	CLogger			m_Logger;
 
 	// TODO: add more members here
-    Rom		rom;
+    Nes		nes;
 };
 
 #endif

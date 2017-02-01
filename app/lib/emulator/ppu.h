@@ -52,7 +52,7 @@ struct RGBColor{
 	unsigned char blue;
 };
 
-class PPU
+class Ppu
 {
 private:
 	const RGBColor colorPalette[0x40] = {
@@ -124,7 +124,7 @@ private:
 public:
 	NESPPURegisters registers;
 	NESPPUMemoryMap memory;
-    PPU();
+    Ppu();
 };
 
 #endif // PPU_H
