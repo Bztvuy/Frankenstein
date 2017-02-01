@@ -42,14 +42,13 @@ union NESCPURegisters{
 class Cpu
 {
 private:
-	NESCPURegisters* registers;
+    NESCPURegisters* registers;
     NESCPUMemoryMap* memory;
 
     //sizes related to hardware (in bytes) :
-	const unsigned int prgRomBankSize = 16 * KILOBYTE;
-	const unsigned int vRomBankSize = 8 * KILOBYTE;
-	const unsigned int prgRamBankSize = 8 * KILOBYTE;
-    const unsigned long instructions[256];
+    const unsigned int prgRomBankSize = 16 * KILOBYTE;
+    const unsigned int vRomBankSize = 8 * KILOBYTE;
+    const unsigned int prgRamBankSize = 8 * KILOBYTE;
     const unsigned char instructionSizes[256] =
     {   1, 2, 1, 1, 1, 2, 2, 1, 1, 2, 1, 1, 1, 3, 3, 1, 2, 2, 
         1, 1, 1, 2, 2, 1, 1, 3, 1, 1, 1, 3, 3, 1, 3, 2, 1, 1, 
@@ -219,6 +218,63 @@ private:
     void SBC_ABS_X();
     void INC_ABS_X();
     void UNIMP();
+    
+    typedef void (Cpu::*func)(void);
+    
+    const func instructions[256]{
+        &Cpu::BRK,      &Cpu::ORA_IND_X,&Cpu::UNIMP,    &Cpu::UNIMP,    &Cpu::UNIMP,
+        &Cpu::ORA_ZP,   &Cpu::ASL_ZP,   &Cpu::UNIMP,    &Cpu::PHP,      &Cpu::ORA_IMM,
+        &Cpu::ASL_ACC,  &Cpu::UNIMP,    &Cpu::UNIMP,    &Cpu::ORA_ABS,  &Cpu::ASL_ABS,
+        &Cpu::UNIMP,    &Cpu::BPL,      &Cpu::ORA_IND_Y,&Cpu::UNIMP,    &Cpu::UNIMP,
+        &Cpu::UNIMP,    &Cpu::ORA_ZP_X, &Cpu::ASL_ZP_X, &Cpu::UNIMP,    &Cpu::CLC,
+        &Cpu::ORA_ABS_Y,&Cpu::UNIMP,    &Cpu::UNIMP,    &Cpu::UNIMP,    &Cpu::ORA_ABS_X,
+        &Cpu::ASL_ABS_X,&Cpu::UNIMP,    &Cpu::JSR,      &Cpu::AND_IND_X,&Cpu::UNIMP,
+        &Cpu::UNIMP,    &Cpu::BIT_ZP,   &Cpu::AND_ZP,   &Cpu::ROL_ZP,   &Cpu::UNIMP, 
+        &Cpu::PLP,      &Cpu::AND_IMM,  &Cpu::ROL_ACC,  &Cpu::UNIMP,    &Cpu::BIT_ABS, 
+        &Cpu::AND_ABS,  &Cpu::ROL_ABS,  &Cpu::UNIMP,    &Cpu::BMI,      &Cpu::AND_IND_Y,
+        &Cpu::UNIMP,    &Cpu::UNIMP,    &Cpu::UNIMP,    &Cpu::AND_ZP_X, &Cpu::ROL_ZP_X,
+        &Cpu::UNIMP,    &Cpu::SEC,      &Cpu::AND_ABS_Y,&Cpu::UNIMP,    &Cpu::UNIMP,
+        &Cpu::UNIMP,    &Cpu::AND_ABS_X,&Cpu::ROL_ABS_X,&Cpu::UNIMP,    &Cpu::RTI,
+        &Cpu::EOR_IND_X,&Cpu::UNIMP,    &Cpu::UNIMP,    &Cpu::UNIMP,    &Cpu::EOR_ZP,
+        &Cpu::LSR_ZP,   &Cpu::UNIMP,    &Cpu::PHA,      &Cpu::EOR_IMM,  &Cpu::LSR_ACC,
+        &Cpu::UNIMP,    &Cpu::JMP_ABS,  &Cpu::EOR_ABS,  &Cpu::LSR_ABS,  &Cpu::UNIMP,
+        &Cpu::BVC,      &Cpu::EOR_IND_Y,&Cpu::UNIMP,    &Cpu::UNIMP,    &Cpu::UNIMP,
+        &Cpu::EOR_ZP_X, &Cpu::LSR_ZP_X, &Cpu::UNIMP,    &Cpu::CLI,      &Cpu::EOR_ABS_Y,
+        &Cpu::UNIMP,    &Cpu::UNIMP,    &Cpu::UNIMP,    &Cpu::EOR_ABS_X,&Cpu::LSR_ABS_X,
+        &Cpu::UNIMP,    &Cpu::RTS,      &Cpu::ADC_IND_X,&Cpu::UNIMP,    &Cpu::UNIMP,
+        &Cpu::UNIMP,    &Cpu::ADC_ZP,   &Cpu::ROR_ZP,   &Cpu::UNIMP,    &Cpu::PLA,
+        &Cpu::ADC_IMM,  &Cpu::ROR_ACC,  &Cpu::UNIMP,    &Cpu::JMP_IND,  &Cpu::ADC_ABS,
+        &Cpu::ROR_ABS,  &Cpu::UNIMP,    &Cpu::BVS,      &Cpu::ADC_IND_Y,&Cpu::UNIMP,
+        &Cpu::UNIMP,    &Cpu::UNIMP,    &Cpu::ADC_ZP_X, &Cpu::ROR_ZP_X, &Cpu::UNIMP,
+        &Cpu::SEI,      &Cpu::ADC_ABS_Y,&Cpu::UNIMP,    &Cpu::UNIMP,    &Cpu::UNIMP,
+        &Cpu::ADC_ABS_X,&Cpu::ROR_ABS_X,&Cpu::UNIMP,    &Cpu::UNIMP,    &Cpu::STA_IND_X,
+        &Cpu::UNIMP,    &Cpu::UNIMP,    &Cpu::STY_ZP,   &Cpu::STA_ZP,   &Cpu::STX_ZP,   
+        &Cpu::UNIMP,    &Cpu::DEY,      &Cpu::UNIMP,    &Cpu::TXA,      &Cpu::UNIMP,    
+        &Cpu::STY_ABS,  &Cpu::STA_ABS,  &Cpu::STX_ABS,  &Cpu::UNIMP,    &Cpu::BCC,      
+        &Cpu::STA_IND_Y,&Cpu::UNIMP,    &Cpu::UNIMP,    &Cpu::STY_ZP_X, &Cpu::STA_ZP_X, 
+        &Cpu::STX_ZP_Y, &Cpu::UNIMP,    &Cpu::TYA,      &Cpu::STA_ABS_Y,&Cpu::TXS,      
+        &Cpu::UNIMP,    &Cpu::UNIMP,    &Cpu::STA_ABS_X,&Cpu::UNIMP,    &Cpu::UNIMP,    
+        &Cpu::LDY_IMM,  &Cpu::LDA_IND_X,&Cpu::LDX_IMM,  &Cpu::UNIMP,    &Cpu::LDY_ZP,   
+        &Cpu::LDA_ZP,   &Cpu::LDX_ZP,   &Cpu::UNIMP,    &Cpu::TAY,      &Cpu::LDA_IMM,  
+        &Cpu::TAX,      &Cpu::UNIMP,    &Cpu::LDY_ABS,  &Cpu::LDA_ABS,  &Cpu::LDX_ABS,  
+        &Cpu::UNIMP,    &Cpu::BCS,      &Cpu::LDA_IND_Y,&Cpu::UNIMP,    &Cpu::UNIMP,    
+        &Cpu::LDY_ZP_X, &Cpu::LDA_ZP_X, &Cpu::LDX_ZP_Y, &Cpu::UNIMP,    &Cpu::CLV,      
+        &Cpu::LDA_ABS_Y,&Cpu::TSX,      &Cpu::UNIMP,    &Cpu::LDY_ABS_X,&Cpu::LDA_ABS_X,
+        &Cpu::LDX_ABS_Y,&Cpu::CPY_IMM,  &Cpu::CMP_IND_X,&Cpu::UNIMP,    &Cpu::UNIMP,    
+        &Cpu::UNIMP,    &Cpu::CPY_ZP,   &Cpu::CMP_ZP,   &Cpu::DEC_ZP,   &Cpu::UNIMP,    
+        &Cpu::INY,      &Cpu::CMP_IMM,  &Cpu::DEX,      &Cpu::UNIMP,    &Cpu::CPY_ABS,  
+        &Cpu::CMP_ABS,  &Cpu::DEC_ABS,  &Cpu::UNIMP,    &Cpu::BNE,      &Cpu::CMP_IND_Y,
+        &Cpu::UNIMP,    &Cpu::UNIMP,    &Cpu::UNIMP,    &Cpu::CMP_ZP_X, &Cpu::DEC_ZP_X, 
+        &Cpu::UNIMP,    &Cpu::CLD,      &Cpu::CMP_ABS_Y,&Cpu::UNIMP,    &Cpu::UNIMP,    
+        &Cpu::UNIMP,    &Cpu::CMP_ABS_X,&Cpu::DEC_ABS_X,&Cpu::UNIMP,    &Cpu::CPX_IMM,  
+        &Cpu::SBC_IND_X,&Cpu::UNIMP,    &Cpu::UNIMP,    &Cpu::CPX_ZP,   &Cpu::SBC_ZP,   
+        &Cpu::INC_ZP,   &Cpu::UNIMP,    &Cpu::INX,      &Cpu::SBC_IMM,  &Cpu::NOP,      
+        &Cpu::UNIMP,    &Cpu::CPX_ABS,  &Cpu::SBC_ABS,  &Cpu::INC_ABS,  &Cpu::UNIMP,    
+        &Cpu::BEQ,      &Cpu::SBC_IND_Y,&Cpu::UNIMP,    &Cpu::UNIMP,    &Cpu::UNIMP,    
+        &Cpu::SBC_ZP_X, &Cpu::INC_ZP_X, &Cpu::UNIMP,    &Cpu::SED,      &Cpu::SBC_ABS_Y,
+        &Cpu::UNIMP,    &Cpu::UNIMP,    &Cpu::UNIMP,    &Cpu::SBC_ABS_X,&Cpu::INC_ABS_X,
+        &Cpu::UNIMP
+    };
 
 public:
 	

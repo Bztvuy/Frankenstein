@@ -188,7 +188,7 @@
   <confs>
     <conf name="Default" type="0">
       <toolsSet>
-        <compilerSet>GNU_ARM|GNU</compilerSet>
+        <compilerSet>GNU|GNU</compilerSet>
         <dependencyChecking>false</dependencyChecking>
         <rebuildPropChanged>false</rebuildPropChanged>
       </toolsSet>
@@ -342,12 +342,17 @@
           </incDir>
         </ccTool>
       </item>
-      <item path="app/lib/emulator/rom.cpp" ex="false" tool="1" flavor2="4">
-        <ccTool>
+      <item path="app/lib/emulator/rom.cpp" ex="false" tool="1" flavor2="8">
+        <ccTool flags="0">
           <incDir>
-            <pElem>.</pElem>
             <pElem>include</pElem>
+            <pElem>addon</pElem>
+            <pElem>app/lib</pElem>
           </incDir>
+          <preprocessorList>
+            <Elem>RASPPI=3</Elem>
+            <Elem>__circle__</Elem>
+          </preprocessorList>
         </ccTool>
       </item>
       <folder path="0/addon">
