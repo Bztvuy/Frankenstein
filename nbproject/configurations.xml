@@ -1,0 +1,517 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="95">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <df root="." name="0">
+      <df name="addon">
+        <df name="dio">
+          <df name="sample">
+            <in>kernel.cpp</in>
+            <in>main.cpp</in>
+          </df>
+          <in>spidio.cpp</in>
+        </df>
+        <df name="OneWire">
+          <df name="sample">
+            <in>ds18x20.cpp</in>
+            <in>kernel.cpp</in>
+            <in>main.cpp</in>
+          </df>
+          <in>OneWire.cpp</in>
+        </df>
+        <df name="Properties">
+          <df name="sample">
+            <in>kernel.cpp</in>
+            <in>main.cpp</in>
+          </df>
+          <in>properties.cpp</in>
+          <in>propertiesfile.cpp</in>
+        </df>
+        <df name="rtc">
+          <df name="sample">
+            <in>kernel.cpp</in>
+            <in>main.cpp</in>
+          </df>
+          <in>mcp7941x.cpp</in>
+        </df>
+        <df name="SDCard">
+          <df name="sample">
+            <in>kernel.cpp</in>
+            <in>main.cpp</in>
+          </df>
+          <in>emmc.cpp</in>
+        </df>
+        <df name="Spectrum">
+          <df name="sample">
+            <in>kernel.cpp</in>
+            <in>main.cpp</in>
+          </df>
+          <in>SpectrumScreen.cpp</in>
+        </df>
+        <df name="tftpfileserver">
+          <df name="sample">
+            <in>kernel.cpp</in>
+            <in>main.cpp</in>
+          </df>
+          <in>tftpfileserver.cpp</in>
+        </df>
+        <df name="ugui">
+          <df name="sample">
+            <in>controlwindow.cpp</in>
+            <in>kernel.cpp</in>
+            <in>main.cpp</in>
+            <in>recorder.cpp</in>
+            <in>scopeconfig.cpp</in>
+            <in>scopewindow.cpp</in>
+            <in>timeline.cpp</in>
+          </df>
+          <in>ugui.c</in>
+          <in>uguicpp.cpp</in>
+        </df>
+        <df name="webconsole">
+          <df name="sample">
+            <in>kernel.cpp</in>
+            <in>main.cpp</in>
+          </df>
+          <in>logbuffer.cpp</in>
+          <in>webconsole.cpp</in>
+        </df>
+        <df name="WS28XX">
+          <df name="sample">
+            <in>kernel.cpp</in>
+            <in>main.cpp</in>
+          </df>
+          <in>ws28xxstripe.cpp</in>
+        </df>
+      </df>
+      <df name="app">
+        <df name="kernel">
+          <in>kernel.cpp</in>
+          <in>main.cpp</in>
+        </df>
+        <df name="lib">
+          <df name="emulator">
+            <in>cpu.cpp</in>
+            <in>nes.cpp</in>
+            <in>ppu.cpp</in>
+            <in>rom.cpp</in>
+          </df>
+        </df>
+      </df>
+      <df name="lib">
+        <df name="sched">
+          <in>scheduler.cpp</in>
+          <in>synchronizationevent.cpp</in>
+          <in>task.cpp</in>
+        </df>
+        <df name="usb">
+          <in>dwhcidevice.cpp</in>
+          <in>dwhciframeschednper.cpp</in>
+          <in>dwhciframeschednsplit.cpp</in>
+          <in>dwhciframeschedper.cpp</in>
+          <in>dwhciregister.cpp</in>
+          <in>dwhcirootport.cpp</in>
+          <in>dwhcixferstagedata.cpp</in>
+          <in>macaddress.cpp</in>
+          <in>netdevice.cpp</in>
+          <in>smsc951x.cpp</in>
+          <in>usbconfigparser.cpp</in>
+          <in>usbdevice.cpp</in>
+          <in>usbdevicefactory.cpp</in>
+          <in>usbendpoint.cpp</in>
+          <in>usbfunction.cpp</in>
+          <in>usbgamepad.cpp</in>
+          <in>usbhostcontroller.cpp</in>
+          <in>usbrequest.cpp</in>
+          <in>usbstandardhub.cpp</in>
+        </df>
+        <in>actled.cpp</in>
+        <in>alloc.cpp</in>
+        <in>assert.cpp</in>
+        <in>bcmframebuffer.cpp</in>
+        <in>bcmmailbox.cpp</in>
+        <in>bcmpropertytags.cpp</in>
+        <in>bcmrandom.cpp</in>
+        <in>chargenerator.cpp</in>
+        <in>cputhrottle.cpp</in>
+        <in>debug.cpp</in>
+        <in>device.cpp</in>
+        <in>devicenameservice.cpp</in>
+        <in>dmachannel.cpp</in>
+        <in>exceptionhandler.cpp</in>
+        <in>gpioclock.cpp</in>
+        <in>gpiomanager.cpp</in>
+        <in>gpiopin.cpp</in>
+        <in>i2cmaster.cpp</in>
+        <in>i2cslave.cpp</in>
+        <in>interrupt.cpp</in>
+        <in>koptions.cpp</in>
+        <in>libhelper.cpp</in>
+        <in>logger.cpp</in>
+        <in>machineinfo.cpp</in>
+        <in>memory.cpp</in>
+        <in>multicore.cpp</in>
+        <in>new.cpp</in>
+        <in>nulldevice.cpp</in>
+        <in>pagetable.cpp</in>
+        <in>ptrarray.cpp</in>
+        <in>ptrlist.cpp</in>
+        <in>purecall.cpp</in>
+        <in>pwmoutput.cpp</in>
+        <in>pwmsounddevice.cpp</in>
+        <in>screen.cpp</in>
+        <in>serial.cpp</in>
+        <in>spimaster.cpp</in>
+        <in>spimasterdma.cpp</in>
+        <in>spinlock.cpp</in>
+        <in>string.cpp</in>
+        <in>synchronize.cpp</in>
+        <in>sysinit.cpp</in>
+        <in>time.cpp</in>
+        <in>timer.cpp</in>
+        <in>tracer.cpp</in>
+        <in>util.cpp</in>
+        <in>virtualgpiopin.cpp</in>
+      </df>
+    </df>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false"
+                   kind="IMPORTANT_FILES_FOLDER">
+      <itemPath>app/makeall</itemPath>
+    </logicalFolder>
+  </logicalFolder>
+  <sourceFolderFilter>^(nbproject)$</sourceFolderFilter>
+  <sourceRootList>
+    <Elem>.</Elem>
+  </sourceRootList>
+  <projectmakefile>app/Makefile</projectmakefile>
+  <confs>
+    <conf name="Default" type="0">
+      <toolsSet>
+        <compilerSet>GNU_ARM|GNU</compilerSet>
+        <dependencyChecking>false</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <flagsDictionary>
+        <element flagsID="0"
+                 commonFlags="-march=armv8-a -mtune=cortex-a53 -nostdinc -nostdlib -O2 -fno-exceptions -fno-rtti -std=c++0x"/>
+      </flagsDictionary>
+      <codeAssistance>
+        <includeAdditional>true</includeAdditional>
+      </codeAssistance>
+      <makefileType>
+        <makeTool>
+          <buildCommandWorkingDir>app</buildCommandWorkingDir>
+          <buildCommand>sh makeall</buildCommand>
+          <cleanCommand>sh makeall clean</cleanCommand>
+          <executablePath></executablePath>
+          <cTool>
+            <incDir>
+              <pElem>.</pElem>
+              <pElem>include</pElem>
+            </incDir>
+          </cTool>
+          <ccTool>
+            <standard>8</standard>
+          </ccTool>
+        </makeTool>
+      </makefileType>
+      <item path="addon/OneWire/OneWire.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="addon/OneWire/sample/ds18x20.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="addon/OneWire/sample/kernel.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="addon/OneWire/sample/main.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="addon/Properties/properties.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="addon/Properties/propertiesfile.cpp"
+            ex="false"
+            tool="1"
+            flavor2="4">
+      </item>
+      <item path="addon/Properties/sample/kernel.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="addon/Properties/sample/main.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="addon/SDCard/emmc.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="addon/SDCard/sample/kernel.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="addon/SDCard/sample/main.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="addon/Spectrum/SpectrumScreen.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="addon/Spectrum/sample/kernel.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="addon/Spectrum/sample/main.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="addon/WS28XX/sample/kernel.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="addon/WS28XX/sample/main.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="addon/WS28XX/ws28xxstripe.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="addon/dio/sample/kernel.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="addon/dio/sample/main.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="addon/dio/spidio.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="addon/rtc/mcp7941x.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="addon/rtc/sample/kernel.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="addon/rtc/sample/main.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="addon/tftpfileserver/sample/kernel.cpp"
+            ex="false"
+            tool="1"
+            flavor2="4">
+      </item>
+      <item path="addon/tftpfileserver/sample/main.cpp"
+            ex="false"
+            tool="1"
+            flavor2="4">
+      </item>
+      <item path="addon/tftpfileserver/tftpfileserver.cpp"
+            ex="false"
+            tool="1"
+            flavor2="4">
+      </item>
+      <item path="addon/ugui/sample/controlwindow.cpp"
+            ex="false"
+            tool="1"
+            flavor2="4">
+      </item>
+      <item path="addon/ugui/sample/kernel.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="addon/ugui/sample/main.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="addon/ugui/sample/recorder.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="addon/ugui/sample/scopeconfig.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="addon/ugui/sample/scopewindow.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="addon/ugui/sample/timeline.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="addon/ugui/ugui.c" ex="false" tool="0" flavor2="2">
+      </item>
+      <item path="addon/ugui/uguicpp.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="addon/webconsole/logbuffer.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="addon/webconsole/sample/kernel.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="addon/webconsole/sample/main.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="addon/webconsole/webconsole.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="app/kernel/kernel.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="app/kernel/main.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="app/lib/emulator/cpu.cpp" ex="false" tool="1" flavor2="8">
+        <ccTool flags="0">
+          <incDir>
+            <pElem>include</pElem>
+            <pElem>addon</pElem>
+            <pElem>app/lib</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>RASPPI=3</Elem>
+            <Elem>__circle__</Elem>
+          </preprocessorList>
+        </ccTool>
+      </item>
+      <item path="app/lib/emulator/nes.cpp" ex="false" tool="1" flavor2="4">
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+            <pElem>include</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="app/lib/emulator/ppu.cpp" ex="false" tool="1" flavor2="4">
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+            <pElem>include</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="app/lib/emulator/rom.cpp" ex="false" tool="1" flavor2="4">
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+            <pElem>include</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <folder path="0/addon">
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+            <pElem>include</pElem>
+          </incDir>
+        </ccTool>
+      </folder>
+      <folder path="0/app/kernel">
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+            <pElem>include</pElem>
+          </incDir>
+        </ccTool>
+      </folder>
+      <folder path="0/lib">
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+            <pElem>include</pElem>
+          </incDir>
+        </ccTool>
+      </folder>
+      <item path="lib/actled.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/alloc.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/assert.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/bcmframebuffer.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/bcmmailbox.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/bcmpropertytags.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/bcmrandom.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/chargenerator.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/cputhrottle.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/debug.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/device.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/devicenameservice.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/dmachannel.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/exceptionhandler.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/gpioclock.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/gpiomanager.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/gpiopin.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/i2cmaster.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/i2cslave.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/interrupt.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/koptions.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/libhelper.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/logger.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/machineinfo.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/memory.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/multicore.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/new.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/nulldevice.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/pagetable.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/ptrarray.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/ptrlist.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/purecall.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/pwmoutput.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/pwmsounddevice.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/sched/scheduler.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/sched/synchronizationevent.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/sched/task.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/screen.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/serial.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/spimaster.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/spimasterdma.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/spinlock.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/string.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/synchronize.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/sysinit.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/time.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/timer.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/tracer.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/usb/dwhcidevice.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/usb/dwhciframeschednper.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/usb/dwhciframeschednsplit.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/usb/dwhciframeschedper.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/usb/dwhciregister.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/usb/dwhcirootport.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/usb/dwhcixferstagedata.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/usb/macaddress.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/usb/netdevice.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/usb/smsc951x.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/usb/usbconfigparser.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/usb/usbdevice.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/usb/usbdevicefactory.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/usb/usbendpoint.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/usb/usbfunction.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/usb/usbgamepad.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/usb/usbhostcontroller.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/usb/usbrequest.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/usb/usbstandardhub.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/util.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+      <item path="lib/virtualgpiopin.cpp" ex="false" tool="1" flavor2="4">
+      </item>
+    </conf>
+  </confs>
+</configurationDescriptor>
