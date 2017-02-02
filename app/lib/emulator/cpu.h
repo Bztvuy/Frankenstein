@@ -277,18 +277,20 @@ private:
         &Cpu::UNIMP
     };
 
+    u16 FromValues(const u8 low);
+    u16 FromValues(const u8 low, const u8 high);
     
-    u16 Immediate();
-    u16 ZeroPage();
-    u16 Absolute();
-    u16 Implied();
-    u16 Accumulator();
-    u16 Indexed();
-    u16 ZeroPageIndexed();
-    u16 Indirect();
-    u16 PreIndexedIndirect();
-    u16 PostIndexedIndirect();
-    u16 Relative();
+    u16 Immediate(const u8 value) const;
+    u16 ZeroPage(const u8 low) const;
+    u16 Absolute(const u8 low, const u8 high) const;
+    //u16 Implied();
+    //u16 Accumulator();
+    u16 Indexed(const u8 low, const u8 high, const u8 const& reg) const;
+    u16 ZeroPageIndexed(const u8 low, const u8 const& reg) const;
+    u16 Indirect(const u8 low, const u8 high) const;
+    u16 PreIndexedIndirect(const u8 low, const u8 const& reg) const;
+    u16 PostIndexedIndirect(const u8 low, const u8 const& reg) const;
+    //u16 Relative();
    
     u16 FromValues(u8 low);
     u16 FromValues(u8 low, u8 high);
