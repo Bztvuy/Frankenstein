@@ -21,10 +21,6 @@ u16 Cpu::FromValues(const u8 low, const u8 high) const {
     return res;
 }
 
-u8 Cpu::Immediate(const u8 value) const {
-    return value;
-}
-
 u16 Cpu::ZeroPage(const u8 low) const {
     return FromValues(low);
 }

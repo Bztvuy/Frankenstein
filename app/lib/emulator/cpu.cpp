@@ -26,6 +26,98 @@ inline u8& Cpu::Operand(int number) const {
     return Memory(this->registers->PC + number);
 }
 
+void Cpu::ADC(u8& value){
+    
+}
+void Cpu::AND(u8& value){
+    this->registers->A &= value;
+    SetFlag(Z, value);
+    SetFlag(S, CHECK_BIT(value, 7));
+}
+void Cpu::ASL(u8& value){
+    SetFlag(C, CHECK_BIT(value, 7));
+    value <<= 1;
+    SetFlag(Z, value);
+    SetFlag(S, CHECK_BIT(value, 7));
+}
+void Cpu::BIT(u8& value){
+    SetFlag(Z, value & this->registers->A);
+    SetFlag(S, CHECK_BIT(value, 7));
+    SetFlag(V, CHECK_BIT(value, 6));
+}
+void Cpu::CMP(u8& value){
+    SetFlag(C, this->registers->A >= value);
+    SetFlag(Z, this->registers->A == value);
+    SetFlag(S, this->registers->A < value);
+}
+void Cpu::CPX(u8& value){
+    SetFlag(C, this->registers->X >= value);
+    SetFlag(Z, this->registers->X == value);
+    SetFlag(S, this->registers->X < value);
+}
+void Cpu::CPY(u8& value){
+    SetFlag(C, this->registers->Y >= value);
+    SetFlag(Z, this->registers->Y == value);
+    SetFlag(S, this->registers->Y < value);
+}
+void Cpu::DEC(u8& value){
+    
+}
+void Cpu::EOR(u8& value){
+    
+}
+void Cpu::INC(u8& value){
+    
+}
+void Cpu::JMP(u8& value){
+    
+}
+void Cpu::LDA(u8& value){
+    
+}
+void Cpu::LDX(u8& value){
+    
+}
+void Cpu::LDY(u8& value){
+    
+}
+void Cpu::LSR(u8& value){
+    
+}
+void Cpu::ORA(u8& value){
+    this->registers->A |= value;
+    SetFlag(Z, this->registers->A);
+    SetFlag(S, CHECK_BIT(this->registers->A, 7));
+}
+void Cpu::ROL(u8& value){
+    auto carry = GetFlag(C);
+    SetFlag(C, CHECK_BIT(value, 7));
+    value <<= 1;
+    ASSIGN_BIT(value, 0, carry);
+    SetFlag(Z, value);
+    SetFlag(S, CHECK_BIT(value, 7));
+}
+void Cpu::ROR(u8& value){
+    auto carry = GetFlag(C);
+    SetFlag(C, CHECK_BIT(value, 0));
+    value >>= 1;
+    ASSIGN_BIT(value, 7, carry);
+    SetFlag(Z, value);
+    SetFlag(S, CHECK_BIT(value, 7));
+}
+void Cpu::SBC(u8& value){
+    
+}
+void Cpu::STA(u8& value){
+    
+}
+void Cpu::STX(u8& value){
+    
+}
+void Cpu::STY(u8& value){
+    
+}
+
 void Cpu::BRK() {
     // TODO
 }
@@ -33,25 +125,17 @@ void Cpu::BRK() {
 /// Logical OR 
 /// 2 bytes; 6 cycles
 void Cpu::ORA_IND_X() {
-    this->registers->A |= Memory(PreIndexedIndirect(Operand(1), this->registers->X));
-    SetFlag(this->flags->zero, this->registers->A);
-    SetFlag(this->flags->negative, CHECK_BIT(this->registers->A, 7));
+    ORA(Memory(PreIndexedIndirect(Operand(1), this->registers->X)));
 }
 
 /// 2 bytes; 3 cycles
 void Cpu::ORA_ZP() {
-    this->registers->A |= Memory(ZeroPage(Operand(1)));
-    SetFlag(this->flags->zero, this->registers->A);
-    SetFlag(this->flags->negative, CHECK_BIT(this->registers->A, 7));
+    ORA(Memory(ZeroPage(Operand(1))));
 }
 
 // 
 void Cpu::ASL_ZP() {
-    auto& value = Memory(ZeroPage(Operand(1)));
-    SetFlag(this->flags->carry, CHECK_BIT(value, 7));
-    value <<= 1;
-    SetFlag(this->flags->zero, value);
-    SetFlag(this->flags->negative, CHECK_BIT(value, 7));
+    ASL(Memory(ZeroPage(Operand(1))));
 }
 
 void Cpu::PHP() {
@@ -59,31 +143,19 @@ void Cpu::PHP() {
 }
 
 void Cpu::ORA_IMM() {
-    this->registers->A |= Immediate(Operand(1));
-    SetFlag(this->flags->zero, this->registers->A);
-    SetFlag(this->flags->negative, CHECK_BIT(this->registers->A, 7));
+    ORA(Operand(1));
 }
 
 void Cpu::ASL_ACC() {
-    auto& value = this->registers->A;
-    SetFlag(this->flags->carry, CHECK_BIT(value, 7));
-    value <<= 1;
-    SetFlag(this->flags->zero, value);
-    SetFlag(this->flags->negative, CHECK_BIT(value, 7));
+    ASL(this->registers->A);
 }
 
 void Cpu::ORA_ABS() {
-    this->registers->A |= Memory(Absolute(Operand(1), Operand(2)));
-    SetFlag(this->flags->zero, this->registers->A);
-    SetFlag(this->flags->negative, CHECK_BIT(this->registers->A, 7));
+    ORA(Memory(Absolute(Operand(1), Operand(2))));
 }
 
 void Cpu::ASL_ABS() {
-    auto& value = Memory(Absolute(Operand(1), Operand(2)));    
-    SetFlag(this->flags->carry, CHECK_BIT(value, 7));
-    value <<= 1;
-    SetFlag(this->flags->zero, value);
-    SetFlag(this->flags->negative, CHECK_BIT(value, 7));
+    ASL(Memory(Absolute(Operand(1), Operand(2))));    
 }
 
 void Cpu::BPL() {
@@ -91,23 +163,15 @@ void Cpu::BPL() {
 }
 
 void Cpu::ORA_IND_Y() {
-    this->registers->A |= Memory(PostIndexedIndirect(Operand(1), this->registers->Y));
-    SetFlag(this->flags->zero, this->registers->A);
-    SetFlag(this->flags->negative, CHECK_BIT(this->registers->A, 7));
+    ORA(Memory(PostIndexedIndirect(Operand(1), this->registers->Y)));
 }
 
 void Cpu::ORA_ZP_X() {
-    this->registers->A |= Memory(ZeroPageIndexed(Operand(1), this->registers->X));
-    SetFlag(this->flags->zero, this->registers->A);
-    SetFlag(this->flags->negative, CHECK_BIT(this->registers->A, 7));
+    ORA(Memory(ZeroPageIndexed(Operand(1), this->registers->X)));
 }
 
 void Cpu::ASL_ZP_X() {
-    auto& value = Memory(ZeroPageIndexed(Operand(1), this->registers->X));
-    SetFlag(this->flags->carry, CHECK_BIT(value, 7));
-    value <<= 1;
-    SetFlag(this->flags->zero, value);
-    SetFlag(this->flags->negative, CHECK_BIT(value, 7));
+    ASL(Memory(ZeroPageIndexed(Operand(1), this->registers->X)));
 }
 
 void Cpu::CLC() {
@@ -115,25 +179,15 @@ void Cpu::CLC() {
 }
 
 void Cpu::ORA_ABS_Y() {
-    auto value = Memory(Indexed(Operand(1), Operand(2), this->registers->Y));
-    this->registers->A |= value;
-    SetFlag(this->flags->zero, this->registers->A);
-    SetFlag(this->flags->negative, CHECK_BIT(this->registers->A, 7));
+    ORA(Memory(Indexed(Operand(1), Operand(2), this->registers->Y)));
 }
 
 void Cpu::ORA_ABS_X() {
-    auto value = Memory(Indexed(Operand(1), Operand(2), this->registers->X));
-    this->registers->A |= value;
-    SetFlag(this->flags->zero, this->registers->A);
-    SetFlag(this->flags->negative, CHECK_BIT(this->registers->A, 7));
+    ORA(Memory(Indexed(Operand(1), Operand(2), this->registers->X)));
 }
 
 void Cpu::ASL_ABS_X() {
-    auto& value = Memory(Indexed(Operand(1), Operand(2), this->registers->X));
-    SetFlag(this->flags->carry, CHECK_BIT(value, 7));
-    value <<= 1;
-    SetFlag(this->flags->zero, value);
-    SetFlag(this->flags->negative, CHECK_BIT(value, 7));
+    ASL(Memory(Indexed(Operand(1), Operand(2), this->registers->X)));
 }
 
 void Cpu::JSR() {
@@ -142,21 +196,19 @@ void Cpu::JSR() {
 
 // 6 cycles
 void Cpu::AND_IND_X() {
-    this->registers->A &= Memory(PreIndexedIndirect(Operand(1), this->registers->X));
-    // TODO
+    AND(Memory(PreIndexedIndirect(Operand(1), this->registers->X)));
 }
 
 void Cpu::BIT_ZP() {
-    // TODO
+    BIT(Memory(ZeroPage(Operand(1))));
 }
 
 void Cpu::AND_ZP() {
-    this->registers->A &= Memory(ZeroPage(Operand(1)));
-    // TODO
+    AND(Memory(ZeroPage(Operand(1))));
 }
 
 void Cpu::ROL_ZP() {
-    // TODO
+    ROL(Memory(ZeroPage(Operand(1))));
 }
 
 void Cpu::PLP() {
@@ -164,25 +216,23 @@ void Cpu::PLP() {
 }
 
 void Cpu::AND_IMM() {
-    this->registers->A &= Operand(1);
-    // TODO
+    AND(Operand(1));
 }
 
 void Cpu::ROL_ACC() {
-    // TODO
+    ROL(this->registers->A);
 }
 
 void Cpu::BIT_ABS() {
-    // TODO
+    BIT(Memory(Absolute(Operand(1), Operand(2))));
 }
 
 void Cpu::AND_ABS() {
-    this->registers->A &= Memory(Absolute(Operand(1), Operand(2)));
-    // TODO
+    AND(Memory(Absolute(Operand(1), Operand(2))));
 }
 
 void Cpu::ROL_ABS() {
-    // TODO
+    ROL(Memory(Absolute(Operand(1), Operand(2))));
 }
 
 void Cpu::BMI() {
@@ -190,17 +240,15 @@ void Cpu::BMI() {
 }
 
 void Cpu::AND_IND_Y() {
-    this->registers->A &= Memory(PostIndexedIndirect(Operand(1), this->registers->Y));
-    // TODO
+    AND(Memory(PostIndexedIndirect(Operand(1), this->registers->Y)));
 }
 
 void Cpu::AND_ZP_X() {
-    this->registers->A &= Memory(ZeroPageIndexed(Operand(1), this->registers->X));
-    // TODO
+    AND(Memory(ZeroPageIndexed(Operand(1), this->registers->X)));
 }
 
 void Cpu::ROL_ZP_X() {
-    // TODO
+    ROL(Memory(ZeroPageIndexed(Operand(1), this->registers->X)));
 }
 
 void Cpu::SEC() {
@@ -208,17 +256,15 @@ void Cpu::SEC() {
 }
 
 void Cpu::AND_ABS_Y() {
-    this->registers->A &= Memory(Indexed(Operand(1), Operand(2), this->registers->Y));
-    // TODO
+    AND(Memory(Indexed(Operand(1), Operand(2), this->registers->Y)));
 }
 
 void Cpu::AND_ABS_X() {
-    this->registers->A &= Memory(Indexed(Operand(1), Operand(2), this->registers->X));
-    // TODO
+    AND(Memory(Indexed(Operand(1), Operand(2), this->registers->X)));
 }
 
 void Cpu::ROL_ABS_X() {
-    // TODO
+    ROL(Memory(Indexed(Operand(1), Operand(2), this->registers->X)));
 }
 
 void Cpu::RTI() {
@@ -226,15 +272,15 @@ void Cpu::RTI() {
 }
 
 void Cpu::EOR_IND_X() {
-    // TODO
+    EOR(Memory(PreIndexedIndirect(Operand(1), this->registers->X)));
 }
 
 void Cpu::EOR_ZP() {
-    // TODO
+    EOR(Memory(ZeroPage(Operand(1))));
 }
 
 void Cpu::LSR_ZP() {
-    // TODO
+    LSR(Memory(ZeroPage(Operand(1))));
 }
 
 void Cpu::PHA() {
@@ -242,23 +288,23 @@ void Cpu::PHA() {
 }
 
 void Cpu::EOR_IMM() {
-    // TODO
+    EOR(Operand(1));
 }
 
 void Cpu::LSR_ACC() {
-    // TODO
+    LSR(this->registers->A);
 }
 
 void Cpu::JMP_ABS() {
-    // TODO
+    JMP(Memory(Absolute(Operand(1), Operand(2))));
 }
 
 void Cpu::EOR_ABS() {
-    // TODO
+    EOR(Memory(Absolute(Operand(1), Operand(2))));
 }
 
 void Cpu::LSR_ABS() {
-    // TODO
+    LSR(Memory(Absolute(Operand(1), Operand(2))));
 }
 
 void Cpu::BVC() {
@@ -266,15 +312,15 @@ void Cpu::BVC() {
 }
 
 void Cpu::EOR_IND_Y() {
-    // TODO
+    EOR(Memory(PostIndexedIndirect(Operand(1), this->registers->Y)));
 }
 
 void Cpu::EOR_ZP_X() {
-    // TODO
+    EOR(Memory(ZeroPageIndexed(Operand(1), this->registers->X)));
 }
 
 void Cpu::LSR_ZP_X() {
-    // TODO
+    LSR(Memory(ZeroPageIndexed(Operand(1), this->registers->X)));
 }
 
 void Cpu::CLI() {
@@ -282,15 +328,15 @@ void Cpu::CLI() {
 }
 
 void Cpu::EOR_ABS_Y() {
-    // TODO
+    EOR(Memory(Indexed(Operand(1), Operand(2), this->registers->Y)));
 }
 
 void Cpu::EOR_ABS_X() {
-    // TODO
+    EOR(Memory(Indexed(Operand(1), Operand(2), this->registers->X)));
 }
 
 void Cpu::LSR_ABS_X() {
-    // TODO
+    LSR(Memory(Indexed(Operand(1), Operand(2), this->registers->X)));
 }
 
 void Cpu::RTS() {
@@ -298,15 +344,15 @@ void Cpu::RTS() {
 }
 
 void Cpu::ADC_IND_X() {
-    // TODO
+    ADC(Memory(PreIndexedIndirect(Operand(1), this->registers->X)));
 }
 
 void Cpu::ADC_ZP() {
-    // TODO
+    ADC(Memory(ZeroPage(Operand(1))));
 }
 
 void Cpu::ROR_ZP() {
-    // TODO
+    ROR(Memory(ZeroPage(Operand(1))));
 }
 
 void Cpu::PLA() {
@@ -314,23 +360,23 @@ void Cpu::PLA() {
 }
 
 void Cpu::ADC_IMM() {
-    // TODO
+    ADC(Operand(1));
 }
 
 void Cpu::ROR_ACC() {
-    // TODO
+    ROR(this->registers->A);
 }
 
 void Cpu::JMP_IND() {
-    // TODO
+    JMP(Memory(Indirect(Operand(1), Operand(2))));
 }
 
 void Cpu::ADC_ABS() {
-    // TODO
+    ADC(Memory(Absolute(Operand(1), Operand(2))));
 }
 
 void Cpu::ROR_ABS() {
-    // TODO
+    ROR(Memory(Absolute(Operand(1), Operand(2))));
 }
 
 void Cpu::BVS() {
@@ -338,15 +384,15 @@ void Cpu::BVS() {
 }
 
 void Cpu::ADC_IND_Y() {
-    // TODO
+    ADC(Memory(PostIndexedIndirect(Operand(1), this->registers->Y)));
 }
 
 void Cpu::ADC_ZP_X() {
-    // TODO
+    ADC(Memory(ZeroPageIndexed(Operand(1), this->registers->X)));
 }
 
 void Cpu::ROR_ZP_X() {
-    // TODO
+    ROR(Memory(ZeroPageIndexed(Operand(1), this->registers->X)));
 }
 
 void Cpu::SEI() {
@@ -354,31 +400,31 @@ void Cpu::SEI() {
 }
 
 void Cpu::ADC_ABS_Y() {
-    // TODO
+    ADC(Memory(Indexed(Operand(1), Operand(2), this->registers->Y)));
 }
 
 void Cpu::ADC_ABS_X() {
-    // TODO
+    ADC(Memory(Indexed(Operand(1), Operand(2), this->registers->X)));
 }
 
 void Cpu::ROR_ABS_X() {
-    // TODO
+    ROR(Memory(Indexed(Operand(1), Operand(2), this->registers->X)));
 }
 
 void Cpu::STA_IND_X() {
-    // TODO
+    STA(Memory(PreIndexedIndirect(Operand(1), this->registers->X)));
 }
 
 void Cpu::STY_ZP() {
-    // TODO
+    STY(Memory(ZeroPage(Operand(1))));
 }
 
 void Cpu::STA_ZP() {
-    // TODO
+    STA(Memory(ZeroPage(Operand(1))));
 }
 
 void Cpu::STX_ZP() {
-    // TODO
+    STX(Memory(ZeroPage(Operand(1))));
 }
 
 void Cpu::DEY() {
@@ -390,15 +436,15 @@ void Cpu::TXA() {
 }
 
 void Cpu::STY_ABS() {
-    // TODO
+    STY(Memory(Absolute(Operand(1), Operand(2))));
 }
 
 void Cpu::STA_ABS() {
-    // TODO
+    STA(Memory(Absolute(Operand(1), Operand(2))));
 }
 
 void Cpu::STX_ABS() {
-    // TODO
+    STX(Memory(Absolute(Operand(1), Operand(2))));
 }
 
 void Cpu::BCC() {
@@ -406,19 +452,19 @@ void Cpu::BCC() {
 }
 
 void Cpu::STA_IND_Y() {
-    // TODO
+    STA(Memory(PostIndexedIndirect(Operand(1), this->registers->Y)));
 }
 
 void Cpu::STY_ZP_X() {
-    // TODO
+    STY(Memory(ZeroPageIndexed(Operand(1), this->registers->X)));
 }
 
 void Cpu::STA_ZP_X() {
-    // TODO
+    STA(Memory(ZeroPageIndexed(Operand(1), this->registers->X)));
 }
 
 void Cpu::STX_ZP_Y() {
-    // TODO
+    STX(Memory(ZeroPageIndexed(Operand(1), this->registers->Y)));
 }
 
 void Cpu::TYA() {
@@ -426,7 +472,7 @@ void Cpu::TYA() {
 }
 
 void Cpu::STA_ABS_Y() {
-    // TODO
+    STA(Memory(Indexed(Operand(1), Operand(2), this->registers->Y)));
 }
 
 void Cpu::TXS() {
@@ -434,31 +480,31 @@ void Cpu::TXS() {
 }
 
 void Cpu::STA_ABS_X() {
-    // TODO
+    STA(Memory(Indexed(Operand(1), Operand(2), this->registers->X)));
 }
 
 void Cpu::LDY_IMM() {
-    // TODO
+    LDY(Operand(1));
 }
 
 void Cpu::LDA_IND_X() {
-    // TODO
+    LDA(Memory(PreIndexedIndirect(Operand(1), this->registers->X)));
 }
 
 void Cpu::LDX_IMM() {
-    // TODO
+    LDX(Operand(1));
 }
 
 void Cpu::LDY_ZP() {
-    // TODO
+    LDY(Memory(ZeroPage(Operand(1))));
 }
 
 void Cpu::LDA_ZP() {
-    // TODO
+    LDA(Memory(ZeroPage(Operand(1))));
 }
 
 void Cpu::LDX_ZP() {
-    // TODO
+    LDX(Memory(ZeroPage(Operand(1))));
 }
 
 void Cpu::TAY() {
@@ -466,7 +512,7 @@ void Cpu::TAY() {
 }
 
 void Cpu::LDA_IMM() {
-    // TODO
+    LDA(Operand(1));
 }
 
 void Cpu::TAX() {
@@ -474,15 +520,15 @@ void Cpu::TAX() {
 }
 
 void Cpu::LDY_ABS() {
-    // TODO
+    LDY(Memory(Absolute(Operand(1), Operand(2))));
 }
 
 void Cpu::LDA_ABS() {
-    // TODO
+    LDA(Memory(Absolute(Operand(1), Operand(2))));
 }
 
 void Cpu::LDX_ABS() {
-    // TODO
+    LDX(Memory(Absolute(Operand(1), Operand(2))));
 }
 
 void Cpu::BCS() {
@@ -490,19 +536,19 @@ void Cpu::BCS() {
 }
 
 void Cpu::LDA_IND_Y() {
-    // TODO
+    LDA(Memory(PostIndexedIndirect(Operand(1), this->registers->Y)));
 }
 
 void Cpu::LDY_ZP_X() {
-    // TODO
+    LDY(Memory(ZeroPageIndexed(Operand(1), this->registers->X)));
 }
 
 void Cpu::LDA_ZP_X() {
-    // TODO
+    LDA(Memory(ZeroPageIndexed(Operand(1), this->registers->X)));
 }
 
 void Cpu::LDX_ZP_Y() {
-    // TODO
+    LDX(Memory(ZeroPageIndexed(Operand(1), this->registers->Y)));
 }
 
 void Cpu::CLV() {
@@ -510,7 +556,7 @@ void Cpu::CLV() {
 }
 
 void Cpu::LDA_ABS_Y() {
-    // TODO
+    LDA(Memory(Indexed(Operand(1), Operand(2), this->registers->Y)));
 }
 
 void Cpu::TSX() {
@@ -518,35 +564,35 @@ void Cpu::TSX() {
 }
 
 void Cpu::LDY_ABS_X() {
-    // TODO
+    LDY(Memory(Indexed(Operand(1), Operand(2), this->registers->X)));
 }
 
 void Cpu::LDA_ABS_X() {
-    // TODO
+    LDA(Memory(Indexed(Operand(1), Operand(2), this->registers->X)));
 }
 
 void Cpu::LDX_ABS_Y() {
-    // TODO
+    LDX(Memory(Indexed(Operand(1), Operand(2), this->registers->Y)));
 }
 
 void Cpu::CPY_IMM() {
-    // TODO
+    CPY(Operand(1));
 }
 
 void Cpu::CMP_IND_X() {
-    // TODO
+    CMP(Memory(PreIndexedIndirect(Operand(1), this->registers->X)));
 }
 
 void Cpu::CPY_ZP() {
-    // TODO
+    CPY(Memory(ZeroPage(Operand(1))));
 }
 
 void Cpu::CMP_ZP() {
-    // TODO
+    CMP(Memory(ZeroPage(Operand(1))));
 }
 
 void Cpu::DEC_ZP() {
-    // TODO
+    DEC(Memory(ZeroPage(Operand(1))));
 }
 
 void Cpu::INY() {
@@ -554,7 +600,7 @@ void Cpu::INY() {
 }
 
 void Cpu::CMP_IMM() {
-    // TODO
+    CMP(Operand(1));
 }
 
 void Cpu::DEX() {
@@ -562,15 +608,15 @@ void Cpu::DEX() {
 }
 
 void Cpu::CPY_ABS() {
-    // TODO
+    CPY(Memory(Absolute(Operand(1), Operand(2))));
 }
 
 void Cpu::CMP_ABS() {
-    // TODO
+    CMP(Memory(Absolute(Operand(1), Operand(2))));
 }
 
 void Cpu::DEC_ABS() {
-    // TODO
+    DEC(Memory(Absolute(Operand(1), Operand(2))));
 }
 
 void Cpu::BNE() {
@@ -578,15 +624,15 @@ void Cpu::BNE() {
 }
 
 void Cpu::CMP_IND_Y() {
-    // TODO
+    CMP(Memory(PostIndexedIndirect(Operand(1), this->registers->Y)));
 }
 
 void Cpu::CMP_ZP_X() {
-    // TODO
+    CMP(Memory(ZeroPageIndexed(Operand(1), this->registers->X)));
 }
 
 void Cpu::DEC_ZP_X() {
-    // TODO
+    DEC(Memory(ZeroPageIndexed(Operand(1), this->registers->X)));
 }
 
 void Cpu::CLD() {
@@ -594,35 +640,35 @@ void Cpu::CLD() {
 }
 
 void Cpu::CMP_ABS_Y() {
-    // TODO
+    CMP(Memory(Indexed(Operand(1), Operand(2), this->registers->Y)));
 }
 
 void Cpu::CMP_ABS_X() {
-    // TODO
+    CMP(Memory(Indexed(Operand(1), Operand(2), this->registers->X)));
 }
 
 void Cpu::DEC_ABS_X() {
-    // TODO
+    DEC(Memory(Indexed(Operand(1), Operand(2), this->registers->X)));
 }
 
 void Cpu::CPX_IMM() {
-    // TODO
+    CPX(Operand(1));
 }
 
 void Cpu::SBC_IND_X() {
-    // TODO
+    SBC(Memory(PreIndexedIndirect(Operand(1), this->registers->X)));
 }
 
 void Cpu::CPX_ZP() {
-    // TODO
+    CPX(Memory(ZeroPage(Operand(1))));
 }
 
 void Cpu::SBC_ZP() {
-    // TODO
+    SBC(Memory(ZeroPage(Operand(1))));
 }
 
 void Cpu::INC_ZP() {
-    // TODO
+    INC(Memory(ZeroPage(Operand(1))));
 }
 
 void Cpu::INX() {
@@ -630,7 +676,7 @@ void Cpu::INX() {
 }
 
 void Cpu::SBC_IMM() {
-    // TODO
+    SBC(Operand(1));
 }
 
 void Cpu::NOP() {
@@ -638,15 +684,15 @@ void Cpu::NOP() {
 }
 
 void Cpu::CPX_ABS() {
-    // TODO
+    CPX(Memory(Absolute(Operand(1), Operand(2))));
 }
 
 void Cpu::SBC_ABS() {
-    // TODO
+    SBC(Memory(Absolute(Operand(1), Operand(2))));
 }
 
 void Cpu::INC_ABS() {
-    // TODO
+    INC(Memory(Absolute(Operand(1), Operand(2))));
 }
 
 void Cpu::BEQ() {
@@ -654,15 +700,15 @@ void Cpu::BEQ() {
 }
 
 void Cpu::SBC_IND_Y() {
-    // TODO
+    SBC(Memory(PostIndexedIndirect(Operand(1), this->registers->Y)));
 }
 
 void Cpu::SBC_ZP_X() {
-    // TODO
+    SBC(Memory(ZeroPageIndexed(Operand(1), this->registers->X)));
 }
 
 void Cpu::INC_ZP_X() {
-    // TODO
+    INC(Memory(ZeroPageIndexed(Operand(1), this->registers->X)));
 }
 
 void Cpu::SED() {
@@ -670,15 +716,15 @@ void Cpu::SED() {
 }
 
 void Cpu::SBC_ABS_Y() {
-    // TODO
+    SBC(Memory(Indexed(Operand(1), Operand(2), this->registers->Y)));
 }
 
 void Cpu::SBC_ABS_X() {
-    // TODO
+    SBC(Memory(Indexed(Operand(1), Operand(2), this->registers->X)));
 }
 
 void Cpu::INC_ABS_X() {
-    // TODO
+    INC(Memory(Indexed(Operand(1), Operand(2), this->registers->X)));
 }
 
 void Cpu::UNIMP() {
@@ -686,4 +732,8 @@ void Cpu::UNIMP() {
 
 void Cpu::SetFlag(u8 flag, u8 value){
     ASSIGN_BIT(this->registers->P, flag, value);
+}
+
+u8 Cpu::GetFlag(u8 flag){
+    return CHECK_BIT(this->registers->P, flag);
 }

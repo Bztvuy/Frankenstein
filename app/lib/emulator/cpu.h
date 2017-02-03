@@ -46,18 +46,17 @@ private:
         };
     };
 
-    struct NESCPUFlags {
-        const u8 negative = 7;
-        const u8 overflow = 6;
-        const u8 always = 5;
-        const u8 brk = 4;
-        const u8 decimal = 3;
-        const u8 interrupt = 2;
-        const u8 zero = 1;
-        const u8 carry = 0;
+    enum NESCPUFlags {
+        C,      //Carry
+        Z,      //Zero
+        I,      //Interrupt
+        D,      //Decimal
+        B,      //Break
+        A,      //Always
+        V,      //Overflow
+        S       //Sign : 1 is negative
     };
 
-    NESCPUFlags* const flags = new NESCPUFlags;
     NESCPURegisters* const registers = new NESCPURegisters;
     NESCPUMemoryMap* const memory = new NESCPUMemoryMap;
 
@@ -80,6 +79,29 @@ private:
         1, 3, 1, 1, 1, 3, 3, 1, 2, 2, 1, 1, 2, 2, 2, 1, 1, 2,
         1, 1, 3, 3, 3, 1, 2, 2, 1, 1, 1, 2, 2, 1, 1, 3, 1, 1,
         1, 3, 3, 1};
+    
+    void ADC(u8& value);
+    void AND(u8& value);
+    void ASL(u8& value);
+    void BIT(u8& value);
+    void CMP(u8& value);
+    void CPX(u8& value);
+    void CPY(u8& value);
+    void DEC(u8& value);
+    void EOR(u8& value);
+    void INC(u8& value);
+    void JMP(u8& value);
+    void LDA(u8& value);
+    void LDX(u8& value);
+    void LDY(u8& value);
+    void LSR(u8& value);
+    void ORA(u8& value);
+    void ROL(u8& value);
+    void ROR(u8& value);
+    void SBC(u8& value);
+    void STA(u8& value);
+    void STX(u8& value);
+    void STY(u8& value);
 
     void BRK();
     void ORA_IND_X();
@@ -321,13 +343,6 @@ private:
     u16 FromValues(const u8 low, const u8 high) const;
 
     /**
-     * A literal value.
-     * @param value the value to return
-     * @return the value
-     */
-    u8 Immediate(const u8 value) const;
-
-    /**
      * Build the address [00][low]. 
      * @param low the least significant byte of the address
      * @return the builded address
@@ -390,6 +405,7 @@ private:
     //u16 Relative();
 
     void SetFlag(u8 flag, u8 value);
+    u8 GetFlag(u8 flag);
     
 public:
 
