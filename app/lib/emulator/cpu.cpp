@@ -38,9 +38,10 @@ void Cpu::ORA_ZP() {
 
 void Cpu::ASL_ZP() {
     auto operand = this->memory->raw[this->registers->PC + 1];
-    auto value = this->memory->raw[ZeroPage(operand)];
+    auto address = ZeroPage(operand);
+    auto value = this->memory->raw[address];
     this->flags->carry = CHECK_BIT(value, 7);
-    this->memory->raw[ZeroPage(operand)] <<= 1;
+    this->memory->raw[address] <<= 1;
 }
 
 void Cpu::PHP() {
@@ -53,6 +54,9 @@ void Cpu::ORA_IMM() {
 }
 
 void Cpu::ASL_ACC() {
+    auto value = this->registers->A;
+    this->flags->carry = CHECK_BIT(value, 7);
+    this->registers->A <<= 1;
 }
 
 void Cpu::ORA_ABS() {
@@ -63,6 +67,12 @@ void Cpu::ORA_ABS() {
 }
 
 void Cpu::ASL_ABS() {
+    auto low = this->memory->raw[this->registers->PC + 1];
+    auto high = this->memory->raw[this->registers->PC + 2];
+    auto address = Absolute(low, high);
+    auto value = this->memory->raw[address];
+    this->flags->carry = CHECK_BIT(value, 7);
+    this->memory->raw[address] <<= 1;
 }
 
 void Cpu::BPL() {
@@ -81,6 +91,11 @@ void Cpu::ORA_ZP_X() {
 }
 
 void Cpu::ASL_ZP_X() {
+    auto operand = this->memory->raw[this->registers->PC + 1];
+    auto address = ZeroPageIndexed(operand, this->registers->X);
+    auto value = this->memory->raw[address];
+    this->flags->carry = CHECK_BIT(value, 7);
+    this->memory->raw[address] <<= 1;
 }
 
 void Cpu::CLC() {
@@ -101,6 +116,12 @@ void Cpu::ORA_ABS_X() {
 }
 
 void Cpu::ASL_ABS_X() {
+    auto low = this->memory->raw[this->registers->PC + 1];
+    auto high = this->memory->raw[this->registers->PC + 2];
+    auto address = Indexed(low, high, this->registers->X);
+    auto value = this->memory->raw[address];
+    this->flags->carry = CHECK_BIT(value, 7);
+    this->memory->raw[address] <<= 1;
 }
 
 void Cpu::JSR() {

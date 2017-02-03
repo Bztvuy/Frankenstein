@@ -40,18 +40,7 @@ private:
             u8 P;
         };
     };
-    struct NESCPUFlags{
-        
-            bool negative = false;
-            bool overflow = false;
-            bool always = true;
-            bool brk = false;
-            bool decimal = false;
-            bool interrupt = false;
-            bool zero = false;
-            bool carry = false;
-    };
-    NESCPUFlags* flags;
+
     NESCPURegisters* registers;
     NESCPUMemoryMap* memory;
 
