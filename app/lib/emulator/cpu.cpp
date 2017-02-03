@@ -26,7 +26,7 @@ void Cpu::BRK() {
 
 void Cpu::ORA_IND_X() {
     auto operand = this->memory->raw[this->registers->PC + 1];
-    auto value = this->memory->raw[PreIndexedIndirect(operand, this->registers->Y)];
+    auto value = this->memory->raw[PreIndexedIndirect(operand, this->registers->X)];
     this->registers->A |= value;
 }
 
@@ -40,7 +40,7 @@ void Cpu::ASL_ZP() {
     auto operand = this->memory->raw[this->registers->PC + 1];
     auto address = ZeroPage(operand);
     auto value = this->memory->raw[address];
-    this->flags->carry = CHECK_BIT(value, 7);
+    SetFlag(this->flags->carry, CHECK_BIT(value, 7));
     this->memory->raw[address] <<= 1;
 }
 
@@ -55,7 +55,7 @@ void Cpu::ORA_IMM() {
 
 void Cpu::ASL_ACC() {
     auto value = this->registers->A;
-    this->flags->carry = CHECK_BIT(value, 7);
+    SetFlag(this->flags->carry, CHECK_BIT(value, 7));
     this->registers->A <<= 1;
 }
 
@@ -71,7 +71,7 @@ void Cpu::ASL_ABS() {
     auto high = this->memory->raw[this->registers->PC + 2];
     auto address = Absolute(low, high);
     auto value = this->memory->raw[address];
-    this->flags->carry = CHECK_BIT(value, 7);
+    SetFlag(this->flags->carry, CHECK_BIT(value, 7));
     this->memory->raw[address] <<= 1;
 }
 
@@ -94,7 +94,7 @@ void Cpu::ASL_ZP_X() {
     auto operand = this->memory->raw[this->registers->PC + 1];
     auto address = ZeroPageIndexed(operand, this->registers->X);
     auto value = this->memory->raw[address];
-    this->flags->carry = CHECK_BIT(value, 7);
+    SetFlag(this->flags->carry, CHECK_BIT(value, 7));
     this->memory->raw[address] <<= 1;
 }
 
@@ -120,7 +120,7 @@ void Cpu::ASL_ABS_X() {
     auto high = this->memory->raw[this->registers->PC + 2];
     auto address = Indexed(low, high, this->registers->X);
     auto value = this->memory->raw[address];
-    this->flags->carry = CHECK_BIT(value, 7);
+    SetFlag(this->flags->carry, CHECK_BIT(value, 7));
     this->memory->raw[address] <<= 1;
 }
 
@@ -527,4 +527,8 @@ void Cpu::INC_ABS_X() {
 }
 
 void Cpu::UNIMP() {
+}
+
+void Cpu::SetFlag(u8 flag, u8 value){
+    ASSIGN_BIT(this->registers->P, flag, value);
 }
