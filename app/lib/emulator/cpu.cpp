@@ -28,20 +28,26 @@ void Cpu::ORA_IND_X() {
     auto operand = this->memory->raw[this->registers->PC + 1];
     auto value = this->memory->raw[PreIndexedIndirect(operand, this->registers->X)];
     this->registers->A |= value;
+    SetFlag(this->flags->zero, this->registers->A);
+    SetFlag(this->flags->negative, CHECK_BIT(this->registers->A, 7));
 }
 
 void Cpu::ORA_ZP() {
     auto operand = this->memory->raw[this->registers->PC + 1];
     auto value = this->memory->raw[ZeroPage(operand)];
     this->registers->A |= value;
+    SetFlag(this->flags->zero, this->registers->A);
+    SetFlag(this->flags->negative, CHECK_BIT(this->registers->A, 7));
 }
 
 void Cpu::ASL_ZP() {
     auto operand = this->memory->raw[this->registers->PC + 1];
     auto address = ZeroPage(operand);
-    auto value = this->memory->raw[address];
+    auto& value = this->memory->raw[address];
     SetFlag(this->flags->carry, CHECK_BIT(value, 7));
-    this->memory->raw[address] <<= 1;
+    value <<= 1;
+    SetFlag(this->flags->zero, value);
+    SetFlag(this->flags->negative, CHECK_BIT(value, 7));
 }
 
 void Cpu::PHP() {
@@ -51,12 +57,16 @@ void Cpu::ORA_IMM() {
     auto operand = this->memory->raw[this->registers->PC + 1];
     auto value = Immediate(operand);
     this->registers->A |= value;
+    SetFlag(this->flags->zero, this->registers->A);
+    SetFlag(this->flags->negative, CHECK_BIT(this->registers->A, 7));
 }
 
 void Cpu::ASL_ACC() {
-    auto value = this->registers->A;
+    auto& value = this->registers->A;
     SetFlag(this->flags->carry, CHECK_BIT(value, 7));
-    this->registers->A <<= 1;
+    value <<= 1;
+    SetFlag(this->flags->zero, value);
+    SetFlag(this->flags->negative, CHECK_BIT(value, 7));
 }
 
 void Cpu::ORA_ABS() {
@@ -64,15 +74,19 @@ void Cpu::ORA_ABS() {
     auto high = this->memory->raw[this->registers->PC + 2];
     auto value = this->memory->raw[Absolute(low, high)];
     this->registers->A |= value;
+    SetFlag(this->flags->zero, this->registers->A);
+    SetFlag(this->flags->negative, CHECK_BIT(this->registers->A, 7));
 }
 
 void Cpu::ASL_ABS() {
     auto low = this->memory->raw[this->registers->PC + 1];
     auto high = this->memory->raw[this->registers->PC + 2];
     auto address = Absolute(low, high);
-    auto value = this->memory->raw[address];
+    auto& value = this->memory->raw[address];
     SetFlag(this->flags->carry, CHECK_BIT(value, 7));
-    this->memory->raw[address] <<= 1;
+    value <<= 1;
+    SetFlag(this->flags->zero, value);
+    SetFlag(this->flags->negative, CHECK_BIT(value, 7));
 }
 
 void Cpu::BPL() {
@@ -82,20 +96,26 @@ void Cpu::ORA_IND_Y() {
     auto operand = this->memory->raw[this->registers->PC + 1];
     auto value = this->memory->raw[PostIndexedIndirect(operand, this->registers->Y)];
     this->registers->A |= value;
+    SetFlag(this->flags->zero, this->registers->A);
+    SetFlag(this->flags->negative, CHECK_BIT(this->registers->A, 7));
 }
 
 void Cpu::ORA_ZP_X() {
     auto operand = this->memory->raw[this->registers->PC + 1];
     auto value = this->memory->raw[ZeroPageIndexed(operand, this->registers->X)];
     this->registers->A |= value;
+    SetFlag(this->flags->zero, this->registers->A);
+    SetFlag(this->flags->negative, CHECK_BIT(this->registers->A, 7));
 }
 
 void Cpu::ASL_ZP_X() {
     auto operand = this->memory->raw[this->registers->PC + 1];
     auto address = ZeroPageIndexed(operand, this->registers->X);
-    auto value = this->memory->raw[address];
+    auto& value = this->memory->raw[address];
     SetFlag(this->flags->carry, CHECK_BIT(value, 7));
-    this->memory->raw[address] <<= 1;
+    value <<= 1;
+    SetFlag(this->flags->zero, value);
+    SetFlag(this->flags->negative, CHECK_BIT(value, 7));
 }
 
 void Cpu::CLC() {
@@ -106,6 +126,8 @@ void Cpu::ORA_ABS_Y() {
     auto high = this->memory->raw[this->registers->PC + 2];
     auto value = this->memory->raw[Indexed(low, high, this->registers->Y)];
     this->registers->A |= value;
+    SetFlag(this->flags->zero, this->registers->A);
+    SetFlag(this->flags->negative, CHECK_BIT(this->registers->A, 7));
 }
 
 void Cpu::ORA_ABS_X() {
@@ -113,15 +135,19 @@ void Cpu::ORA_ABS_X() {
     auto high = this->memory->raw[this->registers->PC + 2];
     auto value = this->memory->raw[Indexed(low, high, this->registers->X)];
     this->registers->A |= value;
+    SetFlag(this->flags->zero, this->registers->A);
+    SetFlag(this->flags->negative, CHECK_BIT(this->registers->A, 7));
 }
 
 void Cpu::ASL_ABS_X() {
     auto low = this->memory->raw[this->registers->PC + 1];
     auto high = this->memory->raw[this->registers->PC + 2];
     auto address = Indexed(low, high, this->registers->X);
-    auto value = this->memory->raw[address];
+    auto& value = this->memory->raw[address];
     SetFlag(this->flags->carry, CHECK_BIT(value, 7));
-    this->memory->raw[address] <<= 1;
+    value <<= 1;
+    SetFlag(this->flags->zero, value);
+    SetFlag(this->flags->negative, CHECK_BIT(value, 7));
 }
 
 void Cpu::JSR() {
