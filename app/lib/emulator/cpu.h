@@ -274,6 +274,14 @@ private:
         &Cpu::UNIMP
     };
     
+    /**
+     * Fetch the operand at memory[PC + number]
+     */
+    inline u8& Operand(int number) const;
+    
+    /**
+     * Fetch the byte at memory[address]
+     */
     inline u8& Memory(const u16 address) const;
     
     /**

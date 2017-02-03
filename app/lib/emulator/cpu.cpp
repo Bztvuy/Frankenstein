@@ -22,6 +22,10 @@ inline u8& Cpu::Memory(const u16 address) const {
     return this->memory->raw[address];
 }
 
+inline u8& Cpu::Operand(int number) const {
+    return Memory(this->registers->PC + number);
+}
+
 void Cpu::BRK() {
     // TODO
 }
@@ -29,23 +33,19 @@ void Cpu::BRK() {
 /// Logical OR 
 /// 2 bytes; 6 cycles
 void Cpu::ORA_IND_X() {
-    auto operand = Memory(this->registers->PC + 1);
-    auto value = Memory(PreIndexedIndirect(operand, this->registers->Y));
-    this->registers->A |= value;
+    this->registers->A |= Memory(PreIndexedIndirect(Operand(1), this->registers->X));
 }
 
+/// 2 bytes; 3 cycles
 void Cpu::ORA_ZP() {
-    auto operand = Memory(this->registers->PC + 1);
-    auto value = Memory(ZeroPage(operand));
-    this->registers->A |= value;
+    this->registers->A |= Memory(ZeroPage(Operand(1)));
 }
 
+// 
 void Cpu::ASL_ZP() {
-    auto operand = Memory(this->registers->PC + 1);
-    auto address = ZeroPage(operand);
-    auto value = Memory(address);
+    auto& value = Memory(ZeroPage(Operand(1)));
     //this->flags->carry = CHECK_BIT(value, 7);
-    Memory(address) <<= 1;
+    value <<= 1;
 }
 
 void Cpu::PHP() {
@@ -53,9 +53,7 @@ void Cpu::PHP() {
 }
 
 void Cpu::ORA_IMM() {
-    auto operand = Memory(this->registers->PC + 1);
-    auto value = Immediate(operand);
-    this->registers->A |= value;
+    this->registers->A |= Immediate(Operand(1));
 }
 
 void Cpu::ASL_ACC() {
@@ -65,19 +63,13 @@ void Cpu::ASL_ACC() {
 }
 
 void Cpu::ORA_ABS() {
-    auto low = Memory(this->registers->PC + 1);
-    auto high = Memory(this->registers->PC + 2);
-    auto value = Memory(Absolute(low, high));
-    this->registers->A |= value;
+    this->registers->A |= Memory(Absolute(Operand(1), Operand(2)));
 }
 
 void Cpu::ASL_ABS() {
-    auto low = Memory(this->registers->PC + 1);
-    auto high = Memory(this->registers->PC + 2);
-    auto address = Absolute(low, high);
-    auto value = Memory(address);
+    auto& value = Memory(Absolute(Operand(1), Operand(2)));
     //this->flags->carry = CHECK_BIT(value, 7);
-    Memory(address) <<= 1;
+    value <<= 1;
 }
 
 void Cpu::BPL() {
@@ -85,23 +77,17 @@ void Cpu::BPL() {
 }
 
 void Cpu::ORA_IND_Y() {
-    auto operand = Memory(this->registers->PC + 1);
-    auto value = Memory(PostIndexedIndirect(operand, this->registers->Y));
-    this->registers->A |= value;
+    this->registers->A |= Memory(PostIndexedIndirect(Operand(1), this->registers->Y));
 }
 
 void Cpu::ORA_ZP_X() {
-    auto operand = Memory(this->registers->PC + 1);
-    auto value = Memory(ZeroPageIndexed(operand, this->registers->X));
-    this->registers->A |= value;
+    this->registers->A |= Memory(ZeroPageIndexed(Operand(1), this->registers->X));
 }
 
 void Cpu::ASL_ZP_X() {
-    auto operand = Memory(this->registers->PC + 1);
-    auto address = ZeroPageIndexed(operand, this->registers->X);
-    auto value = Memory(address);
+    auto& value = Memory(ZeroPageIndexed(Operand(1), this->registers->X));
     //this->flags->carry = CHECK_BIT(value, 7);
-    Memory(address) <<= 1;
+    value <<= 1;
 }
 
 void Cpu::CLC() {
@@ -109,26 +95,19 @@ void Cpu::CLC() {
 }
 
 void Cpu::ORA_ABS_Y() {
-    auto low = Memory(this->registers->PC + 1);
-    auto high = Memory(this->registers->PC + 2);
-    auto value = Memory(Indexed(low, high, this->registers->Y));
+    auto value = Memory(Indexed(Operand(1), Operand(2), this->registers->Y));
     this->registers->A |= value;
 }
 
 void Cpu::ORA_ABS_X() {
-    auto low = Memory(this->registers->PC + 1);
-    auto high = Memory(this->registers->PC + 2);
-    auto value = Memory(Indexed(low, high, this->registers->X));
+    auto value = Memory(Indexed(Operand(1), Operand(2), this->registers->X));
     this->registers->A |= value;
 }
 
 void Cpu::ASL_ABS_X() {
-    auto low = Memory(this->registers->PC + 1);
-    auto high = Memory(this->registers->PC + 2);
-    auto address = Indexed(low, high, this->registers->X);
-    auto value = Memory(address);
+    auto& value = Memory(Indexed(Operand(1), Operand(2), this->registers->X));
 //    this->flags->carry = CHECK_BIT(value, 7);
-    Memory(address) <<= 1;
+    value <<= 1;
 }
 
 void Cpu::JSR() {
