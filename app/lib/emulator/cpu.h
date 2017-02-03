@@ -40,18 +40,7 @@ private:
             u8 P;
         };
     };
-    struct NESCPUFlags{
-        
-            bool negative = false;
-            bool overflow = false;
-            bool always = true;
-            bool brk = false;
-            bool decimal = false;
-            bool interrupt = false;
-            bool zero = false;
-            bool carry = false;
-    };
-    NESCPUFlags* flags;
+
     NESCPURegisters* registers;
     NESCPUMemoryMap* memory;
 
@@ -284,7 +273,9 @@ private:
         &Cpu::UNIMP, &Cpu::UNIMP, &Cpu::UNIMP, &Cpu::SBC_ABS_X, &Cpu::INC_ABS_X,
         &Cpu::UNIMP
     };
-
+    
+    inline u8& Memory(const u16 address) const;
+    
     /**
      * Build an address using only the least significative byte. The first half of 
      * the address is assumed to be zero.
