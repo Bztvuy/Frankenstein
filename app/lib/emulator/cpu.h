@@ -6,7 +6,9 @@
 
 class Cpu {
 private:
+
     union NESCPUMemoryMap {
+
         struct {
             u8 zeroPage[0x0100];
             u8 stack[0x0100];
@@ -22,7 +24,9 @@ private:
         };
         u8 raw[0x10000];
     };
+
     union NESCPURegisters {
+
         struct {
             u16 programCounter;
             u8 stackPointer;
@@ -31,18 +35,31 @@ private:
             u8 indexY;
             u8 processorStatus;
         };
+
         struct {
             u16 PC;
             u8 SP;
             u8 A;
             u8 X;
             u8 Y;
-            u8 P;
+            u8 P = 0b00100000;
         };
     };
 
-    NESCPURegisters* registers;
-    NESCPUMemoryMap* memory;
+    struct NESCPUFlags {
+        const u8 negative = 7;
+        const u8 overflow = 6;
+        const u8 always = 5;
+        const u8 brk = 4;
+        const u8 decimal = 3;
+        const u8 interrupt = 2;
+        const u8 zero = 1;
+        const u8 carry = 0;
+    };
+
+    NESCPUFlags* const flags = new NESCPUFlags;
+    NESCPURegisters* const registers = new NESCPURegisters;
+    NESCPUMemoryMap* const memory = new NESCPUMemoryMap;
 
     //sizes related to hardware (in bytes) :
     const u32 prgRomBankSize = 16 * KILOBYTE;
@@ -372,6 +389,8 @@ private:
     u16 PostIndexedIndirect(const u8 low, const u8 reg) const;
     //u16 Relative();
 
+    void SetFlag(u8 flag, u8 value);
+    
 public:
 
     Cpu(const Rom* rom);

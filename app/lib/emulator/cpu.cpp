@@ -34,18 +34,24 @@ void Cpu::BRK() {
 /// 2 bytes; 6 cycles
 void Cpu::ORA_IND_X() {
     this->registers->A |= Memory(PreIndexedIndirect(Operand(1), this->registers->X));
+    SetFlag(this->flags->zero, this->registers->A);
+    SetFlag(this->flags->negative, CHECK_BIT(this->registers->A, 7));
 }
 
 /// 2 bytes; 3 cycles
 void Cpu::ORA_ZP() {
     this->registers->A |= Memory(ZeroPage(Operand(1)));
+    SetFlag(this->flags->zero, this->registers->A);
+    SetFlag(this->flags->negative, CHECK_BIT(this->registers->A, 7));
 }
 
 // 
 void Cpu::ASL_ZP() {
     auto& value = Memory(ZeroPage(Operand(1)));
-    //this->flags->carry = CHECK_BIT(value, 7);
+    SetFlag(this->flags->carry, CHECK_BIT(value, 7));
     value <<= 1;
+    SetFlag(this->flags->zero, value);
+    SetFlag(this->flags->negative, CHECK_BIT(value, 7));
 }
 
 void Cpu::PHP() {
@@ -54,22 +60,30 @@ void Cpu::PHP() {
 
 void Cpu::ORA_IMM() {
     this->registers->A |= Immediate(Operand(1));
+    SetFlag(this->flags->zero, this->registers->A);
+    SetFlag(this->flags->negative, CHECK_BIT(this->registers->A, 7));
 }
 
 void Cpu::ASL_ACC() {
-    auto value = this->registers->A;
-    //this->flags->carry = CHECK_BIT(value, 7);
-    this->registers->A <<= 1;
+    auto& value = this->registers->A;
+    SetFlag(this->flags->carry, CHECK_BIT(value, 7));
+    value <<= 1;
+    SetFlag(this->flags->zero, value);
+    SetFlag(this->flags->negative, CHECK_BIT(value, 7));
 }
 
 void Cpu::ORA_ABS() {
     this->registers->A |= Memory(Absolute(Operand(1), Operand(2)));
+    SetFlag(this->flags->zero, this->registers->A);
+    SetFlag(this->flags->negative, CHECK_BIT(this->registers->A, 7));
 }
 
 void Cpu::ASL_ABS() {
-    auto& value = Memory(Absolute(Operand(1), Operand(2)));
-    //this->flags->carry = CHECK_BIT(value, 7);
+    auto& value = Memory(Absolute(Operand(1), Operand(2)));    
+    SetFlag(this->flags->carry, CHECK_BIT(value, 7));
     value <<= 1;
+    SetFlag(this->flags->zero, value);
+    SetFlag(this->flags->negative, CHECK_BIT(value, 7));
 }
 
 void Cpu::BPL() {
@@ -78,16 +92,22 @@ void Cpu::BPL() {
 
 void Cpu::ORA_IND_Y() {
     this->registers->A |= Memory(PostIndexedIndirect(Operand(1), this->registers->Y));
+    SetFlag(this->flags->zero, this->registers->A);
+    SetFlag(this->flags->negative, CHECK_BIT(this->registers->A, 7));
 }
 
 void Cpu::ORA_ZP_X() {
     this->registers->A |= Memory(ZeroPageIndexed(Operand(1), this->registers->X));
+    SetFlag(this->flags->zero, this->registers->A);
+    SetFlag(this->flags->negative, CHECK_BIT(this->registers->A, 7));
 }
 
 void Cpu::ASL_ZP_X() {
     auto& value = Memory(ZeroPageIndexed(Operand(1), this->registers->X));
-    //this->flags->carry = CHECK_BIT(value, 7);
+    SetFlag(this->flags->carry, CHECK_BIT(value, 7));
     value <<= 1;
+    SetFlag(this->flags->zero, value);
+    SetFlag(this->flags->negative, CHECK_BIT(value, 7));
 }
 
 void Cpu::CLC() {
@@ -97,17 +117,23 @@ void Cpu::CLC() {
 void Cpu::ORA_ABS_Y() {
     auto value = Memory(Indexed(Operand(1), Operand(2), this->registers->Y));
     this->registers->A |= value;
+    SetFlag(this->flags->zero, this->registers->A);
+    SetFlag(this->flags->negative, CHECK_BIT(this->registers->A, 7));
 }
 
 void Cpu::ORA_ABS_X() {
     auto value = Memory(Indexed(Operand(1), Operand(2), this->registers->X));
     this->registers->A |= value;
+    SetFlag(this->flags->zero, this->registers->A);
+    SetFlag(this->flags->negative, CHECK_BIT(this->registers->A, 7));
 }
 
 void Cpu::ASL_ABS_X() {
     auto& value = Memory(Indexed(Operand(1), Operand(2), this->registers->X));
-//    this->flags->carry = CHECK_BIT(value, 7);
+    SetFlag(this->flags->carry, CHECK_BIT(value, 7));
     value <<= 1;
+    SetFlag(this->flags->zero, value);
+    SetFlag(this->flags->negative, CHECK_BIT(value, 7));
 }
 
 void Cpu::JSR() {
@@ -656,5 +682,8 @@ void Cpu::INC_ABS_X() {
 }
 
 void Cpu::UNIMP() {
-    // TODO
+}
+
+void Cpu::SetFlag(u8 flag, u8 value){
+    ASSIGN_BIT(this->registers->P, flag, value);
 }
