@@ -114,7 +114,9 @@ void Cpu::JSR() {
     // TODO
 }
 
+// 6 cycles
 void Cpu::AND_IND_X() {
+    this->registers->A &= Memory(PreIndexedIndirect(Operand(1), this->registers->X));
     // TODO
 }
 
@@ -123,6 +125,7 @@ void Cpu::BIT_ZP() {
 }
 
 void Cpu::AND_ZP() {
+    this->registers->A &= Memory(ZeroPage(Operand(1)));
     // TODO
 }
 
@@ -135,6 +138,7 @@ void Cpu::PLP() {
 }
 
 void Cpu::AND_IMM() {
+    this->registers->A &= Operand(1);
     // TODO
 }
 
@@ -147,6 +151,7 @@ void Cpu::BIT_ABS() {
 }
 
 void Cpu::AND_ABS() {
+    this->registers->A &= Memory(Absolute(Operand(1), Operand(2)));
     // TODO
 }
 
@@ -159,10 +164,12 @@ void Cpu::BMI() {
 }
 
 void Cpu::AND_IND_Y() {
+    this->registers->A &= Memory(PostIndexedIndirect(Operand(1), this->registers->Y));
     // TODO
 }
 
 void Cpu::AND_ZP_X() {
+    this->registers->A &= Memory(ZeroPageIndexed(Operand(1), this->registers->X));
     // TODO
 }
 
@@ -175,10 +182,12 @@ void Cpu::SEC() {
 }
 
 void Cpu::AND_ABS_Y() {
+    this->registers->A &= Memory(Indexed(Operand(1), Operand(2), this->registers->Y));
     // TODO
 }
 
 void Cpu::AND_ABS_X() {
+    this->registers->A &= Memory(Indexed(Operand(1), Operand(2), this->registers->X));
     // TODO
 }
 
