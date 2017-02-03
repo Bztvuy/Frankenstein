@@ -2,3 +2,5 @@
 *.a
 *.elf
 *.img
+*.lst
+*.map
