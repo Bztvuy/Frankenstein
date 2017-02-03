@@ -1,6 +1,6 @@
 #include "ppu.h"
 
-Ppu::Ppu()
+Ppu::Ppu(const Rom* rom)
 {
 
 }

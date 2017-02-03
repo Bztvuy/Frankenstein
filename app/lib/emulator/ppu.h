@@ -1,6 +1,8 @@
 #ifndef PPU_H
 #define PPU_H
 
+#include "rom.h"
+
 union NESPPUMemoryMap{
     struct {
         char patternTable0[0x1000];
@@ -122,9 +124,9 @@ private:
 		{0x00,0x00,0x00},
 	};
 public:
-	NESPPURegisters registers;
-	NESPPUMemoryMap memory;
-    Ppu();
+    NESPPURegisters registers;
+    NESPPUMemoryMap memory;
+    Ppu(const Rom* rom);
 };
 
 #endif // PPU_H

@@ -9,12 +9,12 @@
 
 #include "cpu.h"
 
-u16 Cpu::FromValues(const u8 low) {
+u16 Cpu::FromValues(const u8 low) const {
     u16 res = 0 | low;
     return res;
 }
 
-u16 Cpu::FromValues(const u8 low, const u8 high) {
+u16 Cpu::FromValues(const u8 low, const u8 high) const {
     u16 res = high;
     res <<= 8;
     res |= low;

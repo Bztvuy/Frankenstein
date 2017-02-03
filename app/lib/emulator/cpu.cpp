@@ -1,918 +1,509 @@
 #include "cpu.h"
 #include <circle/util.h>
 
-Cpu::Cpu(const Rom* rom)
-{
-	const iNesHeader* header = rom->GetHeader();
-	int prgRomBanks = header->prgRomBanks;
-	int trainerOffset = rom->GetTrainerOffset();
-	int prgRomBanksLocation = rom->headerSize + trainerOffset;
-	
-	switch (prgRomBanks) {
-		case 2:
-			memcpy(memory->prgRomUpperBank, rom->GetRaw() + prgRomBanksLocation + prgRomBankSize, prgRomBankSize);
-		case 1:
-			memcpy(memory->prgRomLowerBank, rom->GetRaw() + prgRomBanksLocation, prgRomBankSize);
-			break;
-		default: //TODO: implement multiple PRG-ROM banks
+Cpu::Cpu(const Rom* rom) {
+    const iNesHeader* header = rom->GetHeader();
+    int prgRomBanks = header->prgRomBanks;
+    int trainerOffset = rom->GetTrainerOffset();
+    int prgRomBanksLocation = rom->headerSize + trainerOffset;
+
+    switch (prgRomBanks) {
+        case 2:
+            memcpy(memory->prgRomUpperBank, rom->GetRaw() + prgRomBanksLocation + prgRomBankSize, prgRomBankSize);
+        case 1:
+            memcpy(memory->prgRomLowerBank, rom->GetRaw() + prgRomBanksLocation, prgRomBankSize);
             break;
-	}
-}
-
-unsigned int buildAddress(unsigned char l, unsigned char m)
-{
-	unsigned int res = m;
-	res <<= 8;
-	res |= l;
-	return res;
-}
-
-
-
-    void Cpu::BRK(){}
-    
-    /// Logical OR 
-    /// 2 bytes; 6 cycles
-    void Cpu::ORA_IND_X(){
-        auto regX = this->registers->X;
-        PostIndexedIndirect();
+        default: //TODO: implement multiple PRG-ROM banks
+            break;
     }
-    
-    void Cpu::ORA_ZP(){}
-    void Cpu::ASL_ZP(){}
-    void Cpu::PHP(){}
-    void Cpu::ORA_IMM(){}
-    void Cpu::ASL_ACC(){}
-    void Cpu::ORA_ABS(){}
-    void Cpu::ASL_ABS(){}
-    void Cpu::BPL(){}
-    void Cpu::ORA_IND_Y(){}
-    void Cpu::ORA_ZP_X(){}
-    void Cpu::ASL_ZP_X(){}
-    void Cpu::CLC(){}
-    void Cpu::ORA_ABS_Y(){}
-    void Cpu::ORA_ABS_X(){}
-    void Cpu::ASL_ABS_X(){}
-    void Cpu::JSR(){}
-    void Cpu::AND_IND_X(){}
-    void Cpu::BIT_ZP(){}
-    void Cpu::AND_ZP(){}
-    void Cpu::ROL_ZP(){}
-    void Cpu::PLP(){}
-    void Cpu::AND_IMM(){}
-    void Cpu::ROL_ACC(){}
-    void Cpu::BIT_ABS(){}
-    void Cpu::AND_ABS(){}
-    void Cpu::ROL_ABS(){}
-    void Cpu::BMI(){}
-    void Cpu::AND_IND_Y(){}
-    void Cpu::AND_ZP_X(){}
-    void Cpu::ROL_ZP_X(){}
-    void Cpu::SEC(){}
-    void Cpu::AND_ABS_Y(){}
-    void Cpu::AND_ABS_X(){}
-    void Cpu::ROL_ABS_X(){}
-    void Cpu::RTI(){}
-    void Cpu::EOR_IND_X(){}
-    void Cpu::EOR_ZP(){}
-    void Cpu::LSR_ZP(){}
-    void Cpu::PHA(){}
-    void Cpu::EOR_IMM(){}
-    void Cpu::LSR_ACC(){}
-    void Cpu::JMP_ABS(){}
-    void Cpu::EOR_ABS(){}
-    void Cpu::LSR_ABS(){}
-    void Cpu::BVC(){}
-    void Cpu::EOR_IND_Y(){}
-    void Cpu::EOR_ZP_X(){}
-    void Cpu::LSR_ZP_X(){}
-    void Cpu::CLI(){}
-    void Cpu::EOR_ABS_Y(){}
-    void Cpu::EOR_ABS_X(){}
-    void Cpu::LSR_ABS_X(){}
-    void Cpu::RTS(){}
-    void Cpu::ADC_IND_X(){}
-    void Cpu::ADC_ZP(){}
-    void Cpu::ROR_ZP(){}
-    void Cpu::PLA(){}
-    void Cpu::ADC_IMM(){}
-    void Cpu::ROR_ACC(){}
-    void Cpu::JMP_IND(){}
-    void Cpu::ADC_ABS(){}
-    void Cpu::ROR_ABS(){}
-    void Cpu::BVS(){}
-    void Cpu::ADC_IND_Y(){}
-    void Cpu::ADC_ZP_X(){}
-    void Cpu::ROR_ZP_X(){}
-    void Cpu::SEI(){}
-    void Cpu::ADC_ABS_Y(){}
-    void Cpu::ADC_ABS_X(){}
-    void Cpu::ROR_ABS_X(){}
-    void Cpu::STA_IND_X(){}
-    void Cpu::STY_ZP(){}
-    void Cpu::STA_ZP(){}
-    void Cpu::STX_ZP(){}
-    void Cpu::DEY(){}
-    void Cpu::TXA(){}
-    void Cpu::STY_ABS(){}
-    void Cpu::STA_ABS(){}
-    void Cpu::STX_ABS(){}
-    void Cpu::BCC(){}
-    void Cpu::STA_IND_Y(){}
-    void Cpu::STY_ZP_X(){}
-    void Cpu::STA_ZP_X(){}
-    void Cpu::STX_ZP_Y(){}
-    void Cpu::TYA(){}
-    void Cpu::STA_ABS_Y(){}
-    void Cpu::TXS(){}
-    void Cpu::STA_ABS_X(){}
-    void Cpu::LDY_IMM(){}
-    void Cpu::LDA_IND_X(){}
-    void Cpu::LDX_IMM(){}
-    void Cpu::LDY_ZP(){}
-    void Cpu::LDA_ZP(){}
-    void Cpu::LDX_ZP(){}
-    void Cpu::TAY(){}
-    void Cpu::LDA_IMM(){}
-    void Cpu::TAX(){}
-    void Cpu::LDY_ABS(){}
-    void Cpu::LDA_ABS(){}
-    void Cpu::LDX_ABS(){}
-    void Cpu::BCS(){}
-    void Cpu::LDA_IND_Y(){}
-    void Cpu::LDY_ZP_X(){}
-    void Cpu::LDA_ZP_X(){}
-    void Cpu::LDX_ZP_Y(){}
-    void Cpu::CLV(){}
-    void Cpu::LDA_ABS_Y(){}
-    void Cpu::TSX(){}
-    void Cpu::LDY_ABS_X(){}
-    void Cpu::LDA_ABS_X(){}
-    void Cpu::LDX_ABS_Y(){}
-    void Cpu::CPY_IMM(){}
-    void Cpu::CMP_IND_X(){}
-    void Cpu::CPY_ZP(){}
-    void Cpu::CMP_ZP(){}
-    void Cpu::DEC_ZP(){}
-    void Cpu::INY(){}
-    void Cpu::CMP_IMM(){}
-    void Cpu::DEX(){}
-    void Cpu::CPY_ABS(){}
-    void Cpu::CMP_ABS(){}
-    void Cpu::DEC_ABS(){}
-    void Cpu::BNE(){}
-    void Cpu::CMP_IND_Y(){}
-    void Cpu::CMP_ZP_X(){}
-    void Cpu::DEC_ZP_X(){}
-    void Cpu::CLD(){}
-    void Cpu::CMP_ABS_Y(){}
-    void Cpu::CMP_ABS_X(){}
-    void Cpu::DEC_ABS_X(){}
-    void Cpu::CPX_IMM(){}
-    void Cpu::SBC_IND_X(){}
-    void Cpu::CPX_ZP(){}
-    void Cpu::SBC_ZP(){}
-    void Cpu::INC_ZP(){}
-    void Cpu::INX(){}
-    void Cpu::SBC_IMM(){}
-    void Cpu::NOP(){}
-    void Cpu::CPX_ABS(){}
-    void Cpu::SBC_ABS(){}
-    void Cpu::INC_ABS(){}
-    void Cpu::BEQ(){}
-    void Cpu::SBC_IND_Y(){}
-    void Cpu::SBC_ZP_X(){}
-    void Cpu::INC_ZP_X(){}
-    void Cpu::SED(){}
-    void Cpu::SBC_ABS_Y(){}
-    void Cpu::SBC_ABS_X(){}
-    void Cpu::INC_ABS_X(){}
-    void Cpu::UNIMP(){}
-
-int IMM_m(NesCPU& cpu, NesMMU& mmu)
-{
-	cpu.setOperand(mmu.read(cpu.getPC() + 1));
-	return 1;
-
-}
-
-int ABS_m(NesCPU& cpu, NesMMU& mmu)
-{
-
-	unsigned char lsb = mmu.read(cpu.getPC() + 1);
-	unsigned char msb = mmu.read(cpu.getPC() + 2);
-
-	cpu.setAddress(buildAddress(lsb, msb));
-
-	if (!cpu.getStoreFlag())
-	{
-		cpu.setOperand(mmu.read(cpu.getAddress()));
-	}
-
-	return 3;
-}
-
-int ABX_m(NesCPU& cpu, NesMMU& mmu)
-{
-	unsigned int lsb = mmu.read(cpu.getPC() + 1);
-	unsigned char msb = mmu.read(cpu.getPC() + 2);
-
-	lsb += cpu.getX();
-	msb += lsb >> 8;
-	cpu.setAddress(buildAddress(lsb, msb));
-
-	if (!cpu.getStoreFlag())
-	{
-		cpu.setOperand(mmu.read(cpu.getAddress()));
-	}
-
-	return 3 + (lsb >> 8);
-}
-
-int ABY_m(NesCPU& cpu, NesMMU& mmu)
-{
-	unsigned int lsb = mmu.read(cpu.getPC() + 1);
-	unsigned char msb = mmu.read(cpu.getPC() + 2);
-
-	lsb += cpu.getY();
-	msb += lsb >> 8;
-	cpu.setAddress(buildAddress(lsb, msb));
-
-	if (!cpu.getStoreFlag())
-	{
-		cpu.setOperand(mmu.read(cpu.getAddress()));
-	}
-
-	return 3 + (lsb >> 8);
-}
-
-//Only for the JMP instruction
-int IND_m(NesCPU& cpu, NesMMU& mmu)
-{
-	unsigned int lsb = mmu.read(cpu.getPC() + 1);
-	unsigned char msb = mmu.read(cpu.getPC() + 2);
-
-	unsigned int adr = buildAddress(lsb, msb);
-
-	lsb = mmu.read(adr);
-	msb = mmu.read(adr + 1);
-
-	cpu.setAddress(buildAddress(lsb, msb));
-
-	lsb = mmu.read(cpu.getAddress());
-	msb = mmu.read(cpu.getAddress() + 1);
-
-	adr = buildAddress(lsb, msb);
-	cpu.setOperand(adr);
-
-	return 4;
-}
-
-int INX_m(NesCPU& cpu, NesMMU& mmu)
-{
-	unsigned char lsb = mmu.read(cpu.getPC() + 1);
-
-	lsb += cpu.getX();
-
-	cpu.setAddress(lsb);
-	cpu.setAddress(mmu.read(cpu.getAddress()));
-
-	if (!cpu.getStoreFlag())
-	{
-		cpu.setOperand(mmu.read(cpu.getAddress()));
-	}
-	return 5;
-}
-
-int INY_m(NesCPU& cpu, NesMMU& mmu)
-{
-	unsigned int lsb = mmu.read(cpu.getPC() + 1);
-	unsigned char msb = mmu.read(cpu.getPC() + 2);
+}
+
+void Cpu::BRK() {
+}
+
+/// Logical OR 
+/// 2 bytes; 6 cycles
+
+void Cpu::ORA_IND_X() {
+    auto operand = this->memory->raw[this->registers->PC + 1];
+    auto value = this->memory->raw[PreIndexedIndirect(operand, this->registers->Y)];
+    this->registers->A |= value;
+}
 
-	unsigned int adr = buildAddress(lsb, msb);
+void Cpu::ORA_ZP() {
+    auto operand = this->memory->raw[this->registers->PC + 1];
+    auto value = this->memory->raw[ZeroPage(operand)];
+    this->registers->A |= value;
+}
 
-	lsb = mmu.read(adr);
-	msb = mmu.read(adr + 1);
+void Cpu::ASL_ZP() {
+    auto operand = this->memory->raw[this->registers->PC + 1];
+    auto value = this->memory->raw[ZeroPage(operand)];
+    this->flags->carry = CHECK_BIT(value, 7);
+    this->memory->raw[ZeroPage(operand)] <<= 1;
+}
 
-	lsb += cpu.getY();
-	msb += lsb >> 8;
-	cpu.setAddress(buildAddress(lsb, msb));
+void Cpu::PHP() {
+}
 
-	if (!cpu.getStoreFlag())
-	{
-		cpu.setOperand(mmu.read(cpu.getAddress()));
-	}
-	return 4 + (lsb >> 8);
-}
-
-int ZPA_m(NesCPU& cpu, NesMMU& mmu)
-{
-	unsigned char lsb = mmu.read(cpu.getPC() + 1);
-	unsigned char msb = 0x00;
-	lsb += cpu.getX();
+void Cpu::ORA_IMM() {
+    auto operand = this->memory->raw[this->registers->PC + 1];
+    auto value = Immediate(operand);
+    this->registers->A |= value;
+}
 
-	cpu.setAddress(buildAddress(lsb, msb));
+void Cpu::ASL_ACC() {
+}
 
-	if (!cpu.getStoreFlag())
-	{
-		cpu.setOperand(mmu.read(cpu.getAddress()));
-	}
-	return 2;
+void Cpu::ORA_ABS() {
+    auto low = this->memory->raw[this->registers->PC + 1];
+    auto high = this->memory->raw[this->registers->PC + 2];
+    auto value = this->memory->raw[Absolute(low, high)];
+    this->registers->A |= value;
 }
 
-int ZPX_m(NesCPU& cpu, NesMMU& mmu)
-{
-	unsigned int lsb = mmu.read(cpu.getPC() + 1);
-	unsigned char msb = 0x00;
+void Cpu::ASL_ABS() {
+}
 
-	lsb += cpu.getX();
-	msb += lsb >> 8;
+void Cpu::BPL() {
+}
 
-	cpu.setAddress(buildAddress(lsb, msb));
+void Cpu::ORA_IND_Y() {
+    auto operand = this->memory->raw[this->registers->PC + 1];
+    auto value = this->memory->raw[PostIndexedIndirect(operand, this->registers->Y)];
+    this->registers->A |= value;
+}
 
-	if (!cpu.getStoreFlag())
-	{
-		cpu.setOperand(mmu.read(cpu.getAddress()));
-	}
-	return 3;
+void Cpu::ORA_ZP_X() {
+    auto operand = this->memory->raw[this->registers->PC + 1];
+    auto value = this->memory->raw[ZeroPageIndexed(operand, this->registers->X)];
+    this->registers->A |= value;
 }
 
-int ZPY_m(NesCPU& cpu, NesMMU& mmu)
-{
-	unsigned int lsb = mmu.read(cpu.getPC() + 1);
-	unsigned char msb = 0x00;
+void Cpu::ASL_ZP_X() {
+}
 
-	lsb += cpu.getY();
-	msb += lsb >> 8;
+void Cpu::CLC() {
+}
 
-	cpu.setAddress(buildAddress(lsb, msb));
+void Cpu::ORA_ABS_Y() {
+    auto low = this->memory->raw[this->registers->PC + 1];
+    auto high = this->memory->raw[this->registers->PC + 2];
+    auto value = this->memory->raw[Indexed(low, high, this->registers->Y)];
+    this->registers->A |= value;
+}
 
-	if (!cpu.getStoreFlag())
-	{
-		cpu.setOperand(mmu.read(cpu.getAddress()));
-	}
-	return 3;
+void Cpu::ORA_ABS_X() {
+    auto low = this->memory->raw[this->registers->PC + 1];
+    auto high = this->memory->raw[this->registers->PC + 2];
+    auto value = this->memory->raw[Indexed(low, high, this->registers->X)];
+    this->registers->A |= value;
 }
 
-int REL_m(NesCPU& cpu, NesMMU& mmu)
-{
-	unsigned int operand = mmu.read(cpu.getPC() + 1);
-	unsigned int pc = cpu.getPC();
+void Cpu::ASL_ABS_X() {
+}
 
-	cpu.setOperand(operand);
+void Cpu::JSR() {
+}
 
-	if (((pc + operand) & 0xFF00) != (pc & 0xFF00))
-	{
-		return 2;
-	}
-	return 1;
+void Cpu::AND_IND_X() {
 }
 
-int ACC_m(NesCPU& cpu, NesMMU& mmu)
-{
-	cpu.setOperand(cpu.getA());
-	return 1;
+void Cpu::BIT_ZP() {
 }
-int IMP_m(NesCPU& cpu, NesMMU& mmu)
-{
-	return 0;
+
+void Cpu::AND_ZP() {
 }
 
-int UNI_m(NesCPU& cpu, NesMMU& mmu)
-{
+void Cpu::ROL_ZP() {
+}
 
-	cerr << "unimplemented addressing mode" << endl;
-	return 0;
+void Cpu::PLP() {
 }
 
-/*
- * Instruction simulation
- */
+void Cpu::AND_IMM() {
+}
 
-unsigned char getOffset(unsigned char off, bool flag)
-{
-	/*unsigned char sign = (((off & 0x80)>>8) *-1) | 0x01 ;
-	 unsigned char depl = off & 0x7F;
-	 depl *= sign;*/
+void Cpu::ROL_ACC() {
+}
 
-	if (flag)
-	{
-		return off;
-	}
-	else
-	{
-		return 0;
-	}
+void Cpu::BIT_ABS() {
+}
 
+void Cpu::AND_ABS() {
 }
 
-unsigned char calcOverflow(sbyte op1, sbyte op2, sbyte res)
-{
+void Cpu::ROL_ABS() {
+}
 
-	return (op1 >> 7 == op1 >> 7) && (op1 >> 7 != res >> 7);
+void Cpu::BMI() {
+}
 
+void Cpu::AND_IND_Y() {
 }
 
-void push(NesCPU& cpu, unsigned char val)
-{
- return;
+void Cpu::AND_ZP_X() {
 }
 
-unsigned char pull(NesCPU& cpu)
-{
+void Cpu::ROL_ZP_X() {
+}
 
-	return 0;
+void Cpu::SEC() {
 }
 
-int unimp_f(NesCPU& cpu)
-{
+void Cpu::AND_ABS_Y() {
+}
 
-	cerr << "unimplemented instruction" << endl;
+void Cpu::AND_ABS_X() {
+}
 
-	//assert(false);
-	return 0;
+void Cpu::ROL_ABS_X() {
 }
 
-int ADC_f(NesCPU& cpu)
-{
+void Cpu::RTI() {
+}
 
-	unsigned int res = cpu.getA();
-	unsigned char op = cpu.getOperand();
+void Cpu::EOR_IND_X() {
+}
 
-	res += op;
+void Cpu::EOR_ZP() {
+}
 
-	unsigned char carry = cpu.getC();
+void Cpu::LSR_ZP() {
+}
 
-	res += carry;
+void Cpu::PHA() {
+}
 
-	cout << "res:" << (int) res << endl;
+void Cpu::EOR_IMM() {
+}
 
-	cpu.setC(res > 0x00FF);
-	cpu.setN((res & 0x00FF) >> 7);
-	cpu.setZ((res & 0x00FF) == 0);
-	cpu.setV(calcOverflow(cpu.getA(), op, res));
-	cpu.setA(res);
+void Cpu::LSR_ACC() {
+}
 
-	return 1;
+void Cpu::JMP_ABS() {
 }
-int AND_f(NesCPU&cpu)
-{
-	unsigned char res = cpu.getA() & cpu.getOperand();
-	cpu.setA(res);
-	cpu.setN(res >> 7);
-	cpu.setZ(res == 0);
-	return 1;
+
+void Cpu::EOR_ABS() {
 }
 
-int ASL_f(NesCPU&cpu)
-{
+void Cpu::LSR_ABS() {
+}
 
-	unsigned char op = cpu.getOperand();
+void Cpu::BVC() {
+}
 
-	cpu.setC(op & 0x80);
-	op <<= 1;
-	/*
-	 * Here, store flag is used to signal accumulator mode,
-	 * instead of signaling that a store will happen.
-	 * If it's false, operand comes from memory and needs to
-	 * be stored back to memory (so causes a store!).
-	 *
-	 */
+void Cpu::EOR_IND_Y() {
+}
 
-	if (cpu.getStoreFlag())
-	{
-		cpu.setA(op);
+void Cpu::EOR_ZP_X() {
+}
 
-	}
-	else
-	{
-		cpu.store(op);
-	}
+void Cpu::LSR_ZP_X() {
+}
 
-	cpu.setN(op >> 7);
-	cpu.setZ(op == 7);
+void Cpu::CLI() {
+}
 
-	return 1;
+void Cpu::EOR_ABS_Y() {
 }
-int BCC_f(NesCPU&cpu)
-{
 
-	bool condition = !cpu.getC();
-	unsigned int pc = cpu.getPC();
-	cpu.incrementPC(getOffset(cpu.getOperand(), condition));
-	return 1+ ((pc && 0xFF00 != cpu.getPC() && 0xFF00))+condition;
+void Cpu::EOR_ABS_X() {
 }
-int BCS_f(NesCPU&cpu)
-{
 
-	bool condition = cpu.getC();
-	unsigned int pc = cpu.getPC();
-	cpu.incrementPC(getOffset(cpu.getOperand(), condition));
-	return 1+ ((pc && 0xFF00 != cpu.getPC() && 0xFF00))+condition;
+void Cpu::LSR_ABS_X() {
+}
 
+void Cpu::RTS() {
 }
-int BEQ_f(NesCPU&cpu)
-{
-	bool condition = cpu.getZ();
-	unsigned int pc = cpu.getPC();
-	cpu.incrementPC(getOffset(cpu.getOperand(), condition));
 
-	return 1+ ((pc && 0xFF00 != cpu.getPC() && 0xFF00))+condition;
+void Cpu::ADC_IND_X() {
+}
 
+void Cpu::ADC_ZP() {
 }
-int BIT_f(NesCPU&cpu)
-{
 
-	unsigned char op = cpu.getOperand();
+void Cpu::ROR_ZP() {
+}
 
-	cpu.setZ((cpu.getA() & op) == 0);
+void Cpu::PLA() {
+}
 
-	cpu.setN((op & 0x80) >> 7);
-	cpu.setV((op & 0x40) >> 6);
+void Cpu::ADC_IMM() {
+}
 
-	return 1;
+void Cpu::ROR_ACC() {
 }
-int BMI_f(NesCPU&cpu)
-{
-	bool condition = cpu.getN();
-	unsigned int pc = cpu.getPC();
-	cpu.incrementPC(getOffset(cpu.getOperand(), condition));
-	return 1+ ((pc && 0xFF00 != cpu.getPC() && 0xFF00))+condition;
 
+void Cpu::JMP_IND() {
 }
-int BNE_f(NesCPU&cpu)
-{
-	bool condition = !cpu.getZ();
-	unsigned int pc = cpu.getPC();
-	cpu.incrementPC(getOffset(cpu.getOperand(), condition));
-	return 1+ ((pc && 0xFF00 != cpu.getPC() && 0xFF00))+condition;
 
+void Cpu::ADC_ABS() {
 }
-int BPL_f(NesCPU&cpu)
-{
-	bool condition = !cpu.getN();
-	unsigned int pc = cpu.getPC();
-	cpu.incrementPC(getOffset(cpu.getOperand(), condition));
-	return 1+ ((pc && 0xFF00 != cpu.getPC() && 0xFF00))+condition;
 
+void Cpu::ROR_ABS() {
 }
-int BRK_f(NesCPU&cpu)
-{
-	unsigned int pc = cpu.getPC();
-	push(cpu,pc>>8);
-	push(cpu,pc&0xFF);
-	cpu.setB(true);
-	push(cpu,cpu.getP());
-	/* Need new adressing mode...*/
-	//unsigned char lsb =
 
-	return 7;
+void Cpu::BVS() {
 }
 
-int BVC_f(NesCPU&cpu)
-{
-	bool condition = !cpu.getV();
-	unsigned int pc = cpu.getPC();
-	cpu.incrementPC(getOffset(cpu.getOperand(), condition));
-	return 1+ ((pc && 0xFF00 != cpu.getPC() && 0xFF00))+condition;
+void Cpu::ADC_IND_Y() {
+}
 
+void Cpu::ADC_ZP_X() {
 }
-int BVS_f(NesCPU&cpu)
-{
-	bool condition = cpu.getV();
-	unsigned int pc = cpu.getPC();
-	cpu.incrementPC(getOffset(cpu.getOperand(), condition));
-	return 1+ ((pc && 0xFF00 != cpu.getPC() && 0xFF00))+condition;
 
+void Cpu::ROR_ZP_X() {
 }
-int CLC_f(NesCPU&cpu)
-{
-	cpu.setC(false);
-	return 1;
+
+void Cpu::SEI() {
 }
-int CLD_f(NesCPU&cpu)
-{
-	cpu.setD(false);
-	return 1;
+
+void Cpu::ADC_ABS_Y() {
 }
-int CLI_f(NesCPU&cpu)
-{
-	cpu.setI(false);
-	return 1;
+
+void Cpu::ADC_ABS_X() {
 }
-int CLV_f(NesCPU&cpu)
-{
-	cpu.setV(false);
-	return 1;
+
+void Cpu::ROR_ABS_X() {
 }
-int CMP_f(NesCPU&cpu)
-{
 
-	return 1;
+void Cpu::STA_IND_X() {
 }
-int CPX_f(NesCPU&cpu)
-{
-	int16_t res = (sbyte) cpu.getX();
-	sbyte op = (sbyte) cpu.getOperand();
 
-	res -= op;
+void Cpu::STY_ZP() {
+}
 
-	unsigned char carry = (res & 0x0100) >> 8;
-	cpu.setC(carry ^ 0x1);
-	cpu.setN((res & 0x00FF) >> 7);
-	cpu.setZ((res & 0x00FF) == 0);
+void Cpu::STA_ZP() {
+}
 
-	return 1;
+void Cpu::STX_ZP() {
 }
-int CPY_f(NesCPU&cpu)
-{
 
-	int16_t res = (sbyte) cpu.getY();
-	sbyte op = (sbyte) cpu.getOperand();
+void Cpu::DEY() {
+}
 
-	res -= op;
+void Cpu::TXA() {
+}
 
-	unsigned char carry = (res & 0x0100) >> 8;
+void Cpu::STY_ABS() {
+}
 
-	cpu.setC(carry ^ 0x1);
-	cpu.setN((res & 0x00FF) >> 7);
-	cpu.setZ((res & 0x00FF) == 0);
-	return 1;
+void Cpu::STA_ABS() {
 }
 
-//Problème de calcul des cycles:
-//Il faut overrider les résultat intermédiaire du mode
-//d'adressage (absolute,x n'a pas de différence avec le page
-//boundary).
-int DEC_f(NesCPU&cpu)
-{
+void Cpu::STX_ABS() {
+}
 
-	return 1;
+void Cpu::BCC() {
 }
-int DEX_f(NesCPU&cpu)
-{
 
-	unsigned char X = cpu.getX() - 1;
-	cpu.setX(X);
+void Cpu::STA_IND_Y() {
+}
 
-	cpu.setN(X >> 7);
-	cpu.setZ(X == 0);
+void Cpu::STY_ZP_X() {
+}
 
-	return 1;
+void Cpu::STA_ZP_X() {
 }
-int DEY_f(NesCPU&cpu)
-{
 
-	unsigned char Y = cpu.getY() - 1;
-	cpu.setY(Y);
+void Cpu::STX_ZP_Y() {
+}
 
-	cpu.setN(Y >> 7);
-	cpu.setZ(Y == 0);
+void Cpu::TYA() {
+}
 
-	return 1;
+void Cpu::STA_ABS_Y() {
 }
-int EOR_f(NesCPU&cpu)
-{
 
-	return 1;
+void Cpu::TXS() {
 }
-//Problème de calcul des cycles:
-//Il faut overrider les résultat intermédiaire du mode
-//d'adressage (absolute,x n'a pas de différence avec le page
-//boundary).
 
-int INC_f(NesCPU&cpu)
-{
+void Cpu::STA_ABS_X() {
+}
 
-	return 1;
+void Cpu::LDY_IMM() {
 }
-int INX_f(NesCPU&cpu)
-{
 
-	return 1;
+void Cpu::LDA_IND_X() {
 }
-int INY_f(NesCPU&cpu)
-{
 
-	return 1;
+void Cpu::LDX_IMM() {
 }
-int JMP_f(NesCPU&cpu)
-{
 
-	return 1;
+void Cpu::LDY_ZP() {
 }
-int JSR_f(NesCPU&cpu)
-{
 
-	return 1;
+void Cpu::LDA_ZP() {
 }
-int LDA_f(NesCPU&cpu)
-{
-	cpu.setA(cpu.getOperand());
-	unsigned char A = cpu.getA();
 
-	cpu.setN(A >> 7);
-	cpu.setZ(A == 0);
+void Cpu::LDX_ZP() {
+}
 
-	return 1;
+void Cpu::TAY() {
 }
-int LDX_f(NesCPU&cpu)
-{
-	cpu.setX(cpu.getOperand());
-	unsigned char X = cpu.getX();
 
-	cpu.setN(X >> 7);
-	cpu.setZ(X == 0);
-	return 1;
+void Cpu::LDA_IMM() {
 }
-int LDY_f(NesCPU&cpu)
-{
-	cpu.setY(cpu.getOperand());
-	unsigned char Y = cpu.getY();
 
-	cpu.setN(Y >> 7);
-	cpu.setZ(Y == 0);
+void Cpu::TAX() {
+}
 
-	return 1;
+void Cpu::LDY_ABS() {
 }
-int LSR_f(NesCPU&cpu)
-{
 
-	return 1;
+void Cpu::LDA_ABS() {
 }
-int NOP_f(NesCPU&cpu)
-{
 
-	return 1;
+void Cpu::LDX_ABS() {
 }
-int ORA_f(NesCPU&cpu)
-{
 
-	return 1;
+void Cpu::BCS() {
 }
-int PHA_f(NesCPU&cpu)
-{
 
-	return 1;
+void Cpu::LDA_IND_Y() {
 }
-int PHP_f(NesCPU&cpu)
-{
 
-	return 1;
+void Cpu::LDY_ZP_X() {
 }
-int PLA_f(NesCPU&cpu)
-{
 
-	return 1;
+void Cpu::LDA_ZP_X() {
 }
-int PLP_f(NesCPU&cpu)
-{
 
-	return 1;
+void Cpu::LDX_ZP_Y() {
 }
-int ROL_f(NesCPU&cpu)
-{
 
-	return 1;
+void Cpu::CLV() {
 }
-int ROR_f(NesCPU&cpu)
-{
 
-	return 1;
+void Cpu::LDA_ABS_Y() {
 }
-int RTI_f(NesCPU&cpu)
-{
 
-	return 1;
+void Cpu::TSX() {
 }
-int RTS_f(NesCPU&cpu)
-{
 
-	return 1;
+void Cpu::LDY_ABS_X() {
 }
-int SBC_f(NesCPU&cpu)
-{
 
-	unsigned int res = cpu.getA();
-	unsigned char op = cpu.getOperand();
+void Cpu::LDA_ABS_X() {
+}
 
-	res -= op;
+void Cpu::LDX_ABS_Y() {
+}
 
-	unsigned char carry = !cpu.getC();
+void Cpu::CPY_IMM() {
+}
 
-	res -= carry;
+void Cpu::CMP_IND_X() {
+}
 
-	cout << "res:" << (int) res << endl;
+void Cpu::CPY_ZP() {
+}
 
-	cpu.setC(res > 0x00FF);
-	cpu.setN((res & 0x00FF) >> 7);
-	cpu.setZ((res & 0x00FF) == 0);
-	cpu.setV(calcOverflow(cpu.getA(), op, res));
-	cpu.setA(res);
+void Cpu::CMP_ZP() {
+}
 
-	return 1;
+void Cpu::DEC_ZP() {
 }
-int SEC_f(NesCPU&cpu)
-{
-	cpu.setC(true);
-	return 1;
+
+void Cpu::INY() {
 }
-int SED_f(NesCPU&cpu)
-{
-	cpu.setD(true);
-	return 1;
+
+void Cpu::CMP_IMM() {
 }
-int SEI_f(NesCPU&cpu)
-{
-	cpu.setI(true);
-	return 1;
+
+void Cpu::DEX() {
 }
-int STA_f(NesCPU&cpu)
-{
 
-	return 1;
+void Cpu::CPY_ABS() {
 }
-int STX_f(NesCPU&cpu)
-{
 
-	return 1;
+void Cpu::CMP_ABS() {
 }
-int STY_f(NesCPU&cpu)
-{
 
-	return 1;
+void Cpu::DEC_ABS() {
 }
 
-int TAX_f(NesCPU& cpu)
-{
+void Cpu::BNE() {
+}
 
-	unsigned char A = cpu.getA();
+void Cpu::CMP_IND_Y() {
+}
 
-	cpu.setX(A);
+void Cpu::CMP_ZP_X() {
+}
 
-	cpu.setN(A >> 7);
-	cpu.setZ(A == 0);
+void Cpu::DEC_ZP_X() {
+}
 
-	return 1;
+void Cpu::CLD() {
 }
 
-int TAY_f(NesCPU& cpu)
-{
+void Cpu::CMP_ABS_Y() {
+}
 
-	unsigned char A = cpu.getA();
+void Cpu::CMP_ABS_X() {
+}
 
-	cpu.setY(A);
+void Cpu::DEC_ABS_X() {
+}
 
-	cpu.setN(A >> 7);
-	cpu.setZ(A == 0);
+void Cpu::CPX_IMM() {
+}
 
-	return 1;
+void Cpu::SBC_IND_X() {
 }
 
-int TXA_f(NesCPU& cpu)
-{
+void Cpu::CPX_ZP() {
+}
 
-	unsigned char X = cpu.getX();
+void Cpu::SBC_ZP() {
+}
 
-	cpu.setA(X);
+void Cpu::INC_ZP() {
+}
 
-	cpu.setN(X >> 7);
-	cpu.setZ(X == 0);
+void Cpu::INX() {
+}
 
-	return 1;
+void Cpu::SBC_IMM() {
 }
-int TSX_f(NesCPU& cpu)
-{
 
-	unsigned char S = cpu.getS();
+void Cpu::NOP() {
+}
 
-	cpu.setX(S);
+void Cpu::CPX_ABS() {
+}
 
-	cpu.setN(S >> 7);
-	cpu.setZ(S == 0);
+void Cpu::SBC_ABS() {
+}
 
-	return 1;
+void Cpu::INC_ABS() {
 }
 
-int TXS_f(NesCPU& cpu)
-{
+void Cpu::BEQ() {
+}
 
-	unsigned char X = cpu.getX();
+void Cpu::SBC_IND_Y() {
+}
 
-	cpu.setS(X);
+void Cpu::SBC_ZP_X() {
+}
 
-	return 1;
+void Cpu::INC_ZP_X() {
 }
 
-int TYA_f(NesCPU& cpu)
-{
+void Cpu::SED() {
+}
 
-	unsigned char Y = cpu.getY();
+void Cpu::SBC_ABS_Y() {
+}
 
-	cpu.setA(Y);
+void Cpu::SBC_ABS_X() {
+}
 
-	cpu.setN(Y >> 7);
-	cpu.setZ(Y == 0);
+void Cpu::INC_ABS_X() {
+}
 
-	return 1;
+void Cpu::UNIMP() {
 }

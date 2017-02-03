@@ -1,14 +1,17 @@
 #ifndef NES_H
 #define NES_H
 
+#include "rom.h"
+#include "cpu.h"
+#include "ppu.h"
 class Nes
 {
 private:
     Rom* rom;
-	Cpu* cpu;
+    Cpu* cpu;
     Ppu* ppu;
 public:
-	Nes();
+    Nes();
 };
 
 #endif // CPU_H

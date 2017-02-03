@@ -91,6 +91,7 @@
         <df name="lib">
           <df name="emulator">
             <in>cpu.cpp</in>
+            <in>cpu_addressing.cpp</in>
             <in>nes.cpp</in>
             <in>ppu.cpp</in>
             <in>rom.cpp</in>
@@ -195,6 +196,8 @@
       <flagsDictionary>
         <element flagsID="0"
                  commonFlags="-march=armv8-a -mtune=cortex-a53 -nostdinc -nostdlib -O2 -fno-exceptions -fno-rtti -std=c++0x"/>
+        <element flagsID="1"
+                 commonFlags="-march=armv8-a -mtune=cortex-a53 -nostdinc -nostdlib -O2 -fno-exceptions -fno-rtti -std=c++17"/>
       </flagsDictionary>
       <codeAssistance>
         <includeAdditional>true</includeAdditional>
@@ -310,49 +313,34 @@
       <item path="addon/webconsole/webconsole.cpp" ex="false" tool="1" flavor2="4">
       </item>
       <item path="app/kernel/kernel.cpp" ex="false" tool="1" flavor2="4">
+        <ccTool flags="1">
+        </ccTool>
       </item>
       <item path="app/kernel/main.cpp" ex="false" tool="1" flavor2="4">
+        <ccTool flags="1">
+        </ccTool>
       </item>
       <item path="app/lib/emulator/cpu.cpp" ex="false" tool="1" flavor2="8">
         <ccTool flags="0">
-          <incDir>
-            <pElem>include</pElem>
-            <pElem>addon</pElem>
-            <pElem>app/lib</pElem>
-          </incDir>
-          <preprocessorList>
-            <Elem>RASPPI=3</Elem>
-            <Elem>__circle__</Elem>
-          </preprocessorList>
         </ccTool>
       </item>
-      <item path="app/lib/emulator/nes.cpp" ex="false" tool="1" flavor2="4">
-        <ccTool>
-          <incDir>
-            <pElem>.</pElem>
-            <pElem>include</pElem>
-          </incDir>
+      <item path="app/lib/emulator/cpu_addressing.cpp"
+            ex="false"
+            tool="1"
+            flavor2="8">
+        <ccTool flags="0">
         </ccTool>
       </item>
-      <item path="app/lib/emulator/ppu.cpp" ex="false" tool="1" flavor2="4">
-        <ccTool>
-          <incDir>
-            <pElem>.</pElem>
-            <pElem>include</pElem>
-          </incDir>
+      <item path="app/lib/emulator/nes.cpp" ex="false" tool="1" flavor2="8">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="app/lib/emulator/ppu.cpp" ex="false" tool="1" flavor2="8">
+        <ccTool flags="0">
         </ccTool>
       </item>
       <item path="app/lib/emulator/rom.cpp" ex="false" tool="1" flavor2="8">
         <ccTool flags="0">
-          <incDir>
-            <pElem>include</pElem>
-            <pElem>addon</pElem>
-            <pElem>app/lib</pElem>
-          </incDir>
-          <preprocessorList>
-            <Elem>RASPPI=3</Elem>
-            <Elem>__circle__</Elem>
-          </preprocessorList>
         </ccTool>
       </item>
       <folder path="0/addon">
@@ -363,12 +351,17 @@
           </incDir>
         </ccTool>
       </folder>
-      <folder path="0/app/kernel">
+      <folder path="0/app">
         <ccTool>
           <incDir>
-            <pElem>.</pElem>
             <pElem>include</pElem>
+            <pElem>addon</pElem>
+            <pElem>app/lib</pElem>
           </incDir>
+          <preprocessorList>
+            <Elem>RASPPI=3</Elem>
+            <Elem>__circle__</Elem>
+          </preprocessorList>
         </ccTool>
       </folder>
       <folder path="0/lib">
