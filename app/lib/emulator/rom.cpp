@@ -15,11 +15,11 @@ const char* Rom::GetRaw() const{
     return raw;
 }
 
-const unsigned int Rom::GetLength() const{
+unsigned int Rom::GetLength() const{
     return length;
 }
 
-const unsigned int Rom::GetTrainerOffset() const{
+unsigned int Rom::GetTrainerOffset() const{
 	return CHECK_BIT(this->GetHeader()->controlByte1, 2) * trainerSize;
 }
 // ...

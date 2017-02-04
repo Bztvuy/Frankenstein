@@ -27,12 +27,12 @@ class Rom
 public:
     const iNesHeader* GetHeader() const;
     const char* GetRaw() const;
-    const unsigned int GetLength() const;
-	const unsigned int GetTrainerOffset() const;
-	
-	//sizes related to rom file format (in bytes) :
-	const unsigned int headerSize = 16;
-	const unsigned int trainerSize = 512;
+    unsigned int GetLength() const;
+    unsigned int GetTrainerOffset() const;
+
+    //sizes related to rom file format (in bytes) :
+    const unsigned int headerSize = 16;
+    const unsigned int trainerSize = 512;
 
 private:
     const unsigned int length = 262160;
