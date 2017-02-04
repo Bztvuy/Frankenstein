@@ -26,6 +26,10 @@ inline u8& Cpu::Operand(int number) const {
     return Memory(this->registers->PC + number);
 }
 
+////////////////////////////////////////////////////////////////////////////////
+/// Operations Definition 
+////////////////////////////////////////////////////////////////////////////////
+
 void Cpu::ADC(u8& value){
     
 }
@@ -69,7 +73,9 @@ void Cpu::CPY(u8& value){
 }
 
 void Cpu::DEC(u8& value){
-    
+    value -= 1;
+    SetFlag(Z, value);
+    SetFlag(S, CHECK_BIT(value, 7));
 }
 
 void Cpu::EOR(u8& value){
@@ -79,7 +85,9 @@ void Cpu::EOR(u8& value){
 }
 
 void Cpu::INC(u8& value){
-    
+    value += 1;
+    SetFlag(Z, value);
+    SetFlag(S, CHECK_BIT(value, 7));
 }
 
 void Cpu::JMP(u8& value){
@@ -155,6 +163,10 @@ void Cpu::STY(u8& value){
 void Cpu::BRK() {
     // TODO
 }
+
+////////////////////////////////////////////////////////////////////////////////
+/// OPCodes Definition 
+////////////////////////////////////////////////////////////////////////////////
 
 /// Logical OR 
 /// 2 bytes; 6 cycles
