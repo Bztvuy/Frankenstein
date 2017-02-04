@@ -43,7 +43,7 @@ INCLUDE	+= -I $(CIRCLEHOME)/include -I $(CIRCLEHOME)/addon -I $(CIRCLEHOME)/app/
 AFLAGS	+= $(ARCH) -DRASPPI=$(RASPPI) $(INCLUDE)
 CFLAGS	+= $(ARCH) -Wall -Wno-psabi -fsigned-char -fno-builtin -nostdinc -nostdlib \
            -D__circle__ -DRASPPI=$(RASPPI) $(INCLUDE) $(OPTIMIZE) -g #-DNDEBUG
-CPPFLAGS+= $(CFLAGS) -fno-exceptions -fno-rtti -std=c++17
+CPPFLAGS+= $(CFLAGS) -Wextra -Wshadow -Weffc++ -fno-exceptions -fno-rtti -std=c++17
 
 %.o: %.S
 	$(AS) $(AFLAGS) -c -o $@ $<
