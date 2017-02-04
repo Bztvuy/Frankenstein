@@ -18,6 +18,14 @@ Cpu::Cpu(const Rom* rom) {
     }
 }
 
+void Cpu::SetFlag(u8 flag, u8 value){
+    ASSIGN_BIT(this->registers->P, flag, value);
+}
+
+u8 Cpu::GetFlag(u8 flag){
+    return CHECK_BIT(this->registers->P, flag);
+}
+
 inline u8& Cpu::Memory(const u16 address) const {
     return this->memory->raw[address];
 }
@@ -27,12 +35,8 @@ inline u8& Cpu::Operand(int number) const {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-/// Operations Definition 
+/// Binary Operations Definition 
 ////////////////////////////////////////////////////////////////////////////////
-
-void Cpu::ADC(u8& value){
-    
-}
 
 void Cpu::AND(u8& value){
     this->registers->A &= value;
@@ -54,60 +58,8 @@ void Cpu::BIT(u8& value){
     SetFlag(V, CHECK_BIT(value, 6));
 }
 
-void Cpu::CMP(u8& value){
-    SetFlag(C, this->registers->A >= value);
-    SetFlag(Z, this->registers->A == value);
-    SetFlag(S, this->registers->A < value);
-}
-
-void Cpu::CPX(u8& value){
-    SetFlag(C, this->registers->X >= value);
-    SetFlag(Z, this->registers->X == value);
-    SetFlag(S, this->registers->X < value);
-}
-
-void Cpu::CPY(u8& value){
-    SetFlag(C, this->registers->Y >= value);
-    SetFlag(Z, this->registers->Y == value);
-    SetFlag(S, this->registers->Y < value);
-}
-
-void Cpu::DEC(u8& value){
-    value -= 1;
-    SetFlag(Z, value);
-    SetFlag(S, CHECK_BIT(value, 7));
-}
-
 void Cpu::EOR(u8& value){
     this->registers->A ^= value;
-    SetFlag(Z, value);
-    SetFlag(S, CHECK_BIT(value, 7));
-}
-
-void Cpu::INC(u8& value){
-    value += 1;
-    SetFlag(Z, value);
-    SetFlag(S, CHECK_BIT(value, 7));
-}
-
-void Cpu::JMP(u8& value){
-    // Complex stuff with page boundary?
-}
-
-void Cpu::LDA(u8& value){
-    this->registers->A = value;
-    SetFlag(Z, value);
-    SetFlag(S, CHECK_BIT(value, 7));
-}
-
-void Cpu::LDX(u8& value){
-    this->registers->X = value;
-    SetFlag(Z, value);
-    SetFlag(S, CHECK_BIT(value, 7));
-}
-
-void Cpu::LDY(u8& value){
-    this->registers->Y = value;
     SetFlag(Z, value);
     SetFlag(S, CHECK_BIT(value, 7));
 }
@@ -144,8 +96,51 @@ void Cpu::ROR(u8& value){
     SetFlag(S, CHECK_BIT(value, 7));
 }
 
+////////////////////////////////////////////////////////////////////////////////
+/// Arithmetic Operations Definition 
+////////////////////////////////////////////////////////////////////////////////
+
+void Cpu::ADC(u8& value){
+    // S V Z C    
+}
+
+void Cpu::DEC(u8& value){
+    value -= 1;
+    SetFlag(Z, value);
+    SetFlag(S, CHECK_BIT(value, 7));
+
+}
+
+void Cpu::INC(u8& value){
+    value += 1;
+    SetFlag(Z, value);
+    SetFlag(S, CHECK_BIT(value, 7));
+}
+
 void Cpu::SBC(u8& value){
-    
+    // S V Z C    
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/// Memory Operations Definition 
+////////////////////////////////////////////////////////////////////////////////
+
+void Cpu::LDA(u8& value){
+    this->registers->A = value;
+    SetFlag(Z, value);
+    SetFlag(S, CHECK_BIT(value, 7));
+}
+
+void Cpu::LDX(u8& value){
+    this->registers->X = value;
+    SetFlag(Z, value);
+    SetFlag(S, CHECK_BIT(value, 7));
+}
+
+void Cpu::LDY(u8& value){
+    this->registers->Y = value;
+    SetFlag(Z, value);
+    SetFlag(S, CHECK_BIT(value, 7));
 }
 
 void Cpu::STA(u8& value){
@@ -160,12 +155,202 @@ void Cpu::STY(u8& value){
     value = this->registers->Y;
 }
 
-void Cpu::BRK() {
+////////////////////////////////////////////////////////////////////////////////
+/// Branch Operations
+////////////////////////////////////////////////////////////////////////////////
+
+void Cpu::BPL() {
+    // TODO
+}
+
+void Cpu::BMI() {
+    // TODO
+}
+
+void Cpu::BVC() {
+    // TODO
+}
+
+void Cpu::BVS() {
+    // TODO
+}
+
+void Cpu::BCC() {
+    // TODO
+}
+
+void Cpu::BCS() {
+    // TODO
+}
+
+void Cpu::BNE() {
+    // TODO
+}
+
+void Cpu::BEQ() {
     // TODO
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-/// OPCodes Definition 
+/// Register Operations Definition 
+/// T[1][2] -> Transfert register 1 to register 2
+/// DE[1] -> DEC register 1
+/// IN[1] -> INC register 1
+////////////////////////////////////////////////////////////////////////////////
+
+void Cpu::TAX() {
+    // TODO
+}
+
+void Cpu::TXA() {
+    // TODO
+}
+
+void Cpu::DEX() {
+    // TODO
+}
+
+void Cpu::INX() {
+    // TODO
+}
+
+void Cpu::TAY() {
+    // TODO
+}
+
+void Cpu::TYA() {
+    // TODO
+}
+
+void Cpu::DEY() {
+    // TODO
+}
+
+void Cpu::INY() {
+    // TODO
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/// Stack Operations Definition 
+////////////////////////////////////////////////////////////////////////////////
+
+// Transfert X to Stack ptr
+void Cpu::TXS() {
+    // TODO
+}
+
+void Cpu::TSX() {
+    // TODO
+}
+
+// Push A
+void Cpu::PHA() {
+    // TODO
+}
+
+// Pop A
+void Cpu::PLA() {
+    // TODO
+}
+
+// Push Processor Status
+void Cpu::PHP() {
+    // TODO
+}
+
+// Pull Processor Status
+void Cpu::PLP() {
+    // TODO
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/// PC Operations Definition 
+////////////////////////////////////////////////////////////////////////////////
+
+void Cpu::BRK(){
+    // TODO
+}
+
+void Cpu::JMP(u8& value){
+    // Complex stuff with page boundary?
+}
+
+void Cpu::JSR() {
+    // TODO
+}
+
+void Cpu::RTI() {
+    // TODO
+}
+
+void Cpu::RTS() {
+    // TODO
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// Flag Instructions
+///////////////////////////////////////////////////////////////////////////////
+
+void Cpu::CMP(u8& value){
+    SetFlag(C, this->registers->A >= value);
+    SetFlag(Z, this->registers->A == value);
+    SetFlag(S, this->registers->A < value);
+}
+
+void Cpu::CPX(u8& value){
+    SetFlag(C, this->registers->X >= value);
+    SetFlag(Z, this->registers->X == value);
+    SetFlag(S, this->registers->X < value);
+}
+
+void Cpu::CPY(u8& value){
+    SetFlag(C, this->registers->Y >= value);
+    SetFlag(Z, this->registers->Y == value);
+    SetFlag(S, this->registers->Y < value);
+}
+
+void Cpu::CLC() {
+    // TODO
+}
+
+void Cpu::SEC() {
+    // TODO
+}
+
+void Cpu::CLI() {
+    // TODO
+}
+
+void Cpu::SEI() {
+    // TODO
+}
+
+void Cpu::CLV() {
+    // TODO
+}
+
+void Cpu::CLD() {
+    // TODO
+}
+
+void Cpu::SED() {
+    // TODO
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/// Other operations
+////////////////////////////////////////////////////////////////////////////////
+
+void Cpu::NOP() {
+    // TODO
+}
+
+void Cpu::UNIMP() {
+    // TODO
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/// Operations variant with addressing 
 ////////////////////////////////////////////////////////////////////////////////
 
 /// Logical OR 
@@ -179,13 +364,8 @@ void Cpu::ORA_ZP() {
     ORA(Memory(ZeroPage(Operand(1))));
 }
 
-// 
 void Cpu::ASL_ZP() {
     ASL(Memory(ZeroPage(Operand(1))));
-}
-
-void Cpu::PHP() {
-    // TODO
 }
 
 void Cpu::ORA_IMM() {
@@ -204,10 +384,6 @@ void Cpu::ASL_ABS() {
     ASL(Memory(Absolute(Operand(1), Operand(2))));    
 }
 
-void Cpu::BPL() {
-    // TODO
-}
-
 void Cpu::ORA_IND_Y() {
     ORA(Memory(PostIndexedIndirect(Operand(1), this->registers->Y)));
 }
@@ -220,10 +396,6 @@ void Cpu::ASL_ZP_X() {
     ASL(Memory(ZeroPageIndexed(Operand(1), this->registers->X)));
 }
 
-void Cpu::CLC() {
-    // TODO
-}
-
 void Cpu::ORA_ABS_Y() {
     ORA(Memory(Indexed(Operand(1), Operand(2), this->registers->Y)));
 }
@@ -234,10 +406,6 @@ void Cpu::ORA_ABS_X() {
 
 void Cpu::ASL_ABS_X() {
     ASL(Memory(Indexed(Operand(1), Operand(2), this->registers->X)));
-}
-
-void Cpu::JSR() {
-    // TODO
 }
 
 // 6 cycles
@@ -255,10 +423,6 @@ void Cpu::AND_ZP() {
 
 void Cpu::ROL_ZP() {
     ROL(Memory(ZeroPage(Operand(1))));
-}
-
-void Cpu::PLP() {
-    // TODO
 }
 
 void Cpu::AND_IMM() {
@@ -281,10 +445,6 @@ void Cpu::ROL_ABS() {
     ROL(Memory(Absolute(Operand(1), Operand(2))));
 }
 
-void Cpu::BMI() {
-    // TODO
-}
-
 void Cpu::AND_IND_Y() {
     AND(Memory(PostIndexedIndirect(Operand(1), this->registers->Y)));
 }
@@ -295,10 +455,6 @@ void Cpu::AND_ZP_X() {
 
 void Cpu::ROL_ZP_X() {
     ROL(Memory(ZeroPageIndexed(Operand(1), this->registers->X)));
-}
-
-void Cpu::SEC() {
-    // TODO
 }
 
 void Cpu::AND_ABS_Y() {
@@ -313,10 +469,6 @@ void Cpu::ROL_ABS_X() {
     ROL(Memory(Indexed(Operand(1), Operand(2), this->registers->X)));
 }
 
-void Cpu::RTI() {
-    // TODO
-}
-
 void Cpu::EOR_IND_X() {
     EOR(Memory(PreIndexedIndirect(Operand(1), this->registers->X)));
 }
@@ -327,10 +479,6 @@ void Cpu::EOR_ZP() {
 
 void Cpu::LSR_ZP() {
     LSR(Memory(ZeroPage(Operand(1))));
-}
-
-void Cpu::PHA() {
-    // TODO
 }
 
 void Cpu::EOR_IMM() {
@@ -353,10 +501,6 @@ void Cpu::LSR_ABS() {
     LSR(Memory(Absolute(Operand(1), Operand(2))));
 }
 
-void Cpu::BVC() {
-    // TODO
-}
-
 void Cpu::EOR_IND_Y() {
     EOR(Memory(PostIndexedIndirect(Operand(1), this->registers->Y)));
 }
@@ -367,10 +511,6 @@ void Cpu::EOR_ZP_X() {
 
 void Cpu::LSR_ZP_X() {
     LSR(Memory(ZeroPageIndexed(Operand(1), this->registers->X)));
-}
-
-void Cpu::CLI() {
-    // TODO
 }
 
 void Cpu::EOR_ABS_Y() {
@@ -385,10 +525,6 @@ void Cpu::LSR_ABS_X() {
     LSR(Memory(Indexed(Operand(1), Operand(2), this->registers->X)));
 }
 
-void Cpu::RTS() {
-    // TODO
-}
-
 void Cpu::ADC_IND_X() {
     ADC(Memory(PreIndexedIndirect(Operand(1), this->registers->X)));
 }
@@ -399,10 +535,6 @@ void Cpu::ADC_ZP() {
 
 void Cpu::ROR_ZP() {
     ROR(Memory(ZeroPage(Operand(1))));
-}
-
-void Cpu::PLA() {
-    // TODO
 }
 
 void Cpu::ADC_IMM() {
@@ -425,10 +557,6 @@ void Cpu::ROR_ABS() {
     ROR(Memory(Absolute(Operand(1), Operand(2))));
 }
 
-void Cpu::BVS() {
-    // TODO
-}
-
 void Cpu::ADC_IND_Y() {
     ADC(Memory(PostIndexedIndirect(Operand(1), this->registers->Y)));
 }
@@ -439,10 +567,6 @@ void Cpu::ADC_ZP_X() {
 
 void Cpu::ROR_ZP_X() {
     ROR(Memory(ZeroPageIndexed(Operand(1), this->registers->X)));
-}
-
-void Cpu::SEI() {
-    // TODO
 }
 
 void Cpu::ADC_ABS_Y() {
@@ -473,14 +597,6 @@ void Cpu::STX_ZP() {
     STX(Memory(ZeroPage(Operand(1))));
 }
 
-void Cpu::DEY() {
-    // TODO
-}
-
-void Cpu::TXA() {
-    // TODO
-}
-
 void Cpu::STY_ABS() {
     STY(Memory(Absolute(Operand(1), Operand(2))));
 }
@@ -491,10 +607,6 @@ void Cpu::STA_ABS() {
 
 void Cpu::STX_ABS() {
     STX(Memory(Absolute(Operand(1), Operand(2))));
-}
-
-void Cpu::BCC() {
-    // TODO
 }
 
 void Cpu::STA_IND_Y() {
@@ -513,16 +625,8 @@ void Cpu::STX_ZP_Y() {
     STX(Memory(ZeroPageIndexed(Operand(1), this->registers->Y)));
 }
 
-void Cpu::TYA() {
-    // TODO
-}
-
 void Cpu::STA_ABS_Y() {
     STA(Memory(Indexed(Operand(1), Operand(2), this->registers->Y)));
-}
-
-void Cpu::TXS() {
-    // TODO
 }
 
 void Cpu::STA_ABS_X() {
@@ -553,16 +657,8 @@ void Cpu::LDX_ZP() {
     LDX(Memory(ZeroPage(Operand(1))));
 }
 
-void Cpu::TAY() {
-    // TODO
-}
-
 void Cpu::LDA_IMM() {
     LDA(Operand(1));
-}
-
-void Cpu::TAX() {
-    // TODO
 }
 
 void Cpu::LDY_ABS() {
@@ -575,10 +671,6 @@ void Cpu::LDA_ABS() {
 
 void Cpu::LDX_ABS() {
     LDX(Memory(Absolute(Operand(1), Operand(2))));
-}
-
-void Cpu::BCS() {
-    // TODO
 }
 
 void Cpu::LDA_IND_Y() {
@@ -597,16 +689,8 @@ void Cpu::LDX_ZP_Y() {
     LDX(Memory(ZeroPageIndexed(Operand(1), this->registers->Y)));
 }
 
-void Cpu::CLV() {
-    // TODO
-}
-
 void Cpu::LDA_ABS_Y() {
     LDA(Memory(Indexed(Operand(1), Operand(2), this->registers->Y)));
-}
-
-void Cpu::TSX() {
-    // TODO
 }
 
 void Cpu::LDY_ABS_X() {
@@ -641,16 +725,8 @@ void Cpu::DEC_ZP() {
     DEC(Memory(ZeroPage(Operand(1))));
 }
 
-void Cpu::INY() {
-    // TODO
-}
-
 void Cpu::CMP_IMM() {
     CMP(Operand(1));
-}
-
-void Cpu::DEX() {
-    // TODO
 }
 
 void Cpu::CPY_ABS() {
@@ -665,10 +741,6 @@ void Cpu::DEC_ABS() {
     DEC(Memory(Absolute(Operand(1), Operand(2))));
 }
 
-void Cpu::BNE() {
-    // TODO
-}
-
 void Cpu::CMP_IND_Y() {
     CMP(Memory(PostIndexedIndirect(Operand(1), this->registers->Y)));
 }
@@ -679,10 +751,6 @@ void Cpu::CMP_ZP_X() {
 
 void Cpu::DEC_ZP_X() {
     DEC(Memory(ZeroPageIndexed(Operand(1), this->registers->X)));
-}
-
-void Cpu::CLD() {
-    // TODO
 }
 
 void Cpu::CMP_ABS_Y() {
@@ -717,16 +785,8 @@ void Cpu::INC_ZP() {
     INC(Memory(ZeroPage(Operand(1))));
 }
 
-void Cpu::INX() {
-    // TODO
-}
-
 void Cpu::SBC_IMM() {
     SBC(Operand(1));
-}
-
-void Cpu::NOP() {
-    // TODO
 }
 
 void Cpu::CPX_ABS() {
@@ -741,10 +801,6 @@ void Cpu::INC_ABS() {
     INC(Memory(Absolute(Operand(1), Operand(2))));
 }
 
-void Cpu::BEQ() {
-    // TODO
-}
-
 void Cpu::SBC_IND_Y() {
     SBC(Memory(PostIndexedIndirect(Operand(1), this->registers->Y)));
 }
@@ -757,10 +813,6 @@ void Cpu::INC_ZP_X() {
     INC(Memory(ZeroPageIndexed(Operand(1), this->registers->X)));
 }
 
-void Cpu::SED() {
-    // TODO
-}
-
 void Cpu::SBC_ABS_Y() {
     SBC(Memory(Indexed(Operand(1), Operand(2), this->registers->Y)));
 }
@@ -771,15 +823,4 @@ void Cpu::SBC_ABS_X() {
 
 void Cpu::INC_ABS_X() {
     INC(Memory(Indexed(Operand(1), Operand(2), this->registers->X)));
-}
-
-void Cpu::UNIMP() {
-}
-
-void Cpu::SetFlag(u8 flag, u8 value){
-    ASSIGN_BIT(this->registers->P, flag, value);
-}
-
-u8 Cpu::GetFlag(u8 flag){
-    return CHECK_BIT(this->registers->P, flag);
 }
