@@ -87,15 +87,21 @@ void Cpu::JMP(u8& value){
 }
 
 void Cpu::LDA(u8& value){
-    
+    this->registers->A = value;
+    SetFlag(Z, value);
+    SetFlag(S, CHECK_BIT(value, 7));
 }
 
 void Cpu::LDX(u8& value){
-    
+    this->registers->X = value;
+    SetFlag(Z, value);
+    SetFlag(S, CHECK_BIT(value, 7));
 }
 
 void Cpu::LDY(u8& value){
-    
+    this->registers->Y = value;
+    SetFlag(Z, value);
+    SetFlag(S, CHECK_BIT(value, 7));
 }
 
 void Cpu::LSR(u8& value){
@@ -133,14 +139,17 @@ void Cpu::ROR(u8& value){
 void Cpu::SBC(u8& value){
     
 }
+
 void Cpu::STA(u8& value){
-    
+    value = this->registers->A;
 }
+
 void Cpu::STX(u8& value){
-    
+    value = this->registers->X;
 }
+
 void Cpu::STY(u8& value){
-    
+    value = this->registers->Y;
 }
 
 void Cpu::BRK() {
