@@ -4,7 +4,7 @@
 
 CIRCLEHOME = ../../..
 
-OBJS	= rom.o cpu.o ppu.o nes.o cpu_addressing.o
+OBJS	= rom.o cpu.o ppu.o nes.o
 
 libemu.a: $(OBJS)
 	rm -f $@

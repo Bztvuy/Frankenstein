@@ -8,7 +8,6 @@ class Cpu {
 private:
 
     union NESCPUMemoryMap {
-
         struct {
             u8 zeroPage[0x0100];
             u8 stack[0x0100];
@@ -26,7 +25,6 @@ private:
     };
 
     union NESCPURegisters {
-
         struct {
             u16 programCounter;
             u8 stackPointer;
@@ -35,7 +33,6 @@ private:
             u8 indexY;
             u8 processorStatus;
         };
-
         struct {
             u16 PC;
             u8 SP;
@@ -57,8 +54,8 @@ private:
         S       //Sign : 1 is negative
     };
 
-    NESCPURegisters* const registers = new NESCPURegisters;
-    NESCPUMemoryMap* const memory = new NESCPUMemoryMap;
+    NESCPURegisters registers;
+    NESCPUMemoryMap memory;
 
     //sizes related to hardware (in bytes) :
     const u32 prgRomBankSize = 16 * KILOBYTE;
@@ -316,12 +313,12 @@ private:
     /**
      * Fetch the operand at memory[PC + number]
      */
-    inline u8& Operand(int number) const;
+    inline u8& Operand(int number);
     
     /**
      * Fetch the byte at memory[address]
      */
-    inline u8& Memory(const u16 address) const;
+    inline u8& Memory(const u16 address);
     
     /**
      * Build an address using only the least significative byte. The first half of 
@@ -383,7 +380,7 @@ private:
      * @param  high the most significant byte
      * @return the stored address
      */
-    u16 Indirect(const u8 low, const u8 high) const;
+    u16 Indirect(const u8 low, const u8 high);
 
     /**
      * Fetch an address at memory [00][low + index]. If [low + index] overflow, only
@@ -393,7 +390,7 @@ private:
      * @param  index a value to add to low to get the actual address
      * @return the pre-indexed address
      */
-    u16 PreIndexedIndirect(const u8 low, const u8 reg) const;
+    u16 PreIndexedIndirect(const u8 low, const u8 reg);
 
     /**
      * Fetch an address at memory [00][low] then increase the address by index.
@@ -401,7 +398,7 @@ private:
      * @param  index an index to add to the loaded address. Usually a register [X|Y]
      * @return the post-indexed address
      */
-    u16 PostIndexedIndirect(const u8 low, const u8 reg) const;
+    u16 PostIndexedIndirect(const u8 low, const u8 reg);
     //u16 Relative();
 
     void SetFlag(u8 flag, u8 value);

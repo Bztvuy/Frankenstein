@@ -9,9 +9,9 @@ Cpu::Cpu(const Rom* rom) {
 
     switch (prgRomBanks) {
         case 2:
-            memcpy(memory->prgRomUpperBank, rom->GetRaw() + prgRomBanksLocation + prgRomBankSize, prgRomBankSize);
+            memcpy(this->memory.prgRomLowerBank, rom->GetRaw() + prgRomBanksLocation + prgRomBankSize, prgRomBankSize);
         case 1:
-            memcpy(memory->prgRomLowerBank, rom->GetRaw() + prgRomBanksLocation, prgRomBankSize);
+            memcpy(this->memory.prgRomLowerBank, rom->GetRaw() + prgRomBanksLocation, prgRomBankSize);
             break;
         default: //TODO: implement multiple PRG-ROM banks
             break;
@@ -19,19 +19,66 @@ Cpu::Cpu(const Rom* rom) {
 }
 
 void Cpu::SetFlag(u8 flag, u8 value){
-    ASSIGN_BIT(this->registers->P, flag, value);
+    ASSIGN_BIT(this->registers.P, flag, value);
 }
 
 u8 Cpu::GetFlag(u8 flag){
-    return CHECK_BIT(this->registers->P, flag);
+    return CHECK_BIT(this->registers.P, flag);
 }
 
-inline u8& Cpu::Memory(const u16 address) const {
-    return this->memory->raw[address];
+inline u8& Cpu::Memory(const u16 address) {
+    return this->memory.raw[address];
 }
 
-inline u8& Cpu::Operand(int number) const {
-    return Memory(this->registers->PC + number);
+inline u8& Cpu::Operand(int number) {
+    return Memory(this->registers.PC + number);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/// Addressing
+////////////////////////////////////////////////////////////////////////////////
+
+u16 Cpu::FromValues(const u8 low) const {
+    u16 res = 0 | low;
+    return res;
+}
+
+u16 Cpu::FromValues(const u8 low, const u8 high) const {
+    u16 res = high;
+    res <<= 8;
+    res |= low;
+    return res;
+}
+
+u16 Cpu::ZeroPage(const u8 low) const {
+    return FromValues(low);
+}
+
+u16 Cpu::Absolute(const u8 low, const u8 high) const {
+    return FromValues(low, high);
+}
+
+u16 Cpu::Indexed(const u8 low, const u8 high, const u8 index) const {
+    return FromValues(low, high) + index;
+}
+
+u16 Cpu::ZeroPageIndexed(const u8 low, const u8 index) const {
+    return FromValues(low) + index;
+}
+
+u16 Cpu::Indirect(const u8 low, const u8 high) {
+    auto memAddrAddr = FromValues(low, high);
+    auto valLow = Memory(memAddrAddr);
+    auto valHigh = Memory(memAddrAddr+1);
+    return FromValues(valLow, valHigh);
+}
+
+u16 Cpu::PreIndexedIndirect(const u8 low, const u8 index) {
+    return Indirect((low + index) % (0xFF+1), 0);
+}
+
+u16 Cpu::PostIndexedIndirect(const u8 low, const u8 index) {
+    return Indirect(low, 0) + index;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -39,7 +86,8 @@ inline u8& Cpu::Operand(int number) const {
 ////////////////////////////////////////////////////////////////////////////////
 
 void Cpu::AND(u8& value){
-    this->registers->A &= value;
+    // CONFIRM THIS PLEASE
+    this->registers.A &= value;
     SetFlag(Z, value);
     SetFlag(S, CHECK_BIT(value, 7));
 }
@@ -53,13 +101,13 @@ void Cpu::ASL(u8& value){
 }
 
 void Cpu::BIT(u8& value){
-    SetFlag(Z, value & this->registers->A);
+    SetFlag(Z, value & this->registers.A);
     SetFlag(S, CHECK_BIT(value, 7));
     SetFlag(V, CHECK_BIT(value, 6));
 }
 
 void Cpu::EOR(u8& value){
-    this->registers->A ^= value;
+    this->registers.A ^= value;
     SetFlag(Z, value);
     SetFlag(S, CHECK_BIT(value, 7));
 }
@@ -73,9 +121,9 @@ void Cpu::LSR(u8& value){
 }
 
 void Cpu::ORA(u8& value){
-    this->registers->A |= value;
-    SetFlag(Z, this->registers->A);
-    SetFlag(S, CHECK_BIT(this->registers->A, 7));
+    this->registers.A |= value;
+    SetFlag(Z, this->registers.A);
+    SetFlag(S, CHECK_BIT(this->registers.A, 7));
 }
 
 void Cpu::ROL(u8& value){
@@ -102,6 +150,7 @@ void Cpu::ROR(u8& value){
 
 void Cpu::ADC(u8& value){
     // S V Z C    
+    
 }
 
 void Cpu::DEC(u8& value){
@@ -126,33 +175,33 @@ void Cpu::SBC(u8& value){
 ////////////////////////////////////////////////////////////////////////////////
 
 void Cpu::LDA(u8& value){
-    this->registers->A = value;
+    this->registers.A = value;
     SetFlag(Z, value);
     SetFlag(S, CHECK_BIT(value, 7));
 }
 
 void Cpu::LDX(u8& value){
-    this->registers->X = value;
+    this->registers.X = value;
     SetFlag(Z, value);
     SetFlag(S, CHECK_BIT(value, 7));
 }
 
 void Cpu::LDY(u8& value){
-    this->registers->Y = value;
+    this->registers.Y = value;
     SetFlag(Z, value);
     SetFlag(S, CHECK_BIT(value, 7));
 }
 
 void Cpu::STA(u8& value){
-    value = this->registers->A;
+    value = this->registers.A;
 }
 
 void Cpu::STX(u8& value){
-    value = this->registers->X;
+    value = this->registers.X;
 }
 
 void Cpu::STY(u8& value){
-    value = this->registers->Y;
+    value = this->registers.Y;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -292,21 +341,21 @@ void Cpu::RTS() {
 ///////////////////////////////////////////////////////////////////////////////
 
 void Cpu::CMP(u8& value){
-    SetFlag(C, this->registers->A >= value);
-    SetFlag(Z, this->registers->A == value);
-    SetFlag(S, this->registers->A < value);
+    SetFlag(C, this->registers.A >= value);
+    SetFlag(Z, this->registers.A == value);
+    SetFlag(S, this->registers.A < value);
 }
 
 void Cpu::CPX(u8& value){
-    SetFlag(C, this->registers->X >= value);
-    SetFlag(Z, this->registers->X == value);
-    SetFlag(S, this->registers->X < value);
+    SetFlag(C, this->registers.X >= value);
+    SetFlag(Z, this->registers.X == value);
+    SetFlag(S, this->registers.X < value);
 }
 
 void Cpu::CPY(u8& value){
-    SetFlag(C, this->registers->Y >= value);
-    SetFlag(Z, this->registers->Y == value);
-    SetFlag(S, this->registers->Y < value);
+    SetFlag(C, this->registers.Y >= value);
+    SetFlag(Z, this->registers.Y == value);
+    SetFlag(S, this->registers.Y < value);
 }
 
 void Cpu::CLC() {
@@ -356,7 +405,7 @@ void Cpu::UNIMP() {
 /// Logical OR 
 /// 2 bytes; 6 cycles
 void Cpu::ORA_IND_X() {
-    ORA(Memory(PreIndexedIndirect(Operand(1), this->registers->X)));
+    ORA(Memory(PreIndexedIndirect(Operand(1), this->registers.X)));
 }
 
 /// 2 bytes; 3 cycles
@@ -373,7 +422,7 @@ void Cpu::ORA_IMM() {
 }
 
 void Cpu::ASL_ACC() {
-    ASL(this->registers->A);
+    ASL(this->registers.A);
 }
 
 void Cpu::ORA_ABS() {
@@ -385,32 +434,32 @@ void Cpu::ASL_ABS() {
 }
 
 void Cpu::ORA_IND_Y() {
-    ORA(Memory(PostIndexedIndirect(Operand(1), this->registers->Y)));
+    ORA(Memory(PostIndexedIndirect(Operand(1), this->registers.Y)));
 }
 
 void Cpu::ORA_ZP_X() {
-    ORA(Memory(ZeroPageIndexed(Operand(1), this->registers->X)));
+    ORA(Memory(ZeroPageIndexed(Operand(1), this->registers.X)));
 }
 
 void Cpu::ASL_ZP_X() {
-    ASL(Memory(ZeroPageIndexed(Operand(1), this->registers->X)));
+    ASL(Memory(ZeroPageIndexed(Operand(1), this->registers.X)));
 }
 
 void Cpu::ORA_ABS_Y() {
-    ORA(Memory(Indexed(Operand(1), Operand(2), this->registers->Y)));
+    ORA(Memory(Indexed(Operand(1), Operand(2), this->registers.Y)));
 }
 
 void Cpu::ORA_ABS_X() {
-    ORA(Memory(Indexed(Operand(1), Operand(2), this->registers->X)));
+    ORA(Memory(Indexed(Operand(1), Operand(2), this->registers.X)));
 }
 
 void Cpu::ASL_ABS_X() {
-    ASL(Memory(Indexed(Operand(1), Operand(2), this->registers->X)));
+    ASL(Memory(Indexed(Operand(1), Operand(2), this->registers.X)));
 }
 
 // 6 cycles
 void Cpu::AND_IND_X() {
-    AND(Memory(PreIndexedIndirect(Operand(1), this->registers->X)));
+    AND(Memory(PreIndexedIndirect(Operand(1), this->registers.X)));
 }
 
 void Cpu::BIT_ZP() {
@@ -430,7 +479,7 @@ void Cpu::AND_IMM() {
 }
 
 void Cpu::ROL_ACC() {
-    ROL(this->registers->A);
+    ROL(this->registers.A);
 }
 
 void Cpu::BIT_ABS() {
@@ -446,31 +495,31 @@ void Cpu::ROL_ABS() {
 }
 
 void Cpu::AND_IND_Y() {
-    AND(Memory(PostIndexedIndirect(Operand(1), this->registers->Y)));
+    AND(Memory(PostIndexedIndirect(Operand(1), this->registers.Y)));
 }
 
 void Cpu::AND_ZP_X() {
-    AND(Memory(ZeroPageIndexed(Operand(1), this->registers->X)));
+    AND(Memory(ZeroPageIndexed(Operand(1), this->registers.X)));
 }
 
 void Cpu::ROL_ZP_X() {
-    ROL(Memory(ZeroPageIndexed(Operand(1), this->registers->X)));
+    ROL(Memory(ZeroPageIndexed(Operand(1), this->registers.X)));
 }
 
 void Cpu::AND_ABS_Y() {
-    AND(Memory(Indexed(Operand(1), Operand(2), this->registers->Y)));
+    AND(Memory(Indexed(Operand(1), Operand(2), this->registers.Y)));
 }
 
 void Cpu::AND_ABS_X() {
-    AND(Memory(Indexed(Operand(1), Operand(2), this->registers->X)));
+    AND(Memory(Indexed(Operand(1), Operand(2), this->registers.X)));
 }
 
 void Cpu::ROL_ABS_X() {
-    ROL(Memory(Indexed(Operand(1), Operand(2), this->registers->X)));
+    ROL(Memory(Indexed(Operand(1), Operand(2), this->registers.X)));
 }
 
 void Cpu::EOR_IND_X() {
-    EOR(Memory(PreIndexedIndirect(Operand(1), this->registers->X)));
+    EOR(Memory(PreIndexedIndirect(Operand(1), this->registers.X)));
 }
 
 void Cpu::EOR_ZP() {
@@ -486,7 +535,7 @@ void Cpu::EOR_IMM() {
 }
 
 void Cpu::LSR_ACC() {
-    LSR(this->registers->A);
+    LSR(this->registers.A);
 }
 
 void Cpu::JMP_ABS() {
@@ -502,31 +551,31 @@ void Cpu::LSR_ABS() {
 }
 
 void Cpu::EOR_IND_Y() {
-    EOR(Memory(PostIndexedIndirect(Operand(1), this->registers->Y)));
+    EOR(Memory(PostIndexedIndirect(Operand(1), this->registers.Y)));
 }
 
 void Cpu::EOR_ZP_X() {
-    EOR(Memory(ZeroPageIndexed(Operand(1), this->registers->X)));
+    EOR(Memory(ZeroPageIndexed(Operand(1), this->registers.X)));
 }
 
 void Cpu::LSR_ZP_X() {
-    LSR(Memory(ZeroPageIndexed(Operand(1), this->registers->X)));
+    LSR(Memory(ZeroPageIndexed(Operand(1), this->registers.X)));
 }
 
 void Cpu::EOR_ABS_Y() {
-    EOR(Memory(Indexed(Operand(1), Operand(2), this->registers->Y)));
+    EOR(Memory(Indexed(Operand(1), Operand(2), this->registers.Y)));
 }
 
 void Cpu::EOR_ABS_X() {
-    EOR(Memory(Indexed(Operand(1), Operand(2), this->registers->X)));
+    EOR(Memory(Indexed(Operand(1), Operand(2), this->registers.X)));
 }
 
 void Cpu::LSR_ABS_X() {
-    LSR(Memory(Indexed(Operand(1), Operand(2), this->registers->X)));
+    LSR(Memory(Indexed(Operand(1), Operand(2), this->registers.X)));
 }
 
 void Cpu::ADC_IND_X() {
-    ADC(Memory(PreIndexedIndirect(Operand(1), this->registers->X)));
+    ADC(Memory(PreIndexedIndirect(Operand(1), this->registers.X)));
 }
 
 void Cpu::ADC_ZP() {
@@ -542,7 +591,7 @@ void Cpu::ADC_IMM() {
 }
 
 void Cpu::ROR_ACC() {
-    ROR(this->registers->A);
+    ROR(this->registers.A);
 }
 
 void Cpu::JMP_IND() {
@@ -558,31 +607,31 @@ void Cpu::ROR_ABS() {
 }
 
 void Cpu::ADC_IND_Y() {
-    ADC(Memory(PostIndexedIndirect(Operand(1), this->registers->Y)));
+    ADC(Memory(PostIndexedIndirect(Operand(1), this->registers.Y)));
 }
 
 void Cpu::ADC_ZP_X() {
-    ADC(Memory(ZeroPageIndexed(Operand(1), this->registers->X)));
+    ADC(Memory(ZeroPageIndexed(Operand(1), this->registers.X)));
 }
 
 void Cpu::ROR_ZP_X() {
-    ROR(Memory(ZeroPageIndexed(Operand(1), this->registers->X)));
+    ROR(Memory(ZeroPageIndexed(Operand(1), this->registers.X)));
 }
 
 void Cpu::ADC_ABS_Y() {
-    ADC(Memory(Indexed(Operand(1), Operand(2), this->registers->Y)));
+    ADC(Memory(Indexed(Operand(1), Operand(2), this->registers.Y)));
 }
 
 void Cpu::ADC_ABS_X() {
-    ADC(Memory(Indexed(Operand(1), Operand(2), this->registers->X)));
+    ADC(Memory(Indexed(Operand(1), Operand(2), this->registers.X)));
 }
 
 void Cpu::ROR_ABS_X() {
-    ROR(Memory(Indexed(Operand(1), Operand(2), this->registers->X)));
+    ROR(Memory(Indexed(Operand(1), Operand(2), this->registers.X)));
 }
 
 void Cpu::STA_IND_X() {
-    STA(Memory(PreIndexedIndirect(Operand(1), this->registers->X)));
+    STA(Memory(PreIndexedIndirect(Operand(1), this->registers.X)));
 }
 
 void Cpu::STY_ZP() {
@@ -610,27 +659,27 @@ void Cpu::STX_ABS() {
 }
 
 void Cpu::STA_IND_Y() {
-    STA(Memory(PostIndexedIndirect(Operand(1), this->registers->Y)));
+    STA(Memory(PostIndexedIndirect(Operand(1), this->registers.Y)));
 }
 
 void Cpu::STY_ZP_X() {
-    STY(Memory(ZeroPageIndexed(Operand(1), this->registers->X)));
+    STY(Memory(ZeroPageIndexed(Operand(1), this->registers.X)));
 }
 
 void Cpu::STA_ZP_X() {
-    STA(Memory(ZeroPageIndexed(Operand(1), this->registers->X)));
+    STA(Memory(ZeroPageIndexed(Operand(1), this->registers.X)));
 }
 
 void Cpu::STX_ZP_Y() {
-    STX(Memory(ZeroPageIndexed(Operand(1), this->registers->Y)));
+    STX(Memory(ZeroPageIndexed(Operand(1), this->registers.Y)));
 }
 
 void Cpu::STA_ABS_Y() {
-    STA(Memory(Indexed(Operand(1), Operand(2), this->registers->Y)));
+    STA(Memory(Indexed(Operand(1), Operand(2), this->registers.Y)));
 }
 
 void Cpu::STA_ABS_X() {
-    STA(Memory(Indexed(Operand(1), Operand(2), this->registers->X)));
+    STA(Memory(Indexed(Operand(1), Operand(2), this->registers.X)));
 }
 
 void Cpu::LDY_IMM() {
@@ -638,7 +687,7 @@ void Cpu::LDY_IMM() {
 }
 
 void Cpu::LDA_IND_X() {
-    LDA(Memory(PreIndexedIndirect(Operand(1), this->registers->X)));
+    LDA(Memory(PreIndexedIndirect(Operand(1), this->registers.X)));
 }
 
 void Cpu::LDX_IMM() {
@@ -674,35 +723,35 @@ void Cpu::LDX_ABS() {
 }
 
 void Cpu::LDA_IND_Y() {
-    LDA(Memory(PostIndexedIndirect(Operand(1), this->registers->Y)));
+    LDA(Memory(PostIndexedIndirect(Operand(1), this->registers.Y)));
 }
 
 void Cpu::LDY_ZP_X() {
-    LDY(Memory(ZeroPageIndexed(Operand(1), this->registers->X)));
+    LDY(Memory(ZeroPageIndexed(Operand(1), this->registers.X)));
 }
 
 void Cpu::LDA_ZP_X() {
-    LDA(Memory(ZeroPageIndexed(Operand(1), this->registers->X)));
+    LDA(Memory(ZeroPageIndexed(Operand(1), this->registers.X)));
 }
 
 void Cpu::LDX_ZP_Y() {
-    LDX(Memory(ZeroPageIndexed(Operand(1), this->registers->Y)));
+    LDX(Memory(ZeroPageIndexed(Operand(1), this->registers.Y)));
 }
 
 void Cpu::LDA_ABS_Y() {
-    LDA(Memory(Indexed(Operand(1), Operand(2), this->registers->Y)));
+    LDA(Memory(Indexed(Operand(1), Operand(2), this->registers.Y)));
 }
 
 void Cpu::LDY_ABS_X() {
-    LDY(Memory(Indexed(Operand(1), Operand(2), this->registers->X)));
+    LDY(Memory(Indexed(Operand(1), Operand(2), this->registers.X)));
 }
 
 void Cpu::LDA_ABS_X() {
-    LDA(Memory(Indexed(Operand(1), Operand(2), this->registers->X)));
+    LDA(Memory(Indexed(Operand(1), Operand(2), this->registers.X)));
 }
 
 void Cpu::LDX_ABS_Y() {
-    LDX(Memory(Indexed(Operand(1), Operand(2), this->registers->Y)));
+    LDX(Memory(Indexed(Operand(1), Operand(2), this->registers.Y)));
 }
 
 void Cpu::CPY_IMM() {
@@ -710,7 +759,7 @@ void Cpu::CPY_IMM() {
 }
 
 void Cpu::CMP_IND_X() {
-    CMP(Memory(PreIndexedIndirect(Operand(1), this->registers->X)));
+    CMP(Memory(PreIndexedIndirect(Operand(1), this->registers.X)));
 }
 
 void Cpu::CPY_ZP() {
@@ -742,27 +791,27 @@ void Cpu::DEC_ABS() {
 }
 
 void Cpu::CMP_IND_Y() {
-    CMP(Memory(PostIndexedIndirect(Operand(1), this->registers->Y)));
+    CMP(Memory(PostIndexedIndirect(Operand(1), this->registers.Y)));
 }
 
 void Cpu::CMP_ZP_X() {
-    CMP(Memory(ZeroPageIndexed(Operand(1), this->registers->X)));
+    CMP(Memory(ZeroPageIndexed(Operand(1), this->registers.X)));
 }
 
 void Cpu::DEC_ZP_X() {
-    DEC(Memory(ZeroPageIndexed(Operand(1), this->registers->X)));
+    DEC(Memory(ZeroPageIndexed(Operand(1), this->registers.X)));
 }
 
 void Cpu::CMP_ABS_Y() {
-    CMP(Memory(Indexed(Operand(1), Operand(2), this->registers->Y)));
+    CMP(Memory(Indexed(Operand(1), Operand(2), this->registers.Y)));
 }
 
 void Cpu::CMP_ABS_X() {
-    CMP(Memory(Indexed(Operand(1), Operand(2), this->registers->X)));
+    CMP(Memory(Indexed(Operand(1), Operand(2), this->registers.X)));
 }
 
 void Cpu::DEC_ABS_X() {
-    DEC(Memory(Indexed(Operand(1), Operand(2), this->registers->X)));
+    DEC(Memory(Indexed(Operand(1), Operand(2), this->registers.X)));
 }
 
 void Cpu::CPX_IMM() {
@@ -770,7 +819,7 @@ void Cpu::CPX_IMM() {
 }
 
 void Cpu::SBC_IND_X() {
-    SBC(Memory(PreIndexedIndirect(Operand(1), this->registers->X)));
+    SBC(Memory(PreIndexedIndirect(Operand(1), this->registers.X)));
 }
 
 void Cpu::CPX_ZP() {
@@ -802,25 +851,25 @@ void Cpu::INC_ABS() {
 }
 
 void Cpu::SBC_IND_Y() {
-    SBC(Memory(PostIndexedIndirect(Operand(1), this->registers->Y)));
+    SBC(Memory(PostIndexedIndirect(Operand(1), this->registers.Y)));
 }
 
 void Cpu::SBC_ZP_X() {
-    SBC(Memory(ZeroPageIndexed(Operand(1), this->registers->X)));
+    SBC(Memory(ZeroPageIndexed(Operand(1), this->registers.X)));
 }
 
 void Cpu::INC_ZP_X() {
-    INC(Memory(ZeroPageIndexed(Operand(1), this->registers->X)));
+    INC(Memory(ZeroPageIndexed(Operand(1), this->registers.X)));
 }
 
 void Cpu::SBC_ABS_Y() {
-    SBC(Memory(Indexed(Operand(1), Operand(2), this->registers->Y)));
+    SBC(Memory(Indexed(Operand(1), Operand(2), this->registers.Y)));
 }
 
 void Cpu::SBC_ABS_X() {
-    SBC(Memory(Indexed(Operand(1), Operand(2), this->registers->X)));
+    SBC(Memory(Indexed(Operand(1), Operand(2), this->registers.X)));
 }
 
 void Cpu::INC_ABS_X() {
-    INC(Memory(Indexed(Operand(1), Operand(2), this->registers->X)));
+    INC(Memory(Indexed(Operand(1), Operand(2), this->registers.X)));
 }
