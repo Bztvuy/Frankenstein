@@ -29,66 +29,89 @@ inline u8& Cpu::Operand(int number) const {
 void Cpu::ADC(u8& value){
     
 }
+
 void Cpu::AND(u8& value){
     this->registers->A &= value;
     SetFlag(Z, value);
     SetFlag(S, CHECK_BIT(value, 7));
 }
+
 void Cpu::ASL(u8& value){
+    // 0 is shifted into bit 0 and the original bit 7 is shifted into the Carry. 
     SetFlag(C, CHECK_BIT(value, 7));
     value <<= 1;
     SetFlag(Z, value);
     SetFlag(S, CHECK_BIT(value, 7));
 }
+
 void Cpu::BIT(u8& value){
     SetFlag(Z, value & this->registers->A);
     SetFlag(S, CHECK_BIT(value, 7));
     SetFlag(V, CHECK_BIT(value, 6));
 }
+
 void Cpu::CMP(u8& value){
     SetFlag(C, this->registers->A >= value);
     SetFlag(Z, this->registers->A == value);
     SetFlag(S, this->registers->A < value);
 }
+
 void Cpu::CPX(u8& value){
     SetFlag(C, this->registers->X >= value);
     SetFlag(Z, this->registers->X == value);
     SetFlag(S, this->registers->X < value);
 }
+
 void Cpu::CPY(u8& value){
     SetFlag(C, this->registers->Y >= value);
     SetFlag(Z, this->registers->Y == value);
     SetFlag(S, this->registers->Y < value);
 }
+
 void Cpu::DEC(u8& value){
     
 }
+
 void Cpu::EOR(u8& value){
-    
+    this->registers->A ^= value;
+    SetFlag(Z, value);
+    SetFlag(S, CHECK_BIT(value, 7));
 }
+
 void Cpu::INC(u8& value){
     
 }
+
 void Cpu::JMP(u8& value){
-    
+    // Complex stuff with page boundary?
 }
+
 void Cpu::LDA(u8& value){
     
 }
+
 void Cpu::LDX(u8& value){
     
 }
+
 void Cpu::LDY(u8& value){
     
 }
+
 void Cpu::LSR(u8& value){
-    
+    // 0 is shifted into bit 7 and the original bit 0 is shifted into the Carry. 
+    SetFlag(C, CHECK_BIT(value, 0));
+    value >>= 1;
+    SetFlag(Z, value);
+    SetFlag(S, CHECK_BIT(value, 7));
 }
+
 void Cpu::ORA(u8& value){
     this->registers->A |= value;
     SetFlag(Z, this->registers->A);
     SetFlag(S, CHECK_BIT(this->registers->A, 7));
 }
+
 void Cpu::ROL(u8& value){
     auto carry = GetFlag(C);
     SetFlag(C, CHECK_BIT(value, 7));
@@ -97,6 +120,7 @@ void Cpu::ROL(u8& value){
     SetFlag(Z, value);
     SetFlag(S, CHECK_BIT(value, 7));
 }
+
 void Cpu::ROR(u8& value){
     auto carry = GetFlag(C);
     SetFlag(C, CHECK_BIT(value, 0));
@@ -105,6 +129,7 @@ void Cpu::ROR(u8& value){
     SetFlag(Z, value);
     SetFlag(S, CHECK_BIT(value, 7));
 }
+
 void Cpu::SBC(u8& value){
     
 }
