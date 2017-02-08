@@ -381,21 +381,24 @@ void Cpu::RTS() {
 ///////////////////////////////////////////////////////////////////////////////
 
 void Cpu::CMP(u8& value){
-    SetFlag(C, this->registers.A >= value);
-    SetFlag(Z, this->registers.A == value);
-    SetFlag(S, this->registers.A < value);
+    auto result = this->registers.A - value;
+    SetFlag(C, result < 0x100);
+    SetFlag(S, CHECK_BIT(result, 7));
+    SetFlag(Z, result &= 0xFF);
 }
 
 void Cpu::CPX(u8& value){
-    SetFlag(C, this->registers.X >= value);
-    SetFlag(Z, this->registers.X == value);
-    SetFlag(S, this->registers.X < value);
+    auto result = this->registers.X - value;
+    SetFlag(C, result < 0x100);
+    SetFlag(S, CHECK_BIT(result, 7));
+    SetFlag(Z, result &= 0xFF);
 }
 
 void Cpu::CPY(u8& value){
-    SetFlag(C, this->registers.Y >= value);
-    SetFlag(Z, this->registers.Y == value);
-    SetFlag(S, this->registers.Y < value);
+    auto result = this->registers.Y - value;
+    SetFlag(C, result < 0x100);
+    SetFlag(S, CHECK_BIT(result, 7));
+    SetFlag(Z, result &= 0xFF);
 }
 
 void Cpu::CLC() {
