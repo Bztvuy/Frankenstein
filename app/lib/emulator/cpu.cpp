@@ -323,7 +323,10 @@ void Cpu::TXS() {
 }
 
 void Cpu::TSX() {
-    this->registers->X = PopFromStack();
+    auto& value = PopFromStack();
+    this->registers->X = value;
+    SetFlag(Z, value);
+    SetFlag(S, CHECK_BIT(value, 7));
 }
 
 // Push A
@@ -333,7 +336,10 @@ void Cpu::PHA() {
 
 // Pop A
 void Cpu::PLA() {
-    this->registers->A = PopFromStack();
+    auto& value = PopFromStack();
+    this->registers->A = value;
+    SetFlag(Z, value);
+    SetFlag(S, CHECK_BIT(value, 7));
 }
 
 // Push Processor Status
