@@ -30,6 +30,16 @@ inline u8& Cpu::Memory(const u16 address) {
     return this->memory.raw[address];
 }
 
+inline void Cpu::PushOnStack(u8& value){
+    this->memory->stack[this->registers->SP] = value;
+    this->registers->SP -= 1;
+}
+
+inline u8& Cpu::PopFromStack(){
+    this->registers->SP += 1;
+    return this->memory->stack[this->registers->SP];
+}
+
 inline u8& Cpu::Operand(int number) {
     return Memory(this->registers.PC + number);
 }
@@ -309,31 +319,31 @@ void Cpu::INY() {
 
 // Transfert X to Stack ptr
 void Cpu::TXS() {
-    // TODO
+    PushOnStack(this->registers->X);
 }
 
 void Cpu::TSX() {
-    // TODO
+    this->registers->X = PopFromStack();
 }
 
 // Push A
 void Cpu::PHA() {
-    // TODO
+    PushOnStack(this->registers->A);
 }
 
 // Pop A
 void Cpu::PLA() {
-    // TODO
+    this->registers->A = PopFromStack();
 }
 
 // Push Processor Status
 void Cpu::PHP() {
-    // TODO
+    PushOnStack(this->registers->P);
 }
 
 // Pull Processor Status
 void Cpu::PLP() {
-    // TODO
+    this->registers->P = PopFromStack();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

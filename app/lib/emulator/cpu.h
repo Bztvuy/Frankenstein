@@ -35,7 +35,7 @@ private:
         };
         struct {
             u16 PC;
-            u8 SP;
+            u8 SP = 0xFF;
             u8 A;
             u8 X;
             u8 Y;
@@ -319,6 +319,18 @@ private:
      * Fetch the byte at memory[address]
      */
     inline u8& Memory(const u16 address);
+    
+    /**
+     * Store the byte at stack[SP]
+     * and decrement the stack pointer
+     */
+    inline void PushOnStack(u8& value);
+
+    /**
+     * Fetch the byte at stack[SP]
+     * and increment the stack pointer
+     */
+    inline u8& PopFromStack();
     
     /**
      * Build an address using only the least significative byte. The first half of 
