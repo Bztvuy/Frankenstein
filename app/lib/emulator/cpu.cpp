@@ -248,35 +248,59 @@ void Cpu::BEQ() {
 ////////////////////////////////////////////////////////////////////////////////
 
 void Cpu::TAX() {
-    // TODO
+    auto& value = this->registers->A
+    this->registers.X = value;
+    SetFlag(Z, value);
+    SetFlag(S, CHECK_BIT(value, 7));
 }
 
 void Cpu::TXA() {
-    // TODO
+    auto& value = this->registers->X
+    this->registers.A = value;
+    SetFlag(Z, value);
+    SetFlag(S, CHECK_BIT(value, 7));
 }
 
 void Cpu::DEX() {
-    // TODO
+    auto& value = this->registers->X
+    value -= 1 ;
+    SetFlag(Z, value);
+    SetFlag(S, CHECK_BIT(value, 7));
 }
 
 void Cpu::INX() {
-    // TODO
+    auto& value = this->registers->X
+    value += 1 ;
+    SetFlag(Z, value);
+    SetFlag(S, CHECK_BIT(value, 7));
 }
 
 void Cpu::TAY() {
-    // TODO
+    auto& value = this->registers->A
+    this->registers.Y = value;
+    SetFlag(Z, value);
+    SetFlag(S, CHECK_BIT(value, 7));
 }
 
 void Cpu::TYA() {
-    // TODO
+    auto& value = this->registers->Y
+    this->registers.A = value;
+    SetFlag(Z, value);
+    SetFlag(S, CHECK_BIT(value, 7));
 }
 
 void Cpu::DEY() {
-    // TODO
+    auto& value = this->registers->Y
+    value -= 1 ;
+    SetFlag(Z, value);
+    SetFlag(S, CHECK_BIT(value, 7));
 }
 
 void Cpu::INY() {
-    // TODO
+    auto& value = this->registers->Y
+    value += 1 ;
+    SetFlag(Z, value);
+    SetFlag(S, CHECK_BIT(value, 7));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
