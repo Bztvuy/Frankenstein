@@ -393,31 +393,31 @@ void Cpu::CPY(u8& value){
 }
 
 void Cpu::CLC() {
-    // TODO
+    SetFlag(C, 0);
 }
 
 void Cpu::SEC() {
-    // TODO
+    SetFlag(C, 1);
 }
 
 void Cpu::CLI() {
-    // TODO
+    SetFlag(I, 0);
 }
 
 void Cpu::SEI() {
-    // TODO
+    SetFlag(I, 1);
 }
 
 void Cpu::CLV() {
-    // TODO
+    SetFlag(V, 0);
 }
 
 void Cpu::CLD() {
-    // TODO
+    SetFlag(D, 0);
 }
 
 void Cpu::SED() {
-    // TODO
+    SetFlag(D, 1);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
