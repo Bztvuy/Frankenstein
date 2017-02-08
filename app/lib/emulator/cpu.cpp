@@ -159,15 +159,18 @@ void Cpu::ROR(u8& value){
 ////////////////////////////////////////////////////////////////////////////////
 
 void Cpu::ADC(u8& value){
-    // S V Z C    
-    
+    u16 result = value + this->registers->A + GetFlag(C);
+    SetFlag(Z, result & 0xFF);
+    SetFlag(S, CHECK_BIT(value, 7));
+    SetFlag(V, !((this->registers->A ^ value) & 0x80) && ((this->registers->A ^ result) & 0x80));
+    SetFlag(C, result > 0xFF);
+    this->registers->A = (u8) result;
 }
 
 void Cpu::DEC(u8& value){
     value -= 1;
     SetFlag(Z, value);
     SetFlag(S, CHECK_BIT(value, 7));
-
 }
 
 void Cpu::INC(u8& value){
@@ -177,7 +180,12 @@ void Cpu::INC(u8& value){
 }
 
 void Cpu::SBC(u8& value){
-    // S V Z C    
+    u16 result = this->registers->A - value - GetFlag(C);
+    SetFlag(Z, result & 0xFF);
+    SetFlag(S, CHECK_BIT(value, 7));
+    SetFlag(V, !((this->registers->A ^ value) & 0x80) && ((this->registers->A ^ result) & 0x80));
+    SetFlag(C, result < 0x100);
+    this->registers->A = (result & 0xFF);  
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -384,21 +392,21 @@ void Cpu::CMP(u8& value){
     auto result = this->registers.A - value;
     SetFlag(C, result < 0x100);
     SetFlag(S, CHECK_BIT(result, 7));
-    SetFlag(Z, result &= 0xFF);
+    SetFlag(Z, result & 0xFF);
 }
 
 void Cpu::CPX(u8& value){
     auto result = this->registers.X - value;
     SetFlag(C, result < 0x100);
     SetFlag(S, CHECK_BIT(result, 7));
-    SetFlag(Z, result &= 0xFF);
+    SetFlag(Z, result & 0xFF);
 }
 
 void Cpu::CPY(u8& value){
     auto result = this->registers.Y - value;
     SetFlag(C, result < 0x100);
     SetFlag(S, CHECK_BIT(result, 7));
-    SetFlag(Z, result &= 0xFF);
+    SetFlag(Z, result & 0xFF);
 }
 
 void Cpu::CLC() {
