@@ -365,23 +365,39 @@ void Cpu::PLP() {
 ////////////////////////////////////////////////////////////////////////////////
 
 void Cpu::BRK(){
-    // TODO
+    this->registers->PC += 1;
+    PushOnStack((this->registers->PC >> 8) & 0xFF);     /* Push return address onto the stack. */
+    PushOnStack(this->registers->PC & 0xFF)
+    SetFlag(B, 1);                                      /* Set BFlag before pushing */
+    PushOnStack(this->registers->P);
+    SetFlag(I, 1);
+    this->registers->PC = (Memory(0xFFFE) | Memory(0xFFFF) << 8);
 }
 
 void Cpu::JMP(u8& value){
     // Complex stuff with page boundary?
+    this->registers->PC = value;
 }
 
 void Cpu::JSR() {
-    // TODO
+    this->registers->PC -= 1;
+    PushOnStack((this->registers->PC >> 8) & 0xFF);	/* Push return address onto the stack. */
+    PushOnStack(this->registers->PC & 0xFF);
+    this->registers->PC = Operand(1);
 }
 
 void Cpu::RTI() {
-    // TODO
+    auto processorStatus = PopFromStack();
+    this->registers->P = processorStatus;
+    auto returnAddress = PopFromStack();
+    returnAddress |= (PopFromStack() << 8);	/* Load return address from stack. */
+    this->registers->PC = returnAddress;
 }
 
 void Cpu::RTS() {
-    // TODO
+    auto returnAddress = PopFromStack();
+    returnAddress += ((PopFromStack) << 8) + 1;	/* Load return address from stack and add 1. */
+    this->registers->PC = returnAddress;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -389,24 +405,24 @@ void Cpu::RTS() {
 ///////////////////////////////////////////////////////////////////////////////
 
 void Cpu::CMP(u8& value){
-    auto result = this->registers.A - value;
+    u16 result = this->registers.A - value;
     SetFlag(C, result < 0x100);
     SetFlag(S, CHECK_BIT(result, 7));
-    SetFlag(Z, result & 0xFF);
+    SetFlag(Z, result &= 0xFF);
 }
 
 void Cpu::CPX(u8& value){
-    auto result = this->registers.X - value;
+    u16 result = this->registers.X - value;
     SetFlag(C, result < 0x100);
     SetFlag(S, CHECK_BIT(result, 7));
-    SetFlag(Z, result & 0xFF);
+    SetFlag(Z, result &= 0xFF);
 }
 
 void Cpu::CPY(u8& value){
-    auto result = this->registers.Y - value;
+    u16 result = this->registers.Y - value;
     SetFlag(C, result < 0x100);
     SetFlag(S, CHECK_BIT(result, 7));
-    SetFlag(Z, result & 0xFF);
+    SetFlag(Z, result &= 0xFF);
 }
 
 void Cpu::CLC() {
