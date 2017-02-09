@@ -226,36 +226,76 @@ void Cpu::STY(u8& value){
 /// Branch Operations
 ////////////////////////////////////////////////////////////////////////////////
 
+//Branch on plus
 void Cpu::BPL() {
-    // TODO
+    if (!GetFlag(S)) {
+        //TODO: processor cycles
+	//clock += ((PC & 0xFF00) != (REL_ADDR(PC, src) & 0xFF00) ? 2 : 1); 
+	this->registers->PC += (s8) Operand(1);
+    }
 }
 
+//Branch on minus
 void Cpu::BMI() {
-    // TODO
+    if (GetFlag(S)) {
+        //TODO: processor cycles
+	//clock += ((PC & 0xFF00) != (REL_ADDR(PC, src) & 0xFF00) ? 2 : 1); 
+	this->registers->PC += (s8) Operand(1);
+    }
 }
 
+//Branch on overflow clear
 void Cpu::BVC() {
-    // TODO
+    if (!GetFlag(V)) {
+        //TODO: processor cycles
+	//clock += ((PC & 0xFF00) != (REL_ADDR(PC, src) & 0xFF00) ? 2 : 1); 
+	this->registers->PC += (s8) Operand(1);
+    }
 }
 
+//Branch on overflow set
 void Cpu::BVS() {
-    // TODO
+    if (GetFlag(V)) {
+        //TODO: processor cycles
+	//clock += ((PC & 0xFF00) != (REL_ADDR(PC, src) & 0xFF00) ? 2 : 1); 
+	this->registers->PC += (s8) Operand(1);
+    }
 }
 
+//Branch on carry clear
 void Cpu::BCC() {
-    // TODO
+    if (!GetFlag(C)) {
+        //TODO: processor cycles
+	//clock += ((PC & 0xFF00) != (REL_ADDR(PC, src) & 0xFF00) ? 2 : 1); 
+	this->registers->PC += (s8) Operand(1);
+    }
 }
 
+//Branch on carry set
 void Cpu::BCS() {
-    // TODO
+    if (GetFlag(C)) {
+        //TODO: processor cycles
+	//clock += ((PC & 0xFF00) != (REL_ADDR(PC, src) & 0xFF00) ? 2 : 1); 
+	this->registers->PC += (s8) Operand(1);
+    }
 }
 
+//Branch on not equal
 void Cpu::BNE() {
-    // TODO
+    if (!GetFlag(Z)) {
+        //TODO: processor cycles
+	//clock += ((PC & 0xFF00) != (REL_ADDR(PC, src) & 0xFF00) ? 2 : 1); 
+	this->registers->PC += (s8) Operand(1);
+    }
 }
 
+//Branch on equal
 void Cpu::BEQ() {
-    // TODO
+    if (GetFlag(Z)) {
+        //TODO: processor cycles
+	//clock += ((PC & 0xFF00) != (REL_ADDR(PC, src) & 0xFF00) ? 2 : 1); 
+	this->registers->PC += (s8) Operand(1);
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
