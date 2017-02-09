@@ -61,13 +61,14 @@ private:
     const u32 prgRomBankSize = 16 * KILOBYTE;
     const u32 vRomBankSize = 8 * KILOBYTE;
     const u32 prgRamBankSize = 8 * KILOBYTE;
-    const u8 instructionSizes[256] ={1, 2, 1, 1, 1, 2, 2, 1, 1, 2, 1, 1, 1, 3, 3, 1, 2, 2,
-        1, 1, 1, 2, 2, 1, 1, 3, 1, 1, 1, 3, 3, 1, 3, 2, 1, 1,
+    const u8 instructionSizes[256] ={
+        0, 2, 1, 1, 1, 2, 2, 1, 1, 2, 1, 1, 1, 3, 3, 1, 2, 2,
+        1, 1, 1, 2, 2, 1, 1, 3, 1, 1, 1, 3, 3, 1, 0, 2, 1, 1,
         2, 2, 2, 1, 1, 2, 1, 1, 3, 3, 3, 1, 2, 2, 1, 1, 1, 2,
-        2, 1, 1, 3, 1, 1, 1, 3, 3, 1, 1, 2, 1, 1, 1, 2, 2, 1,
-        1, 2, 1, 1, 3, 3, 3, 1, 2, 2, 1, 1, 1, 2, 2, 1, 1, 3,
-        1, 1, 1, 3, 3, 1, 1, 2, 1, 1, 1, 2, 2, 1, 1, 2, 1, 1,
-        3, 3, 3, 1, 2, 2, 1, 1, 1, 2, 2, 1, 1, 3, 1, 1, 1, 3,
+        2, 1, 1, 3, 1, 1, 1, 3, 3, 1, 0, 2, 1, 1, 1, 2, 2, 1,
+        1, 2, 1, 1, 0, 3, 3, 1, 2, 2, 1, 1, 1, 2, 2, 1, 1, 3,
+        1, 1, 1, 3, 3, 1, 0, 2, 1, 1, 1, 2, 2, 1, 1, 2, 1, 1,
+        0, 3, 3, 1, 2, 2, 1, 1, 1, 2, 2, 1, 1, 3, 1, 1, 1, 3,
         3, 1, 1, 2, 1, 1, 2, 2, 2, 1, 1, 1, 1, 1, 3, 3, 3, 1,
         2, 2, 1, 1, 2, 2, 2, 1, 1, 3, 1, 1, 1, 3, 1, 1, 2, 2,
         2, 1, 2, 2, 2, 1, 1, 2, 1, 1, 3, 3, 3, 1, 2, 2, 1, 1,
@@ -309,6 +310,17 @@ private:
         &Cpu::UNIMP, &Cpu::UNIMP, &Cpu::UNIMP, &Cpu::SBC_ABS_X, &Cpu::INC_ABS_X,
         &Cpu::UNIMP
     };
+    
+    /**
+     * Executes the next instruction at memory[PC]
+     * Increments the PC accordingly
+     */
+    void Execute();
+    
+    /**
+     * Fetch the opcode at memory[PC]
+     */
+    inline u8& OpCode();
     
     /**
      * Fetch the operand at memory[PC + number]

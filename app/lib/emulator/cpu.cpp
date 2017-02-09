@@ -9,13 +9,18 @@ Cpu::Cpu(const Rom* rom) {
 
     switch (prgRomBanks) {
         case 2:
-            memcpy(this->memory.prgRomLowerBank, rom->GetRaw() + prgRomBanksLocation + prgRomBankSize, prgRomBankSize);
+            memcpy(this->memory.prgRomUpperBank, rom->GetRaw() + prgRomBanksLocation + prgRomBankSize, prgRomBankSize);
+            memcpy(this->memory.prgRomLowerBank, rom->GetRaw() + prgRomBanksLocation, prgRomBankSize);
+            break;
         case 1:
+            memcpy(this->memory.prgRomUpperBank, rom->GetRaw() + prgRomBanksLocation, prgRomBankSize);
             memcpy(this->memory.prgRomLowerBank, rom->GetRaw() + prgRomBanksLocation, prgRomBankSize);
             break;
         default: //TODO: implement multiple PRG-ROM banks
             break;
     }
+    
+    this->registers->PC = (Memory(0xFFFC) | Memory(0xFFFD) << 8);
 }
 
 void Cpu::SetFlag(u8 flag, u8 value){
@@ -24,6 +29,16 @@ void Cpu::SetFlag(u8 flag, u8 value){
 
 u8 Cpu::GetFlag(u8 flag){
     return CHECK_BIT(this->registers.P, flag);
+}
+
+void Cpu::Execute(){
+    auto opCode = OpCode();
+    (*instructions[opCode])();
+    this->registers->PC += this->instructionSizes[opCode];
+}
+
+inline u8& Cpu::OpCode(){
+    return Memory(this->registers->PC);
 }
 
 inline u8& Cpu::Memory(const u16 address) {
@@ -96,7 +111,6 @@ u16 Cpu::PostIndexedIndirect(const u8 low, const u8 index) {
 ////////////////////////////////////////////////////////////////////////////////
 
 void Cpu::AND(u8& value){
-    // CONFIRM THIS PLEASE
     this->registers.A &= value;
     SetFlag(Z, value);
     SetFlag(S, CHECK_BIT(value, 7));
@@ -420,10 +434,11 @@ void Cpu::JMP(u8& value){
 }
 
 void Cpu::JSR() {
-    this->registers->PC -= 1;
+    auto address = Memory(Absolute(Operand(1), Operand(2)));
+    this->registers->PC += 2;
     PushOnStack((this->registers->PC >> 8) & 0xFF);	/* Push return address onto the stack. */
     PushOnStack(this->registers->PC & 0xFF);
-    this->registers->PC = Operand(1);
+    this->registers->PC = address;
 }
 
 void Cpu::RTI() {
