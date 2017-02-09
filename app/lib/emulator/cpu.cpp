@@ -434,7 +434,7 @@ void Cpu::JMP(u8& value){
 }
 
 void Cpu::JSR() {
-    auto address = Memory(Absolute(Operand(1), Operand(2)));
+    auto address = Absolute(Operand(1), Operand(2));
     this->registers->PC += 2;
     PushOnStack((this->registers->PC >> 8) & 0xFF);	/* Push return address onto the stack. */
     PushOnStack(this->registers->PC & 0xFF);
@@ -444,15 +444,15 @@ void Cpu::JSR() {
 void Cpu::RTI() {
     auto processorStatus = PopFromStack();
     this->registers->P = processorStatus;
-    auto returnAddress = PopFromStack();
-    returnAddress |= (PopFromStack() << 8);	/* Load return address from stack. */
-    this->registers->PC = returnAddress;
+    u16 address = PopFromStack();
+    address |= (PopFromStack() << 8);	/* Load return address from stack. */
+    this->registers->PC = address;
 }
 
 void Cpu::RTS() {
-    auto returnAddress = PopFromStack();
-    returnAddress += ((PopFromStack) << 8) + 1;	/* Load return address from stack and add 1. */
-    this->registers->PC = returnAddress;
+    u16 address = PopFromStack();
+    address |= ((PopFromStack) << 8);	/* Load return address from stack. */
+    this->registers->PC = address;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
