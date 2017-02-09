@@ -58,6 +58,7 @@ private:
     NESCPUMemoryMap memory;
 
     //sizes related to hardware (in bytes) :
+    const u16 pageSize = 256;
     const u32 prgRomBankSize = 16 * KILOBYTE;
     const u32 vRomBankSize = 8 * KILOBYTE;
     const u32 prgRamBankSize = 8 * KILOBYTE;
@@ -666,6 +667,14 @@ private:
      */
     u16 PostIndexedIndirect(const u8 low, const u8 reg);
     //u16 Relative();
+    
+    /**
+     * Detects if two addresses are on the same page 
+     * @param startAddress
+     * @param endAddress
+     * @return if a page is crossed
+     */
+    boolean IsPageCrossed(u16 startAddress, u16 endAddress);
 
     void SetFlag(u8 flag, u8 value);
     u8 GetFlag(u8 flag);

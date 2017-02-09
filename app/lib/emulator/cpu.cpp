@@ -9,12 +9,12 @@ Cpu::Cpu(const Rom* rom) {
 
     switch (prgRomBanks) {
         case 2:
-            memcpy(this->memory.prgRomUpperBank, rom->GetRaw() + prgRomBanksLocation + prgRomBankSize, prgRomBankSize);
             memcpy(this->memory.prgRomLowerBank, rom->GetRaw() + prgRomBanksLocation, prgRomBankSize);
+            memcpy(this->memory.prgRomUpperBank, rom->GetRaw() + prgRomBanksLocation + prgRomBankSize, prgRomBankSize);
             break;
         case 1:
-            memcpy(this->memory.prgRomUpperBank, rom->GetRaw() + prgRomBanksLocation, prgRomBankSize);
             memcpy(this->memory.prgRomLowerBank, rom->GetRaw() + prgRomBanksLocation, prgRomBankSize);
+            memcpy(this->memory.prgRomUpperBank, rom->GetRaw() + prgRomBanksLocation, prgRomBankSize);
             break;
         default: //TODO: implement multiple PRG-ROM banks
             break;
@@ -29,6 +29,10 @@ void Cpu::SetFlag(u8 flag, u8 value){
 
 u8 Cpu::GetFlag(u8 flag){
     return CHECK_BIT(this->registers.P, flag);
+}
+
+boolean Cpu::IsPageCrossed(u16 startAddress, u16 endAddress){
+    return (startAddress / this->pageSize) == (endAddress / this->pageSize);
 }
 
 void Cpu::Execute(){
@@ -88,7 +92,7 @@ u16 Cpu::Indexed(const u8 low, const u8 high, const u8 index) const {
 }
 
 u16 Cpu::ZeroPageIndexed(const u8 low, const u8 index) const {
-    return FromValues(low) + index;
+    return FromValues(low + index);
 }
 
 u16 Cpu::Indirect(const u8 low, const u8 high) {
@@ -717,7 +721,10 @@ void Cpu::ROR_ACC() {
 }
 
 void Cpu::JMP_IND() {
-    JMP(Memory(Indirect(Operand(1), Operand(2))));
+    if (IsPageCrossed(this->registers->PC + 1, this->registers->PC + 2))
+        JMP(Memory(Indirect(Operand(1), Operand(-0xFE)))); //wrap around
+    else
+        JMP(Memory(Indirect(Operand(1), Operand(2))));
 }
 
 void Cpu::ADC_ABS() {
