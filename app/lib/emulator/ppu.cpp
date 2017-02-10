@@ -12,7 +12,7 @@ Ppu::Ppu(const Rom* rom)
         case 1:
             memcpy(this->memory.patternTable0, rom->GetRaw() + vRomBanksLocation, VROM_BANK_SIZE);
             break;
-        default: //TODO: implement multiple PRG-ROM banks
+        default: //TODO: implement multiple V-ROM banks
             break;
     }
 }
