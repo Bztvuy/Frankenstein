@@ -1,6 +1,7 @@
 #ifndef CPU_H
 #define CPU_H
 
+#include "util.h"
 #include "rom.h"
 #include <circle/types.h>
 
@@ -57,11 +58,6 @@ private:
     NESCPURegisters registers;
     NESCPUMemoryMap memory;
 
-    //sizes related to hardware (in bytes) :
-    const u16 pageSize = 256;
-    const u32 prgRomBankSize = 16 * KILOBYTE;
-    const u32 vRomBankSize = 8 * KILOBYTE;
-    const u32 prgRamBankSize = 8 * KILOBYTE;
     const u8 instructionSizes[256] ={
         0, //BRK
         2, //ORA_IND_X
@@ -680,7 +676,6 @@ private:
     u8 GetFlag(u8 flag);
     
 public:
-
     Cpu(const Rom* rom);
 };
 

@@ -5,53 +5,53 @@
 
 union NESPPUMemoryMap{
     struct {
-        char patternTable0[0x1000];
-        char patternTable1[0x1000];
-        char nameTable0[0x03C0];
-        char attributeTable0[0x0040];
-        char nameTable1[0x03C0];
-        char attributeTable1[0x0040];
-        char nameTable2[0x03C0];
-        char attributeTable2[0x0040];
-        char nameTable3[0x03C0];
-        char attributeTable3[0x0040];
-        char mirrors1[0x0F00];
-        char imagePalette[0x0010];
-        char spritePalette[0x0010];
-        char mirrors2[0x00E0];
-        char mirrors3[0xC000];
+        u8 patternTable0[0x1000];
+        u8 patternTable1[0x1000];
+        u8 nameTable0[0x03C0];
+        u8 attributeTable0[0x0040];
+        u8 nameTable1[0x03C0];
+        u8 attributeTable1[0x0040];
+        u8 nameTable2[0x03C0];
+        u8 attributeTable2[0x0040];
+        u8 nameTable3[0x03C0];
+        u8 attributeTable3[0x0040];
+        u8 mirrors1[0x0F00];
+        u8 imagePalette[0x0010];
+        u8 spritePalette[0x0010];
+        u8 mirrors2[0x00E0];
+        u8 mirrors3[0xC000];
     };
-    char raw[0x10000];
+    u8 raw[0x10000];
 };
 
 union NESPPURegisters{
     struct {
-        unsigned char controlRegister1;
-        unsigned char controlRegister2;
-        unsigned char processorStatus;
-        unsigned char sprRamAddress;
-        unsigned char sprRamIO;
-        unsigned char vramAddress1;
-        unsigned char vramAddress2;
-        unsigned char vramIO;
+        u8 controlRegister1;
+        u8 controlRegister2;
+        u8 processorStatus;
+        u8 sprRamAddress;
+        u8 sprRamIO;
+        u8 vramAddress1;
+        u8 vramAddress2;
+        u8 vramIO;
         //TODO: add registers above 0x4000
     };
     struct {
-        unsigned char C1;
-        unsigned char C2;
-        unsigned char P;
-        unsigned char SRA;
-        unsigned char SRIO;
-        unsigned char VRA1;
-        unsigned char VRA2;
-        unsigned char VRIO;
+        u8 C1;
+        u8 C2;
+        u8 P;
+        u8 SRA;
+        u8 SRIO;
+        u8 VRA1;
+        u8 VRA2;
+        u8 VRIO;
     };
 };
 
 struct RGBColor{
-	unsigned char red;
-	unsigned char green;
-	unsigned char blue;
+	u8 red;
+	u8 green;
+	u8 blue;
 };
 
 class Ppu

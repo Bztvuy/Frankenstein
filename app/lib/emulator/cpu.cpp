@@ -8,13 +8,13 @@ Cpu::Cpu(const Rom* rom) {
     int prgRomBanksLocation = rom->headerSize + trainerOffset;
 
     switch (prgRomBanks) {
-        case 2:
-            memcpy(this->memory.prgRomLowerBank, rom->GetRaw() + prgRomBanksLocation, prgRomBankSize);
-            memcpy(this->memory.prgRomUpperBank, rom->GetRaw() + prgRomBanksLocation + prgRomBankSize, prgRomBankSize);
-            break;
         case 1:
-            memcpy(this->memory.prgRomLowerBank, rom->GetRaw() + prgRomBanksLocation, prgRomBankSize);
-            memcpy(this->memory.prgRomUpperBank, rom->GetRaw() + prgRomBanksLocation, prgRomBankSize);
+            memcpy(this->memory.prgRomLowerBank, rom->GetRaw() + prgRomBanksLocation, PRGROM_BANK_SIZE);
+            memcpy(this->memory.prgRomUpperBank, rom->GetRaw() + prgRomBanksLocation, PRGROM_BANK_SIZE);
+            break;
+        case 2:
+            memcpy(this->memory.prgRomLowerBank, rom->GetRaw() + prgRomBanksLocation, PRGROM_BANK_SIZE);
+            memcpy(this->memory.prgRomUpperBank, rom->GetRaw() + prgRomBanksLocation + PRGROM_BANK_SIZE, PRGROM_BANK_SIZE);
             break;
         default: //TODO: implement multiple PRG-ROM banks
             break;
@@ -32,7 +32,7 @@ u8 Cpu::GetFlag(u8 flag){
 }
 
 boolean Cpu::IsPageCrossed(u16 startAddress, u16 endAddress){
-    return (startAddress / this->pageSize) == (endAddress / this->pageSize);
+    return (startAddress / PAGE_SIZE) == (endAddress / PAGE_SIZE);
 }
 
 void Cpu::Execute(){
