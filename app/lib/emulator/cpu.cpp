@@ -583,9 +583,9 @@ u8 Cpu::ASL_ABS_X() {
     ASL(Memory(Indexed(Operand(1), Operand(2), this->registers.X)));
 }
 
-// 6 cycles
 u8 Cpu::AND_IND_X() {
     AND(Memory(PreIndexedIndirect(Operand(1), this->registers.X)));
+    return 6;
 }
 
 u8 Cpu::BIT_ZP() {
@@ -594,6 +594,7 @@ u8 Cpu::BIT_ZP() {
 
 u8 Cpu::AND_ZP() {
     AND(Memory(ZeroPage(Operand(1))));
+    return 3;
 }
 
 u8 Cpu::ROL_ZP() {
@@ -602,6 +603,7 @@ u8 Cpu::ROL_ZP() {
 
 u8 Cpu::AND_IMM() {
     AND(Operand(1));
+    return 2;
 }
 
 u8 Cpu::ROL_ACC() {
@@ -614,6 +616,7 @@ u8 Cpu::BIT_ABS() {
 
 u8 Cpu::AND_ABS() {
     AND(Memory(Absolute(Operand(1), Operand(2))));
+    return 4;
 }
 
 u8 Cpu::ROL_ABS() {
@@ -622,10 +625,13 @@ u8 Cpu::ROL_ABS() {
 
 u8 Cpu::AND_IND_Y() {
     AND(Memory(PostIndexedIndirect(Operand(1), this->registers.Y)));
+    auto address = Indirect(Operand(1), 0);
+    return 5 + IsPageCrossed(address, address + this->registers.Y);
 }
 
 u8 Cpu::AND_ZP_X() {
     AND(Memory(ZeroPageIndexed(Operand(1), this->registers.X)));
+    return 4;
 }
 
 u8 Cpu::ROL_ZP_X() {
@@ -634,10 +640,14 @@ u8 Cpu::ROL_ZP_X() {
 
 u8 Cpu::AND_ABS_Y() {
     AND(Memory(Indexed(Operand(1), Operand(2), this->registers.Y)));
+    auto address = FromValues(Operand(1), Operand(2));
+    return 4 + IsPageCrossed(address, address + this->registers.Y);
 }
 
 u8 Cpu::AND_ABS_X() {
     AND(Memory(Indexed(Operand(1), Operand(2), this->registers.X)));
+    auto address = FromValues(Operand(1), Operand(2));
+    return 4 + IsPageCrossed(address, address + this->registers.X);
 }
 
 u8 Cpu::ROL_ABS_X() {
@@ -702,10 +712,12 @@ u8 Cpu::LSR_ABS_X() {
 
 u8 Cpu::ADC_IND_X() {
     ADC(Memory(PreIndexedIndirect(Operand(1), this->registers.X)));
+    return 6;
 }
 
 u8 Cpu::ADC_ZP() {
     ADC(Memory(ZeroPage(Operand(1))));
+    return 3;
 }
 
 u8 Cpu::ROR_ZP() {
@@ -714,6 +726,7 @@ u8 Cpu::ROR_ZP() {
 
 u8 Cpu::ADC_IMM() {
     ADC(Operand(1));
+    return 2;
 }
 
 u8 Cpu::ROR_ACC() {
@@ -729,6 +742,7 @@ u8 Cpu::JMP_IND() {
 
 u8 Cpu::ADC_ABS() {
     ADC(Memory(Absolute(Operand(1), Operand(2))));
+    return 4;
 }
 
 u8 Cpu::ROR_ABS() {
@@ -737,10 +751,13 @@ u8 Cpu::ROR_ABS() {
 
 u8 Cpu::ADC_IND_Y() {
     ADC(Memory(PostIndexedIndirect(Operand(1), this->registers.Y)));
+    auto address = Indirect(Operand(1), 0);
+    return 5 + IsPageCrossed(address, address + this->registers.Y);
 }
 
 u8 Cpu::ADC_ZP_X() {
     ADC(Memory(ZeroPageIndexed(Operand(1), this->registers.X)));
+    return 4;
 }
 
 u8 Cpu::ROR_ZP_X() {
@@ -749,10 +766,14 @@ u8 Cpu::ROR_ZP_X() {
 
 u8 Cpu::ADC_ABS_Y() {
     ADC(Memory(Indexed(Operand(1), Operand(2), this->registers.Y)));
+    auto address = FromValues(Operand(1), Operand(2));
+    return 4 + IsPageCrossed(address, address + this->registers.Y);
 }
 
 u8 Cpu::ADC_ABS_X() {
     ADC(Memory(Indexed(Operand(1), Operand(2), this->registers.X)));
+    auto address = FromValues(Operand(1), Operand(2));
+    return 4 + IsPageCrossed(address, address + this->registers.X);
 }
 
 u8 Cpu::ROR_ABS_X() {
