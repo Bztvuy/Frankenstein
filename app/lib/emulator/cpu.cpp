@@ -860,10 +860,12 @@ u8 Cpu::ROR_ABS_X() {
 
 u8 Cpu::STA_IND_X() {
     STA(Memory(PreIndexedIndirect(Operand(1), this->registers.X)));
+    return 6;
 }
 
 u8 Cpu::STY_ZP() {
     STY(Memory(ZeroPage(Operand(1))));
+    return 3;
 }
 
 u8 Cpu::STA_ZP() {
@@ -873,10 +875,12 @@ u8 Cpu::STA_ZP() {
 
 u8 Cpu::STX_ZP() {
     STX(Memory(ZeroPage(Operand(1))));
+    return 3;
 }
 
 u8 Cpu::STY_ABS() {
     STY(Memory(Absolute(Operand(1), Operand(2))));
+    return 4;
 }
 
 u8 Cpu::STA_ABS() {
@@ -886,14 +890,17 @@ u8 Cpu::STA_ABS() {
 
 u8 Cpu::STX_ABS() {
     STX(Memory(Absolute(Operand(1), Operand(2))));
+    return 4;
 }
 
 u8 Cpu::STA_IND_Y() {
     STA(Memory(PostIndexedIndirect(Operand(1), this->registers.Y)));
+    return 6;
 }
 
 u8 Cpu::STY_ZP_X() {
     STY(Memory(ZeroPageIndexed(Operand(1), this->registers.X)));
+    return 4;
 }
 
 u8 Cpu::STA_ZP_X() {
@@ -903,6 +910,7 @@ u8 Cpu::STA_ZP_X() {
 
 u8 Cpu::STX_ZP_Y() {
     STX(Memory(ZeroPageIndexed(Operand(1), this->registers.Y)));
+    return 4;
 }
 
 u8 Cpu::STA_ABS_Y() {
