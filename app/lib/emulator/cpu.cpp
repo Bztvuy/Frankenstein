@@ -247,73 +247,81 @@ void Cpu::STY(u8& value){
 //Branch on plus
 u8 Cpu::BPL() {
     if (!GetFlag(S)) {
-        //TODO: processor cycles
-	//clock += ((PC & 0xFF00) != (REL_ADDR(PC, src) & 0xFF00) ? 2 : 1); 
-	this->registers->PC += (s8) Operand(1);
+        auto pageCrossed = IsPageCrossed(this->registers->PC + 2, (this->registers->PC + 2 + Operand(1)) & 0xFF);
+	this->registers->PC = (this->registers->PC + Operand(1)) & 0xFF;
+        return 3 + pageCrossed;
     }
+    return 2;
 }
 
 //Branch on minus
 u8 Cpu::BMI() {
     if (GetFlag(S)) {
-        //TODO: processor cycles
-	//clock += ((PC & 0xFF00) != (REL_ADDR(PC, src) & 0xFF00) ? 2 : 1); 
-	this->registers->PC += (s8) Operand(1);
+    auto pageCrossed = IsPageCrossed(this->registers->PC + 2, (this->registers->PC + 2 + Operand(1)) & 0xFF);
+	this->registers->PC = (this->registers->PC + Operand(1)) & 0xFF;
+        return 3 + pageCrossed;
     }
+    return 2;
 }
 
 //Branch on overflow clear
 u8 Cpu::BVC() {
     if (!GetFlag(V)) {
-        //TODO: processor cycles
-	//clock += ((PC & 0xFF00) != (REL_ADDR(PC, src) & 0xFF00) ? 2 : 1); 
-	this->registers->PC += (s8) Operand(1);
+    auto pageCrossed = IsPageCrossed(this->registers->PC + 2, (this->registers->PC + 2 + Operand(1)) & 0xFF);
+	this->registers->PC = (this->registers->PC + Operand(1)) & 0xFF;
+        return 3 + pageCrossed;
     }
+    return 2;
 }
 
 //Branch on overflow set
 u8 Cpu::BVS() {
     if (GetFlag(V)) {
-        //TODO: processor cycles
-	//clock += ((PC & 0xFF00) != (REL_ADDR(PC, src) & 0xFF00) ? 2 : 1); 
-	this->registers->PC += (s8) Operand(1);
+    auto pageCrossed = IsPageCrossed(this->registers->PC + 2, (this->registers->PC + 2 + Operand(1)) & 0xFF);
+	this->registers->PC = (this->registers->PC + Operand(1)) & 0xFF;
+        return 3 + pageCrossed;
     }
+    return 2;
 }
 
 //Branch on carry clear
 u8 Cpu::BCC() {
     if (!GetFlag(C)) {
-        //TODO: processor cycles
-	//clock += ((PC & 0xFF00) != (REL_ADDR(PC, src) & 0xFF00) ? 2 : 1); 
-	this->registers->PC += (s8) Operand(1);
+    auto pageCrossed = IsPageCrossed(this->registers->PC + 2, (this->registers->PC + 2 + Operand(1)) & 0xFF);
+	this->registers->PC = (this->registers->PC + Operand(1)) & 0xFF;
+        return 3 + pageCrossed;
     }
+    return 2;
 }
 
 //Branch on carry set
 u8 Cpu::BCS() {
     if (GetFlag(C)) {
-        //TODO: processor cycles
-	//clock += ((PC & 0xFF00) != (REL_ADDR(PC, src) & 0xFF00) ? 2 : 1); 
-	this->registers->PC += (s8) Operand(1);
+    auto pageCrossed = IsPageCrossed(this->registers->PC + 2, (this->registers->PC + 2 + Operand(1)) & 0xFF);
+	this->registers->PC = (this->registers->PC + Operand(1)) & 0xFF;
+        return 3 + pageCrossed;
     }
+    return 2;
 }
 
 //Branch on not equal
 u8 Cpu::BNE() {
     if (!GetFlag(Z)) {
-        //TODO: processor cycles
-	//clock += ((PC & 0xFF00) != (REL_ADDR(PC, src) & 0xFF00) ? 2 : 1); 
-	this->registers->PC += (s8) Operand(1);
+    auto pageCrossed = IsPageCrossed(this->registers->PC + 2, (this->registers->PC + 2 + Operand(1)) & 0xFF);
+	this->registers->PC = (this->registers->PC + Operand(1)) & 0xFF;
+        return 3 + pageCrossed;
     }
+    return 2;
 }
 
 //Branch on equal
 u8 Cpu::BEQ() {
     if (GetFlag(Z)) {
-        //TODO: processor cycles
-	//clock += ((PC & 0xFF00) != (REL_ADDR(PC, src) & 0xFF00) ? 2 : 1); 
-	this->registers->PC += (s8) Operand(1);
+    auto pageCrossed = IsPageCrossed(this->registers->PC + 2, (this->registers->PC + 2 + Operand(1)) & 0xFF);
+	this->registers->PC = (this->registers->PC + Operand(1)) & 0xFF;
+        return 3 + pageCrossed;
     }
+    return 2;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -328,6 +336,7 @@ u8 Cpu::TAX() {
     this->registers.X = value;
     SetFlag(Z, value);
     SetFlag(S, CHECK_BIT(value, 7));
+    return 2;
 }
 
 u8 Cpu::TXA() {
@@ -335,6 +344,7 @@ u8 Cpu::TXA() {
     this->registers.A = value;
     SetFlag(Z, value);
     SetFlag(S, CHECK_BIT(value, 7));
+    return 2;
 }
 
 u8 Cpu::DEX() {
@@ -342,6 +352,7 @@ u8 Cpu::DEX() {
     value -= 1 ;
     SetFlag(Z, value);
     SetFlag(S, CHECK_BIT(value, 7));
+    return 2;
 }
 
 u8 Cpu::INX() {
@@ -349,6 +360,7 @@ u8 Cpu::INX() {
     value += 1 ;
     SetFlag(Z, value);
     SetFlag(S, CHECK_BIT(value, 7));
+    return 2;
 }
 
 u8 Cpu::TAY() {
@@ -356,6 +368,7 @@ u8 Cpu::TAY() {
     this->registers.Y = value;
     SetFlag(Z, value);
     SetFlag(S, CHECK_BIT(value, 7));
+    return 2;
 }
 
 u8 Cpu::TYA() {
@@ -363,6 +376,7 @@ u8 Cpu::TYA() {
     this->registers.A = value;
     SetFlag(Z, value);
     SetFlag(S, CHECK_BIT(value, 7));
+    return 2;
 }
 
 u8 Cpu::DEY() {
@@ -370,6 +384,7 @@ u8 Cpu::DEY() {
     value -= 1 ;
     SetFlag(Z, value);
     SetFlag(S, CHECK_BIT(value, 7));
+    return 2;
 }
 
 u8 Cpu::INY() {
@@ -377,6 +392,7 @@ u8 Cpu::INY() {
     value += 1 ;
     SetFlag(Z, value);
     SetFlag(S, CHECK_BIT(value, 7));
+    return 2;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -386,6 +402,7 @@ u8 Cpu::INY() {
 // Transfert X to Stack ptr
 u8 Cpu::TXS() {
     PushOnStack(this->registers->X);
+    return 2;
 }
 
 u8 Cpu::TSX() {
@@ -393,11 +410,13 @@ u8 Cpu::TSX() {
     this->registers->X = value;
     SetFlag(Z, value);
     SetFlag(S, CHECK_BIT(value, 7));
+    return 2;
 }
 
 // Push A
 u8 Cpu::PHA() {
     PushOnStack(this->registers->A);
+    return 3;
 }
 
 // Pop A
@@ -406,16 +425,19 @@ u8 Cpu::PLA() {
     this->registers->A = value;
     SetFlag(Z, value);
     SetFlag(S, CHECK_BIT(value, 7));
+    return 4;
 }
 
 // Push Processor Status
 u8 Cpu::PHP() {
     PushOnStack(this->registers->P);
+    return 3;
 }
 
 // Pull Processor Status
 u8 Cpu::PLP() {
     this->registers->P = PopFromStack();
+    return 4;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -430,10 +452,10 @@ u8 Cpu::BRK(){
     PushOnStack(this->registers->P);
     SetFlag(I, 1);
     this->registers->PC = (Memory(0xFFFE) | Memory(0xFFFF) << 8);
+    return 7;
 }
 
 void Cpu::JMP(u8& value){
-    // Complex stuff with page boundary?
     this->registers->PC = value;
 }
 
@@ -443,6 +465,7 @@ u8 Cpu::JSR() {
     PushOnStack((this->registers->PC >> 8) & 0xFF);	/* Push return address onto the stack. */
     PushOnStack(this->registers->PC & 0xFF);
     this->registers->PC = address;
+    return 6;
 }
 
 u8 Cpu::RTI() {
@@ -451,12 +474,14 @@ u8 Cpu::RTI() {
     u16 address = PopFromStack();
     address |= (PopFromStack() << 8);	/* Load return address from stack. */
     this->registers->PC = address;
+    return 6;
 }
 
 u8 Cpu::RTS() {
     u16 address = PopFromStack();
     address |= ((PopFromStack) << 8);	/* Load return address from stack. */
     this->registers->PC = address;
+    return 6;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -486,30 +511,37 @@ void Cpu::CPY(u8& value){
 
 u8 Cpu::CLC() {
     SetFlag(C, 0);
+    return 2;
 }
 
 u8 Cpu::SEC() {
     SetFlag(C, 1);
+    return 2;
 }
 
 u8 Cpu::CLI() {
     SetFlag(I, 0);
+    return 2;
 }
 
 u8 Cpu::SEI() {
     SetFlag(I, 1);
+    return 2;
 }
 
 u8 Cpu::CLV() {
     SetFlag(V, 0);
+    return 2;
 }
 
 u8 Cpu::CLD() {
     SetFlag(D, 0);
+    return 2;
 }
 
 u8 Cpu::SED() {
     SetFlag(D, 1);
+    return 2;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -517,11 +549,11 @@ u8 Cpu::SED() {
 ////////////////////////////////////////////////////////////////////////////////
 
 u8 Cpu::NOP() {
-    // TODO
+    return 2;
 }
 
 u8 Cpu::UNIMP() {
-    // TODO
+    return 2;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -532,55 +564,71 @@ u8 Cpu::UNIMP() {
 /// 2 bytes; 6 cycles
 u8 Cpu::ORA_IND_X() {
     ORA(Memory(PreIndexedIndirect(Operand(1), this->registers.X)));
+    return 6;
 }
 
 /// 2 bytes; 3 cycles
 u8 Cpu::ORA_ZP() {
     ORA(Memory(ZeroPage(Operand(1))));
+    return 3;
 }
 
 u8 Cpu::ASL_ZP() {
     ASL(Memory(ZeroPage(Operand(1))));
+    return 5;
 }
 
 u8 Cpu::ORA_IMM() {
     ORA(Operand(1));
+    return 2;
 }
 
 u8 Cpu::ASL_ACC() {
     ASL(this->registers.A);
+    return 2;
 }
 
 u8 Cpu::ORA_ABS() {
     ORA(Memory(Absolute(Operand(1), Operand(2))));
+    return 4;
 }
 
 u8 Cpu::ASL_ABS() {
     ASL(Memory(Absolute(Operand(1), Operand(2))));    
+    return 6;
 }
 
 u8 Cpu::ORA_IND_Y() {
     ORA(Memory(PostIndexedIndirect(Operand(1), this->registers.Y)));
+    auto address = Indirect(Operand(1), 0);
+    return 5 + IsPageCrossed(address, address + this->registers.Y);
 }
 
 u8 Cpu::ORA_ZP_X() {
     ORA(Memory(ZeroPageIndexed(Operand(1), this->registers.X)));
+    return 4;
 }
 
 u8 Cpu::ASL_ZP_X() {
     ASL(Memory(ZeroPageIndexed(Operand(1), this->registers.X)));
+    return 6;
 }
 
 u8 Cpu::ORA_ABS_Y() {
     ORA(Memory(Indexed(Operand(1), Operand(2), this->registers.Y)));
+    auto address = FromValues(Operand(1), Operand(2));
+    return 4 + IsPageCrossed(address, address + this->registers.Y);
 }
 
 u8 Cpu::ORA_ABS_X() {
     ORA(Memory(Indexed(Operand(1), Operand(2), this->registers.X)));
+    auto address = FromValues(Operand(1), Operand(2));
+    return 4 + IsPageCrossed(address, address + this->registers.X);
 }
 
 u8 Cpu::ASL_ABS_X() {
     ASL(Memory(Indexed(Operand(1), Operand(2), this->registers.X)));
+    return 7;
 }
 
 u8 Cpu::AND_IND_X() {
@@ -590,6 +638,7 @@ u8 Cpu::AND_IND_X() {
 
 u8 Cpu::BIT_ZP() {
     BIT(Memory(ZeroPage(Operand(1))));
+    return 3;
 }
 
 u8 Cpu::AND_ZP() {
@@ -599,6 +648,7 @@ u8 Cpu::AND_ZP() {
 
 u8 Cpu::ROL_ZP() {
     ROL(Memory(ZeroPage(Operand(1))));
+    return 5;
 }
 
 u8 Cpu::AND_IMM() {
@@ -608,10 +658,12 @@ u8 Cpu::AND_IMM() {
 
 u8 Cpu::ROL_ACC() {
     ROL(this->registers.A);
+    return 2;
 }
 
 u8 Cpu::BIT_ABS() {
     BIT(Memory(Absolute(Operand(1), Operand(2))));
+    return 4;
 }
 
 u8 Cpu::AND_ABS() {
@@ -621,6 +673,7 @@ u8 Cpu::AND_ABS() {
 
 u8 Cpu::ROL_ABS() {
     ROL(Memory(Absolute(Operand(1), Operand(2))));
+    return 6;
 }
 
 u8 Cpu::AND_IND_Y() {
@@ -636,6 +689,7 @@ u8 Cpu::AND_ZP_X() {
 
 u8 Cpu::ROL_ZP_X() {
     ROL(Memory(ZeroPageIndexed(Operand(1), this->registers.X)));
+    return 6;
 }
 
 u8 Cpu::AND_ABS_Y() {
@@ -652,62 +706,80 @@ u8 Cpu::AND_ABS_X() {
 
 u8 Cpu::ROL_ABS_X() {
     ROL(Memory(Indexed(Operand(1), Operand(2), this->registers.X)));
+    return 7;
 }
 
 u8 Cpu::EOR_IND_X() {
     EOR(Memory(PreIndexedIndirect(Operand(1), this->registers.X)));
+    return 6;
 }
 
 u8 Cpu::EOR_ZP() {
     EOR(Memory(ZeroPage(Operand(1))));
+    return 3;
 }
 
 u8 Cpu::LSR_ZP() {
     LSR(Memory(ZeroPage(Operand(1))));
+    return 5;
 }
 
 u8 Cpu::EOR_IMM() {
     EOR(Operand(1));
+    return 2;
 }
 
 u8 Cpu::LSR_ACC() {
     LSR(this->registers.A);
+    return 2;
 }
 
 u8 Cpu::JMP_ABS() {
     JMP(Memory(Absolute(Operand(1), Operand(2))));
+    return 3;
 }
 
 u8 Cpu::EOR_ABS() {
     EOR(Memory(Absolute(Operand(1), Operand(2))));
+    return 4;
 }
 
 u8 Cpu::LSR_ABS() {
     LSR(Memory(Absolute(Operand(1), Operand(2))));
+    return 6;
 }
 
 u8 Cpu::EOR_IND_Y() {
     EOR(Memory(PostIndexedIndirect(Operand(1), this->registers.Y)));
+    auto address = Indirect(Operand(1), 0);
+    return 5 + IsPageCrossed(address, address + this->registers.Y);
 }
 
 u8 Cpu::EOR_ZP_X() {
     EOR(Memory(ZeroPageIndexed(Operand(1), this->registers.X)));
+    return 4;
 }
 
 u8 Cpu::LSR_ZP_X() {
     LSR(Memory(ZeroPageIndexed(Operand(1), this->registers.X)));
+    return 6;
 }
 
 u8 Cpu::EOR_ABS_Y() {
     EOR(Memory(Indexed(Operand(1), Operand(2), this->registers.Y)));
+    auto address = FromValues(Operand(1), Operand(2));
+    return 4 + IsPageCrossed(address, address + this->registers.Y);
 }
 
 u8 Cpu::EOR_ABS_X() {
     EOR(Memory(Indexed(Operand(1), Operand(2), this->registers.X)));
+    auto address = FromValues(Operand(1), Operand(2));
+    return 4 + IsPageCrossed(address, address + this->registers.X);
 }
 
 u8 Cpu::LSR_ABS_X() {
     LSR(Memory(Indexed(Operand(1), Operand(2), this->registers.X)));
+    return 7;
 }
 
 u8 Cpu::ADC_IND_X() {
@@ -722,6 +794,7 @@ u8 Cpu::ADC_ZP() {
 
 u8 Cpu::ROR_ZP() {
     ROR(Memory(ZeroPage(Operand(1))));
+    return 5;
 }
 
 u8 Cpu::ADC_IMM() {
@@ -731,6 +804,7 @@ u8 Cpu::ADC_IMM() {
 
 u8 Cpu::ROR_ACC() {
     ROR(this->registers.A);
+    return 2;
 }
 
 u8 Cpu::JMP_IND() {
@@ -738,6 +812,7 @@ u8 Cpu::JMP_IND() {
         JMP(Memory(Indirect(Operand(1), Operand(-0xFE)))); //wrap around
     else
         JMP(Memory(Indirect(Operand(1), Operand(2))));
+    return 5;
 }
 
 u8 Cpu::ADC_ABS() {
@@ -747,6 +822,7 @@ u8 Cpu::ADC_ABS() {
 
 u8 Cpu::ROR_ABS() {
     ROR(Memory(Absolute(Operand(1), Operand(2))));
+    return 6;
 }
 
 u8 Cpu::ADC_IND_Y() {
@@ -762,6 +838,7 @@ u8 Cpu::ADC_ZP_X() {
 
 u8 Cpu::ROR_ZP_X() {
     ROR(Memory(ZeroPageIndexed(Operand(1), this->registers.X)));
+    return 6;
 }
 
 u8 Cpu::ADC_ABS_Y() {
@@ -778,6 +855,7 @@ u8 Cpu::ADC_ABS_X() {
 
 u8 Cpu::ROR_ABS_X() {
     ROR(Memory(Indexed(Operand(1), Operand(2), this->registers.X)));
+    return 7;
 }
 
 u8 Cpu::STA_IND_X() {
@@ -790,6 +868,7 @@ u8 Cpu::STY_ZP() {
 
 u8 Cpu::STA_ZP() {
     STA(Memory(ZeroPage(Operand(1))));
+    return 3;
 }
 
 u8 Cpu::STX_ZP() {
@@ -802,6 +881,7 @@ u8 Cpu::STY_ABS() {
 
 u8 Cpu::STA_ABS() {
     STA(Memory(Absolute(Operand(1), Operand(2))));
+    return 4;
 }
 
 u8 Cpu::STX_ABS() {
@@ -818,6 +898,7 @@ u8 Cpu::STY_ZP_X() {
 
 u8 Cpu::STA_ZP_X() {
     STA(Memory(ZeroPageIndexed(Operand(1), this->registers.X)));
+    return 4;
 }
 
 u8 Cpu::STX_ZP_Y() {
@@ -826,200 +907,261 @@ u8 Cpu::STX_ZP_Y() {
 
 u8 Cpu::STA_ABS_Y() {
     STA(Memory(Indexed(Operand(1), Operand(2), this->registers.Y)));
+    return 5;
 }
 
 u8 Cpu::STA_ABS_X() {
     STA(Memory(Indexed(Operand(1), Operand(2), this->registers.X)));
+    return 5;
 }
 
 u8 Cpu::LDY_IMM() {
     LDY(Operand(1));
+    return 2;
 }
 
 u8 Cpu::LDA_IND_X() {
     LDA(Memory(PreIndexedIndirect(Operand(1), this->registers.X)));
+    return 6;
 }
 
 u8 Cpu::LDX_IMM() {
     LDX(Operand(1));
+    return 2;
 }
 
 u8 Cpu::LDY_ZP() {
     LDY(Memory(ZeroPage(Operand(1))));
+    return 3;
 }
 
 u8 Cpu::LDA_ZP() {
     LDA(Memory(ZeroPage(Operand(1))));
+    return 3;
 }
 
 u8 Cpu::LDX_ZP() {
     LDX(Memory(ZeroPage(Operand(1))));
+    return 3;
 }
 
 u8 Cpu::LDA_IMM() {
     LDA(Operand(1));
+    return 2;
 }
 
 u8 Cpu::LDY_ABS() {
     LDY(Memory(Absolute(Operand(1), Operand(2))));
+    return 4;
 }
 
 u8 Cpu::LDA_ABS() {
     LDA(Memory(Absolute(Operand(1), Operand(2))));
+    return 4;
 }
 
 u8 Cpu::LDX_ABS() {
     LDX(Memory(Absolute(Operand(1), Operand(2))));
+    return 4;
 }
 
 u8 Cpu::LDA_IND_Y() {
     LDA(Memory(PostIndexedIndirect(Operand(1), this->registers.Y)));
+    auto address = Indirect(Operand(1), 0);
+    return 5 + IsPageCrossed(address, address + this->registers.Y);
 }
 
 u8 Cpu::LDY_ZP_X() {
     LDY(Memory(ZeroPageIndexed(Operand(1), this->registers.X)));
+    return 4;
 }
 
 u8 Cpu::LDA_ZP_X() {
     LDA(Memory(ZeroPageIndexed(Operand(1), this->registers.X)));
+    return 4;
 }
 
 u8 Cpu::LDX_ZP_Y() {
     LDX(Memory(ZeroPageIndexed(Operand(1), this->registers.Y)));
+    return 4;
 }
 
 u8 Cpu::LDA_ABS_Y() {
     LDA(Memory(Indexed(Operand(1), Operand(2), this->registers.Y)));
+    auto address = FromValues(Operand(1), Operand(2));
+    return 4 + IsPageCrossed(address, address + this->registers.Y);
 }
 
 u8 Cpu::LDY_ABS_X() {
     LDY(Memory(Indexed(Operand(1), Operand(2), this->registers.X)));
+    auto address = FromValues(Operand(1), Operand(2));
+    return 4 + IsPageCrossed(address, address + this->registers.X);
 }
 
 u8 Cpu::LDA_ABS_X() {
     LDA(Memory(Indexed(Operand(1), Operand(2), this->registers.X)));
+    auto address = FromValues(Operand(1), Operand(2));
+    return 4 + IsPageCrossed(address, address + this->registers.X);
 }
 
 u8 Cpu::LDX_ABS_Y() {
     LDX(Memory(Indexed(Operand(1), Operand(2), this->registers.Y)));
+    auto address = FromValues(Operand(1), Operand(2));
+    return 4 + IsPageCrossed(address, address + this->registers.Y);
 }
 
 u8 Cpu::CPY_IMM() {
     CPY(Operand(1));
+    return 2;
 }
 
 u8 Cpu::CMP_IND_X() {
     CMP(Memory(PreIndexedIndirect(Operand(1), this->registers.X)));
+    return 6;
 }
 
 u8 Cpu::CPY_ZP() {
     CPY(Memory(ZeroPage(Operand(1))));
+    return 3;
 }
 
 u8 Cpu::CMP_ZP() {
     CMP(Memory(ZeroPage(Operand(1))));
+    return 3;
 }
 
 u8 Cpu::DEC_ZP() {
     DEC(Memory(ZeroPage(Operand(1))));
+    return 5;
 }
 
 u8 Cpu::CMP_IMM() {
     CMP(Operand(1));
+    return 2;
 }
 
 u8 Cpu::CPY_ABS() {
     CPY(Memory(Absolute(Operand(1), Operand(2))));
+    return 4;
 }
 
 u8 Cpu::CMP_ABS() {
     CMP(Memory(Absolute(Operand(1), Operand(2))));
+    return 4;
 }
 
 u8 Cpu::DEC_ABS() {
     DEC(Memory(Absolute(Operand(1), Operand(2))));
+    return 6;
 }
 
 u8 Cpu::CMP_IND_Y() {
     CMP(Memory(PostIndexedIndirect(Operand(1), this->registers.Y)));
+    auto address = Indirect(Operand(1), 0);
+    return 5 + IsPageCrossed(address, address + this->registers.Y);
 }
 
 u8 Cpu::CMP_ZP_X() {
     CMP(Memory(ZeroPageIndexed(Operand(1), this->registers.X)));
+    return 4;
 }
 
 u8 Cpu::DEC_ZP_X() {
     DEC(Memory(ZeroPageIndexed(Operand(1), this->registers.X)));
+    return 6;
 }
 
 u8 Cpu::CMP_ABS_Y() {
     CMP(Memory(Indexed(Operand(1), Operand(2), this->registers.Y)));
+    auto address = FromValues(Operand(1), Operand(2));
+    return 4 + IsPageCrossed(address, address + this->registers.Y);
 }
 
 u8 Cpu::CMP_ABS_X() {
     CMP(Memory(Indexed(Operand(1), Operand(2), this->registers.X)));
+    auto address = FromValues(Operand(1), Operand(2));
+    return 4 + IsPageCrossed(address, address + this->registers.X);
 }
 
 u8 Cpu::DEC_ABS_X() {
     DEC(Memory(Indexed(Operand(1), Operand(2), this->registers.X)));
+    return 7;
 }
 
 u8 Cpu::CPX_IMM() {
     CPX(Operand(1));
+    return 2;
 }
 
 u8 Cpu::SBC_IND_X() {
     SBC(Memory(PreIndexedIndirect(Operand(1), this->registers.X)));
+    return 6;
 }
 
 u8 Cpu::CPX_ZP() {
     CPX(Memory(ZeroPage(Operand(1))));
+    return 3;
 }
 
 u8 Cpu::SBC_ZP() {
     SBC(Memory(ZeroPage(Operand(1))));
+    return 3;
 }
 
 u8 Cpu::INC_ZP() {
     INC(Memory(ZeroPage(Operand(1))));
+    return 5;
 }
 
 u8 Cpu::SBC_IMM() {
     SBC(Operand(1));
+    return 2;
 }
 
 u8 Cpu::CPX_ABS() {
     CPX(Memory(Absolute(Operand(1), Operand(2))));
+    return 4;
 }
 
 u8 Cpu::SBC_ABS() {
     SBC(Memory(Absolute(Operand(1), Operand(2))));
+    return 4;
 }
 
 u8 Cpu::INC_ABS() {
     INC(Memory(Absolute(Operand(1), Operand(2))));
+    return 6;
 }
 
 u8 Cpu::SBC_IND_Y() {
     SBC(Memory(PostIndexedIndirect(Operand(1), this->registers.Y)));
+    auto address = Indirect(Operand(1), 0);
+    return 5 + IsPageCrossed(address, address + this->registers.Y);
 }
 
 u8 Cpu::SBC_ZP_X() {
     SBC(Memory(ZeroPageIndexed(Operand(1), this->registers.X)));
+    return 4;
 }
 
 u8 Cpu::INC_ZP_X() {
     INC(Memory(ZeroPageIndexed(Operand(1), this->registers.X)));
+    return 6;
 }
 
 u8 Cpu::SBC_ABS_Y() {
     SBC(Memory(Indexed(Operand(1), Operand(2), this->registers.Y)));
+    auto address = FromValues(Operand(1), Operand(2));
+    return 4 + IsPageCrossed(address, address + this->registers.Y);
 }
 
 u8 Cpu::SBC_ABS_X() {
     SBC(Memory(Indexed(Operand(1), Operand(2), this->registers.X)));
+    auto address = FromValues(Operand(1), Operand(2));
+    return 4 + IsPageCrossed(address, address + this->registers.X);
 }
 
 u8 Cpu::INC_ABS_X() {
     INC(Memory(Indexed(Operand(1), Operand(2), this->registers.X)));
+    return 7;
 }
