@@ -1,6 +1,8 @@
 #include "cpu.h"
 #include <circle/util.h>
 
+Cpu::Cpu(){}
+
 Cpu::Cpu(const Rom* rom) {
     const iNesHeader* header = rom->GetHeader();
     int prgRomBanks = header->prgRomBanks;

@@ -6,8 +6,7 @@
 #include <circle/types.h>
 
 class Cpu {
-private:
-
+    public:
     union NESCPUMemoryMap {
         struct {
             u8 zeroPage[0x0100];
@@ -675,7 +674,7 @@ private:
     void SetFlag(u8 flag, u8 value);
     u8 GetFlag(u8 flag);
     
-public:
+    Cpu();
     Cpu(const Rom* rom);
 };
 
