@@ -1,6 +1,16 @@
 #ifndef UTIL_H
 #define UTIL_H
 
+typedef unsigned char		u8;
+typedef unsigned short		u16;
+typedef unsigned int		u32;
+typedef unsigned long long	u64;
+
+typedef signed char		s8;
+typedef signed short		s16;
+typedef signed int		s32;
+typedef signed long long	s64;
+
 #define KILOBYTE 1024
 #define CHECK_BIT(var,pos) ((var) & (1<<(pos)))
 #define SET_BIT(var,pos) ((var) |= (1 << (pos)))

@@ -4,7 +4,6 @@
 #ifndef _rom_h
 #define _rom_h
 
-#include <circle/types.h>
 #include "util.h"
 
 union iNesHeader {

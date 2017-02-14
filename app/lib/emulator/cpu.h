@@ -1,7 +1,6 @@
 #ifndef CPU_H
 #define CPU_H
 
-#include <circle/types.h>
 #include "util.h"
 #include "rom.h"
 
@@ -659,7 +658,7 @@ class Cpu {
      * @param endAddress
      * @return if a page is crossed
      */
-    boolean IsPageCrossed(u16 startAddress, u16 endAddress);
+    bool IsPageCrossed(u16 startAddress, u16 endAddress);
 
     void SetFlag(u8 flag, u8 value);
     u8 GetFlag(u8 flag);

@@ -1,5 +1,9 @@
 #include "ppu.h"
-#include <circle/util.h>
+#ifdef _GLIBCXX_CSTRING
+    #include <cstring>
+#else
+    #include <circle/util.h>
+#endif
 
 Ppu::Ppu(const Rom* rom)
 {

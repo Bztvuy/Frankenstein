@@ -1,5 +1,9 @@
 #include "cpu.h"
-#include <circle/util.h>
+#ifdef _GLIBCXX_CSTRING
+    #include <cstring>
+#else
+    #include <circle/util.h>
+#endif
 
 Cpu::Cpu(){}
 
@@ -33,7 +37,7 @@ u8 Cpu::GetFlag(u8 flag){
     return CHECK_BIT(this->registers.P, flag);
 }
 
-boolean Cpu::IsPageCrossed(u16 startAddress, u16 endAddress){
+bool Cpu::IsPageCrossed(u16 startAddress, u16 endAddress){
     return (startAddress / NES_PAGE_SIZE) == (endAddress / NES_PAGE_SIZE);
 }
 

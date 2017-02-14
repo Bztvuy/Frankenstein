@@ -6,7 +6,7 @@ CIRCLEHOME = ../../..
 
 OBJS	= rom.o cpu.o ppu.o nes.o
 
-libemu.a: $(OBJS)
+libemulator.a: $(OBJS)
 	rm -f $@
 	$(AR) cr $@ $(OBJS)
 
