@@ -1,4 +1,5 @@
 #include "ppu.h"
+#include <circle/util.h>
 
 Ppu::Ppu(const Rom* rom)
 {

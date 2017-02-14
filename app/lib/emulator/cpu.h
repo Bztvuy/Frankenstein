@@ -1,9 +1,9 @@
 #ifndef CPU_H
 #define CPU_H
 
+#include <circle/types.h>
 #include "util.h"
 #include "rom.h"
-#include <circle/types.h>
 
 class Cpu {
     public:
@@ -24,23 +24,13 @@ class Cpu {
         u8 raw[0x10000];
     };
 
-    union NESCPURegisters {
-        struct {
-            u16 programCounter;
-            u8 stackPointer;
-            u8 accumulator;
-            u8 indexX;
-            u8 indexY;
-            u8 processorStatus;
-        };
-        struct {
-            u16 PC;
-            u8 SP = 0xFF;
-            u8 A;
-            u8 X;
-            u8 Y;
-            u8 P = 0b00100000;
-        };
+    struct NESCPURegisters {
+        u16 PC;
+        u8 SP = 0xFF;
+        u8 A;
+        u8 X;
+        u8 Y;
+        u8 P = 0b00100000;
     };
 
     enum NESCPUFlags {
@@ -574,13 +564,13 @@ class Cpu {
      * Store the byte at stack[SP]
      * and decrement the stack pointer
      */
-    inline void PushOnStack(u8& value);
+    inline void PushOnStack(u8 value);
 
     /**
      * Fetch the byte at stack[SP]
      * and increment the stack pointer
      */
-    inline u8& PopFromStack();
+    inline u8 PopFromStack();
     
     /**
      * Build an address using only the least significative byte. The first half of 

@@ -22,7 +22,7 @@ Cpu::Cpu(const Rom* rom) {
             break;
     }
     
-    this->registers->PC = (Memory(0xFFFC) | Memory(0xFFFD) << 8);
+    this->registers.PC = (Memory(0xFFFC) | Memory(0xFFFD) << 8);
 }
 
 void Cpu::SetFlag(u8 flag, u8 value){
@@ -34,31 +34,31 @@ u8 Cpu::GetFlag(u8 flag){
 }
 
 boolean Cpu::IsPageCrossed(u16 startAddress, u16 endAddress){
-    return (startAddress / PAGE_SIZE) == (endAddress / PAGE_SIZE);
+    return (startAddress / NES_PAGE_SIZE) == (endAddress / NES_PAGE_SIZE);
 }
 
 void Cpu::Execute(){
     auto opCode = OpCode();
-    auto cycles = (*instructions[opCode])();
-    this->registers->PC += this->instructionSizes[opCode];
+    auto cycles = (this->*instructions[opCode])();
+    this->registers.PC += this->instructionSizes[opCode];
 }
 
 inline u8& Cpu::OpCode(){
-    return Memory(this->registers->PC);
+    return Memory(this->registers.PC);
 }
 
 inline u8& Cpu::Memory(const u16 address) {
     return this->memory.raw[address];
 }
 
-inline void Cpu::PushOnStack(u8& value){
-    this->memory->stack[this->registers->SP] = value;
-    this->registers->SP -= 1;
+inline void Cpu::PushOnStack(u8 value){
+    this->memory.stack[this->registers.SP] = value;
+    this->registers.SP -= 1;
 }
 
-inline u8& Cpu::PopFromStack(){
-    this->registers->SP += 1;
-    return this->memory->stack[this->registers->SP];
+inline u8 Cpu::PopFromStack(){
+    this->registers.SP += 1;
+    return this->memory.stack[this->registers.SP];
 }
 
 inline u8& Cpu::Operand(int number) {
@@ -179,12 +179,12 @@ void Cpu::ROR(u8& value){
 ////////////////////////////////////////////////////////////////////////////////
 
 void Cpu::ADC(u8& value){
-    u16 result = value + this->registers->A + GetFlag(C);
+    u16 result = value + this->registers.A + GetFlag(C);
     SetFlag(Z, result & 0xFF);
     SetFlag(S, CHECK_BIT(value, 7));
-    SetFlag(V, !((this->registers->A ^ value) & 0x80) && ((this->registers->A ^ result) & 0x80));
+    SetFlag(V, !((this->registers.A ^ value) & 0x80) && ((this->registers.A ^ result) & 0x80));
     SetFlag(C, result > 0xFF);
-    this->registers->A = (u8) result;
+    this->registers.A = (u8) result;
 }
 
 void Cpu::DEC(u8& value){
@@ -200,12 +200,12 @@ void Cpu::INC(u8& value){
 }
 
 void Cpu::SBC(u8& value){
-    u16 result = this->registers->A - value - GetFlag(C);
+    u16 result = this->registers.A - value - GetFlag(C);
     SetFlag(Z, result & 0xFF);
     SetFlag(S, CHECK_BIT(value, 7));
-    SetFlag(V, !((this->registers->A ^ value) & 0x80) && ((this->registers->A ^ result) & 0x80));
+    SetFlag(V, !((this->registers.A ^ value) & 0x80) && ((this->registers.A ^ result) & 0x80));
     SetFlag(C, result < 0x100);
-    this->registers->A = (result & 0xFF);  
+    this->registers.A = (result & 0xFF);  
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -249,8 +249,8 @@ void Cpu::STY(u8& value){
 //Branch on plus
 u8 Cpu::BPL() {
     if (!GetFlag(S)) {
-        auto pageCrossed = IsPageCrossed(this->registers->PC + 2, (this->registers->PC + 2 + Operand(1)) & 0xFF);
-	this->registers->PC = (this->registers->PC + Operand(1)) & 0xFF;
+        auto pageCrossed = IsPageCrossed(this->registers.PC + 2, (this->registers.PC + 2 + Operand(1)) & 0xFF);
+	this->registers.PC = (this->registers.PC + Operand(1)) & 0xFF;
         return 3 + pageCrossed;
     }
     return 2;
@@ -259,8 +259,8 @@ u8 Cpu::BPL() {
 //Branch on minus
 u8 Cpu::BMI() {
     if (GetFlag(S)) {
-    auto pageCrossed = IsPageCrossed(this->registers->PC + 2, (this->registers->PC + 2 + Operand(1)) & 0xFF);
-	this->registers->PC = (this->registers->PC + Operand(1)) & 0xFF;
+    auto pageCrossed = IsPageCrossed(this->registers.PC + 2, (this->registers.PC + 2 + Operand(1)) & 0xFF);
+	this->registers.PC = (this->registers.PC + Operand(1)) & 0xFF;
         return 3 + pageCrossed;
     }
     return 2;
@@ -269,8 +269,8 @@ u8 Cpu::BMI() {
 //Branch on overflow clear
 u8 Cpu::BVC() {
     if (!GetFlag(V)) {
-    auto pageCrossed = IsPageCrossed(this->registers->PC + 2, (this->registers->PC + 2 + Operand(1)) & 0xFF);
-	this->registers->PC = (this->registers->PC + Operand(1)) & 0xFF;
+    auto pageCrossed = IsPageCrossed(this->registers.PC + 2, (this->registers.PC + 2 + Operand(1)) & 0xFF);
+	this->registers.PC = (this->registers.PC + Operand(1)) & 0xFF;
         return 3 + pageCrossed;
     }
     return 2;
@@ -279,8 +279,8 @@ u8 Cpu::BVC() {
 //Branch on overflow set
 u8 Cpu::BVS() {
     if (GetFlag(V)) {
-    auto pageCrossed = IsPageCrossed(this->registers->PC + 2, (this->registers->PC + 2 + Operand(1)) & 0xFF);
-	this->registers->PC = (this->registers->PC + Operand(1)) & 0xFF;
+    auto pageCrossed = IsPageCrossed(this->registers.PC + 2, (this->registers.PC + 2 + Operand(1)) & 0xFF);
+	this->registers.PC = (this->registers.PC + Operand(1)) & 0xFF;
         return 3 + pageCrossed;
     }
     return 2;
@@ -289,8 +289,8 @@ u8 Cpu::BVS() {
 //Branch on carry clear
 u8 Cpu::BCC() {
     if (!GetFlag(C)) {
-    auto pageCrossed = IsPageCrossed(this->registers->PC + 2, (this->registers->PC + 2 + Operand(1)) & 0xFF);
-	this->registers->PC = (this->registers->PC + Operand(1)) & 0xFF;
+    auto pageCrossed = IsPageCrossed(this->registers.PC + 2, (this->registers.PC + 2 + Operand(1)) & 0xFF);
+	this->registers.PC = (this->registers.PC + Operand(1)) & 0xFF;
         return 3 + pageCrossed;
     }
     return 2;
@@ -299,8 +299,8 @@ u8 Cpu::BCC() {
 //Branch on carry set
 u8 Cpu::BCS() {
     if (GetFlag(C)) {
-    auto pageCrossed = IsPageCrossed(this->registers->PC + 2, (this->registers->PC + 2 + Operand(1)) & 0xFF);
-	this->registers->PC = (this->registers->PC + Operand(1)) & 0xFF;
+    auto pageCrossed = IsPageCrossed(this->registers.PC + 2, (this->registers.PC + 2 + Operand(1)) & 0xFF);
+	this->registers.PC = (this->registers.PC + Operand(1)) & 0xFF;
         return 3 + pageCrossed;
     }
     return 2;
@@ -309,8 +309,8 @@ u8 Cpu::BCS() {
 //Branch on not equal
 u8 Cpu::BNE() {
     if (!GetFlag(Z)) {
-    auto pageCrossed = IsPageCrossed(this->registers->PC + 2, (this->registers->PC + 2 + Operand(1)) & 0xFF);
-	this->registers->PC = (this->registers->PC + Operand(1)) & 0xFF;
+    auto pageCrossed = IsPageCrossed(this->registers.PC + 2, (this->registers.PC + 2 + Operand(1)) & 0xFF);
+	this->registers.PC = (this->registers.PC + Operand(1)) & 0xFF;
         return 3 + pageCrossed;
     }
     return 2;
@@ -319,8 +319,8 @@ u8 Cpu::BNE() {
 //Branch on equal
 u8 Cpu::BEQ() {
     if (GetFlag(Z)) {
-    auto pageCrossed = IsPageCrossed(this->registers->PC + 2, (this->registers->PC + 2 + Operand(1)) & 0xFF);
-	this->registers->PC = (this->registers->PC + Operand(1)) & 0xFF;
+    auto pageCrossed = IsPageCrossed(this->registers.PC + 2, (this->registers.PC + 2 + Operand(1)) & 0xFF);
+	this->registers.PC = (this->registers.PC + Operand(1)) & 0xFF;
         return 3 + pageCrossed;
     }
     return 2;
@@ -334,7 +334,7 @@ u8 Cpu::BEQ() {
 ////////////////////////////////////////////////////////////////////////////////
 
 u8 Cpu::TAX() {
-    auto& value = this->registers->A
+    auto& value = this->registers.A;
     this->registers.X = value;
     SetFlag(Z, value);
     SetFlag(S, CHECK_BIT(value, 7));
@@ -342,7 +342,7 @@ u8 Cpu::TAX() {
 }
 
 u8 Cpu::TXA() {
-    auto& value = this->registers->X
+    auto& value = this->registers.X;
     this->registers.A = value;
     SetFlag(Z, value);
     SetFlag(S, CHECK_BIT(value, 7));
@@ -350,7 +350,7 @@ u8 Cpu::TXA() {
 }
 
 u8 Cpu::DEX() {
-    auto& value = this->registers->X
+    auto& value = this->registers.X;
     value -= 1 ;
     SetFlag(Z, value);
     SetFlag(S, CHECK_BIT(value, 7));
@@ -358,7 +358,7 @@ u8 Cpu::DEX() {
 }
 
 u8 Cpu::INX() {
-    auto& value = this->registers->X
+    auto& value = this->registers.X;
     value += 1 ;
     SetFlag(Z, value);
     SetFlag(S, CHECK_BIT(value, 7));
@@ -366,7 +366,7 @@ u8 Cpu::INX() {
 }
 
 u8 Cpu::TAY() {
-    auto& value = this->registers->A
+    auto& value = this->registers.A;
     this->registers.Y = value;
     SetFlag(Z, value);
     SetFlag(S, CHECK_BIT(value, 7));
@@ -374,7 +374,7 @@ u8 Cpu::TAY() {
 }
 
 u8 Cpu::TYA() {
-    auto& value = this->registers->Y
+    auto& value = this->registers.Y;
     this->registers.A = value;
     SetFlag(Z, value);
     SetFlag(S, CHECK_BIT(value, 7));
@@ -382,7 +382,7 @@ u8 Cpu::TYA() {
 }
 
 u8 Cpu::DEY() {
-    auto& value = this->registers->Y
+    auto& value = this->registers.Y;
     value -= 1 ;
     SetFlag(Z, value);
     SetFlag(S, CHECK_BIT(value, 7));
@@ -390,7 +390,7 @@ u8 Cpu::DEY() {
 }
 
 u8 Cpu::INY() {
-    auto& value = this->registers->Y
+    auto& value = this->registers.Y;
     value += 1 ;
     SetFlag(Z, value);
     SetFlag(S, CHECK_BIT(value, 7));
@@ -403,13 +403,13 @@ u8 Cpu::INY() {
 
 // Transfert X to Stack ptr
 u8 Cpu::TXS() {
-    PushOnStack(this->registers->X);
+    PushOnStack(this->registers.X);
     return 2;
 }
 
 u8 Cpu::TSX() {
-    auto& value = PopFromStack();
-    this->registers->X = value;
+    auto value = PopFromStack();
+    this->registers.X = value;
     SetFlag(Z, value);
     SetFlag(S, CHECK_BIT(value, 7));
     return 2;
@@ -417,14 +417,14 @@ u8 Cpu::TSX() {
 
 // Push A
 u8 Cpu::PHA() {
-    PushOnStack(this->registers->A);
+    PushOnStack(this->registers.A);
     return 3;
 }
 
 // Pop A
 u8 Cpu::PLA() {
-    auto& value = PopFromStack();
-    this->registers->A = value;
+    auto value = PopFromStack();
+    this->registers.A = value;
     SetFlag(Z, value);
     SetFlag(S, CHECK_BIT(value, 7));
     return 4;
@@ -432,13 +432,13 @@ u8 Cpu::PLA() {
 
 // Push Processor Status
 u8 Cpu::PHP() {
-    PushOnStack(this->registers->P);
+    PushOnStack(this->registers.P);
     return 3;
 }
 
 // Pull Processor Status
 u8 Cpu::PLP() {
-    this->registers->P = PopFromStack();
+    this->registers.P = PopFromStack();
     return 4;
 }
 
@@ -447,42 +447,42 @@ u8 Cpu::PLP() {
 ////////////////////////////////////////////////////////////////////////////////
 
 u8 Cpu::BRK(){
-    this->registers->PC += 1;
-    PushOnStack((this->registers->PC >> 8) & 0xFF);     /* Push return address onto the stack. */
-    PushOnStack(this->registers->PC & 0xFF)
+    this->registers.PC += 1;
+    PushOnStack((this->registers.PC >> 8) & 0xFF);     /* Push return address onto the stack. */
+    PushOnStack(this->registers.PC & 0xFF);
     SetFlag(B, 1);                                      /* Set BFlag before pushing */
-    PushOnStack(this->registers->P);
+    PushOnStack(this->registers.P);
     SetFlag(I, 1);
-    this->registers->PC = (Memory(0xFFFE) | Memory(0xFFFF) << 8);
+    this->registers.PC = (Memory(0xFFFE) | Memory(0xFFFF) << 8);
     return 7;
 }
 
 void Cpu::JMP(u8& value){
-    this->registers->PC = value;
+    this->registers.PC = value;
 }
 
 u8 Cpu::JSR() {
     auto address = Absolute(Operand(1), Operand(2));
-    this->registers->PC += 2;
-    PushOnStack((this->registers->PC >> 8) & 0xFF);	/* Push return address onto the stack. */
-    PushOnStack(this->registers->PC & 0xFF);
-    this->registers->PC = address;
+    this->registers.PC += 2;
+    PushOnStack((this->registers.PC >> 8) & 0xFF);	/* Push return address onto the stack. */
+    PushOnStack(this->registers.PC & 0xFF);
+    this->registers.PC = address;
     return 6;
 }
 
 u8 Cpu::RTI() {
     auto processorStatus = PopFromStack();
-    this->registers->P = processorStatus;
+    this->registers.P = processorStatus;
     u16 address = PopFromStack();
     address |= (PopFromStack() << 8);	/* Load return address from stack. */
-    this->registers->PC = address;
+    this->registers.PC = address;
     return 6;
 }
 
 u8 Cpu::RTS() {
     u16 address = PopFromStack();
-    address |= ((PopFromStack) << 8);	/* Load return address from stack. */
-    this->registers->PC = address;
+    address |= ((PopFromStack()) << 8);	/* Load return address from stack. */
+    this->registers.PC = address;
     return 6;
 }
 
@@ -810,7 +810,7 @@ u8 Cpu::ROR_ACC() {
 }
 
 u8 Cpu::JMP_IND() {
-    if (IsPageCrossed(this->registers->PC + 1, this->registers->PC + 2))
+    if (IsPageCrossed(this->registers.PC + 1, this->registers.PC + 2))
         JMP(Memory(Indirect(Operand(1), Operand(-0xFE)))); //wrap around
     else
         JMP(Memory(Indirect(Operand(1), Operand(2))));
