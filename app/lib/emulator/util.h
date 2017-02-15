@@ -22,4 +22,6 @@ const u16 NES_PAGE_SIZE = 256;
 const u32 PRGROM_BANK_SIZE = 16 * KILOBYTE;
 const u32 VROM_BANK_SIZE = 8 * KILOBYTE;
 const u32 PRGRAM_BANK_SIZE = 8 * KILOBYTE;
+const u8 TILE_SIZE = 16;
+const u8 BLOCK_SIZE = 64;
 #endif // UTIL_H
