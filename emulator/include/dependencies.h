@@ -1,6 +1,6 @@
 #pragma once
 
-#ifndef Native
+#ifndef NotNative
     #include <cstring>
 #else
     #include <circle/util.h>

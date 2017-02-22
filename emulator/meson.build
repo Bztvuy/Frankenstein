@@ -11,7 +11,7 @@ if meson.is_cross_build()
 
 	emulator = static_library('emulator', emulator_src,
 		include_directories: [emulator_include, libcircle_include],
-		cpp_args: ['-DNative'] + cpp_source_args,
+		cpp_args: ['-DNotNative'] + cpp_source_args,
 		link_args: cpp_source_args)
 
 	emulator_dep = declare_dependency(
