@@ -1,0 +1,49 @@
+cmake_minimum_required(VERSION 3.4)
+project(circle LANGUAGE CXX)
+
+set(RASPPI 3)
+set(TOOLING_PREFIX "arm-none-eabi-")
+
+IF(RASPPI EQUAL 1)
+    SET(ARCH   "-march=armv6j -mtune=arm1176jzf-s -mfloat-abi=hard")
+    SET(TARGET "kernel")
+ELSEIF(RASPPI EQUAL 2)
+    SET(ARCH   "-march=armv7-a -mfpu=neon-vfpv4 -mfloat-abi=hard");
+    SET(TARGET "kernel7")
+ELSEIF(RASPPI EQUAL 3)
+    SET(ARCH   "-march=armv8-a -mtune=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard")
+    SET(TARGET "kernel7")
+ENDIF()
+
+CC	= $(PREFIX)gcc
+CPP	= $(PREFIX)g++
+AS	= $(CC)
+LD	= $(PREFIX)ld
+AR	= $(PREFIX)ar
+
+OPTIMIZE ?= -O2
+
+INCLUDE	+= -I $(CIRCLEHOME)/include -I $(CIRCLEHOME)/addon -I $(CIRCLEHOME)/app/lib
+
+AFLAGS	+= $(ARCH) -DRASPPI=$(RASPPI) $(INCLUDE)
+CFLAGS	+= $(ARCH) -Wall -Wno-psabi -fsigned-char -fno-builtin -nostdinc -nostdlib \
+	   -D__circle__ -DRASPPI=$(RASPPI) $(INCLUDE) $(OPTIMIZE) -g #-DNDEBUG
+CPPFLAGS+= $(CFLAGS) -fno-exceptions -fno-rtti -std=c++0x
+
+%.o: %.S
+	$(AS) $(AFLAGS) -c -o $@ $<
+
+%.o: %.c
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+%.o: %.cpp
+	$(CPP) $(CPPFLAGS) -c -o $@ $<
+
+$(TARGET).img: $(OBJS) $(LIBS) $(CIRCLEHOME)/lib/startup.o $(CIRCLEHOME)/circle.ld
+	$(LD) -o $(TARGET).elf -Map $(TARGET).map -T $(CIRCLEHOME)/circle.ld $(CIRCLEHOME)/lib/startup.o $(OBJS) $(LIBS)
+	$(PREFIX)objdump -d $(TARGET).elf | $(PREFIX)c++filt > $(TARGET).lst
+	$(PREFIX)objcopy $(TARGET).elf -O binary $(TARGET).img
+	wc -c $(TARGET).img
+
+clean:
+	rm -f *.o *.a *.elf *.lst *.img *.cir *.map *~ $(EXTRACLEAN)

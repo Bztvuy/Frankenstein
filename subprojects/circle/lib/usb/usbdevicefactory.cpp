@@ -3,7 +3,7 @@
 //
 // Circle - A C++ bare metal environment for Raspberry Pi
 // Copyright (C) 2014-2016  R. Stange <rsta2@o2online.de>
-// 
+//
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
@@ -22,18 +22,18 @@
 
 // for factory
 #include <circle/usb/usbstandardhub.h>
-#include <circle/usb/usbkeyboard.h>
-#include <circle/usb/usbmouse.h>
+//#include <circle/usb/usbkeyboard.h>
+//#include <circle/usb/usbmouse.h>
 #include <circle/usb/usbgamepad.h>
-#include <circle/usb/usbprinter.h>
-#include <circle/usb/smsc951x.h>
-#include <circle/usb/usbbluetooth.h>
+//#include <circle/usb/usbprinter.h>
+//#include <circle/usb/smsc951x.h>
+//#include <circle/usb/usbbluetooth.h>
 
 CUSBFunction *CUSBDeviceFactory::GetDevice (CUSBFunction *pParent, CString *pName)
 {
 	assert (pParent != 0);
 	assert (pName != 0);
-	
+
 	CUSBFunction *pResult = 0;
 
 	if (   pName->Compare ("int9-0-0") == 0
@@ -47,11 +47,11 @@ CUSBFunction *CUSBDeviceFactory::GetDevice (CUSBFunction *pParent, CString *pNam
 	}
 	else if (pName->Compare ("int3-1-1") == 0)
 	{
-		pResult = new CUSBKeyboardDevice (pParent);
+		//pResult = new CUSBKeyboardDevice (pParent);
 	}
 	else if (pName->Compare ("int3-1-2") == 0)
 	{
-		pResult = new CUSBMouseDevice (pParent);
+		//pResult = new CUSBMouseDevice (pParent);
 	}
 	else if (pName->Compare ("int3-0-0") == 0)
 	{
@@ -60,16 +60,16 @@ CUSBFunction *CUSBDeviceFactory::GetDevice (CUSBFunction *pParent, CString *pNam
 	else if (   pName->Compare ("int7-1-1") == 0
 		 || pName->Compare ("int7-1-2") == 0)
 	{
-		pResult = new CUSBPrinterDevice (pParent);
+		//pResult = new CUSBPrinterDevice (pParent);
 	}
 	else if (pName->Compare ("ven424-ec00") == 0)
 	{
-		pResult = new CSMSC951xDevice (pParent);
+		//pResult = new CSMSC951xDevice (pParent);
 	}
 	else if (   pName->Compare ("inte0-1-1") == 0
 		 || pName->Compare ("ven50d-65a") == 0)		// Belkin F8T065BF Mini Bluetooth 4.0 Adapter
 	{
-		pResult = new CUSBBluetoothDevice (pParent);
+		//pResult = new CUSBBluetoothDevice (pParent);
 	}
 	// new devices follow
 
@@ -77,8 +77,8 @@ CUSBFunction *CUSBDeviceFactory::GetDevice (CUSBFunction *pParent, CString *pNam
 	{
 		pResult->GetDevice ()->LogWrite (LogNotice, "Using device/interface %s", (const char *) *pName);
 	}
-	
+
 	delete pName;
-	
+
 	return pResult;
 }
