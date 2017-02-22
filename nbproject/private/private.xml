@@ -10,18 +10,9 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/dinf0014_admin/Documents/Frankenstein/app/kernel/kernel.h</file>
-            <file>file:/home/dinf0014_admin/Documents/Frankenstein/app/lib/emulator/nes.h</file>
-            <file>file:/home/dinf0014_admin/Documents/Frankenstein/app/lib/emulator/cpu_addressing.cpp</file>
-            <file>file:/home/dinf0014_admin/Documents/Frankenstein/app/lib/emulator/ppu.cpp</file>
-            <file>file:/home/dinf0014_admin/Documents/Frankenstein/Rules.mk</file>
-            <file>file:/home/dinf0014_admin/Documents/Frankenstein/app/kernel/kernel.cpp</file>
-            <file>file:/home/dinf0014_admin/Documents/Frankenstein/app/lib/emulator/cpu.h</file>
-            <file>file:/home/dinf0014_admin/Documents/Frankenstein/app/lib/emulator/cpu.cpp</file>
-            <file>file:/home/dinf0014_admin/Documents/Frankenstein/app/lib/emulator/util.h</file>
-            <file>file:/home/dinf0014_admin/Documents/Frankenstein/app/lib/emulator/ppu.h</file>
-            <file>file:/home/dinf0014_admin/Documents/Frankenstein/app/lib/emulator/Makefile</file>
-            <file>file:/home/dinf0014_admin/Documents/Frankenstein/app/Rules.mk</file>
+            <file>file:/home/mgoyette/Documents/Frankenstein/emulator/meson.build</file>
+            <file>file:/home/mgoyette/Documents/Frankenstein/emulator/cpu.cpp</file>
+            <file>file:/home/mgoyette/Documents/Frankenstein/emulator/include/dependencies.h</file>
         </group>
     </open-files>
 </project-private>

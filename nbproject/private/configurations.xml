@@ -1,329 +1,462 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configurationDescriptor version="95">
+<configurationDescriptor version="100">
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
     <df root="." name="0">
-      <df name="addon">
-        <df name="dio">
-          <df name="sample">
-            <in>kernel.cpp</in>
-            <in>kernel.h</in>
-            <in>main.cpp</in>
-          </df>
-          <in>spidio.cpp</in>
-          <in>spidio.h</in>
-        </df>
-        <df name="OneWire">
-          <df name="sample">
-            <in>ds18x20.cpp</in>
-            <in>ds18x20.h</in>
-            <in>kernel.cpp</in>
-            <in>kernel.h</in>
-            <in>main.cpp</in>
-          </df>
-          <in>OneWire.cpp</in>
-          <in>OneWire.h</in>
-        </df>
-        <df name="Properties">
-          <df name="sample">
-            <in>kernel.cpp</in>
-            <in>kernel.h</in>
-            <in>main.cpp</in>
-          </df>
-          <in>properties.cpp</in>
-          <in>properties.h</in>
-          <in>propertiesfile.cpp</in>
-          <in>propertiesfile.h</in>
-        </df>
-        <df name="rtc">
-          <df name="sample">
-            <in>kernel.cpp</in>
-            <in>kernel.h</in>
-            <in>main.cpp</in>
-          </df>
-          <in>mcp7941x.cpp</in>
-          <in>mcp7941x.h</in>
-          <in>rtc.h</in>
-        </df>
-        <df name="SDCard">
-          <df name="sample">
-            <in>kernel.cpp</in>
-            <in>kernel.h</in>
-            <in>main.cpp</in>
-          </df>
-          <in>emmc.cpp</in>
-          <in>emmc.h</in>
-        </df>
-        <df name="Spectrum">
-          <df name="sample">
-            <in>BruceLeeScr.h</in>
-            <in>kernel.cpp</in>
-            <in>kernel.h</in>
-            <in>main.cpp</in>
-          </df>
-          <in>SpectrumScreen.cpp</in>
-          <in>SpectrumScreen.h</in>
-        </df>
-        <df name="tftpfileserver">
-          <df name="sample">
-            <in>kernel.cpp</in>
-            <in>kernel.h</in>
-            <in>main.cpp</in>
-          </df>
-          <in>tftpfileserver.cpp</in>
-          <in>tftpfileserver.h</in>
-        </df>
-        <df name="ugui">
-          <df name="sample">
-            <in>controlwindow.cpp</in>
-            <in>controlwindow.h</in>
-            <in>kernel.cpp</in>
-            <in>kernel.h</in>
-            <in>main.cpp</in>
-            <in>recorder.cpp</in>
-            <in>recorder.h</in>
-            <in>sampler.S</in>
-            <in>sampler.h</in>
-            <in>scopeconfig.cpp</in>
-            <in>scopeconfig.h</in>
-            <in>scopewindow.cpp</in>
-            <in>scopewindow.h</in>
-            <in>timeline.cpp</in>
-            <in>timeline.h</in>
-          </df>
-          <in>system.h</in>
-          <in>ugui.c</in>
-          <in>ugui.h</in>
-          <in>ugui_config.h</in>
-          <in>uguicpp.cpp</in>
-          <in>uguicpp.h</in>
-        </df>
-        <df name="webconsole">
-          <df name="sample">
-            <in>kernel.cpp</in>
-            <in>kernel.h</in>
-            <in>main.cpp</in>
-          </df>
-          <in>logbuffer.cpp</in>
-          <in>logbuffer.h</in>
-          <in>webconsole.cpp</in>
-          <in>webconsole.h</in>
-        </df>
-        <df name="WS28XX">
-          <df name="sample">
-            <in>kernel.cpp</in>
-            <in>kernel.h</in>
-            <in>main.cpp</in>
-          </df>
-          <in>ws28xxstripe.cpp</in>
-          <in>ws28xxstripe.h</in>
-        </df>
-      </df>
-      <df name="app">
-        <df name="kernel">
-          <in>kernel.cpp</in>
-          <in>kernel.h</in>
-          <in>main.cpp</in>
-        </df>
-        <df name="lib">
-          <df name="emulator">
-            <in>cpu.cpp</in>
-            <in>cpu.h</in>
-            <in>cpu_addressing.cpp</in>
-            <in>nes.cpp</in>
-            <in>nes.h</in>
-            <in>ppu.cpp</in>
-            <in>ppu.h</in>
-            <in>rom.cpp</in>
-            <in>rom.h</in>
-            <in>util.h</in>
-          </df>
-        </df>
-      </df>
-      <df name="boot">
-      </df>
-      <df name="doc">
-      </df>
-      <df name="include">
-        <df name="circle">
-          <df name="sched">
-            <in>scheduler.h</in>
-            <in>synchronizationevent.h</in>
-            <in>task.h</in>
-            <in>taskswitch.h</in>
-          </df>
-          <df name="usb">
-            <in>dwhci.h</in>
-            <in>dwhcidevice.h</in>
-            <in>dwhciframeschednper.h</in>
-            <in>dwhciframeschednsplit.h</in>
-            <in>dwhciframeschedper.h</in>
-            <in>dwhciframescheduler.h</in>
-            <in>dwhciregister.h</in>
-            <in>dwhcirootport.h</in>
-            <in>dwhcixferstagedata.h</in>
-            <in>macaddress.h</in>
-            <in>netdevice.h</in>
-            <in>smsc951x.h</in>
-            <in>usb.h</in>
-            <in>usbconfigparser.h</in>
-            <in>usbdevice.h</in>
-            <in>usbdevicefactory.h</in>
-            <in>usbendpoint.h</in>
-            <in>usbfunction.h</in>
-            <in>usbgamepad.h</in>
-            <in>usbhid.h</in>
-            <in>usbhostcontroller.h</in>
-            <in>usbhub.h</in>
-            <in>usbrequest.h</in>
-            <in>usbstandardhub.h</in>
-          </df>
-          <in>actled.h</in>
-          <in>alloc.h</in>
-          <in>armv6mmu.h</in>
-          <in>bcm2835.h</in>
-          <in>bcm2835int.h</in>
-          <in>bcm2836.h</in>
-          <in>bcmframebuffer.h</in>
-          <in>bcmmailbox.h</in>
-          <in>bcmpropertytags.h</in>
-          <in>bcmrandom.h</in>
-          <in>chargenerator.h</in>
-          <in>cputhrottle.h</in>
-          <in>debug.h</in>
-          <in>device.h</in>
-          <in>devicenameservice.h</in>
-          <in>dmachannel.h</in>
-          <in>exception.h</in>
-          <in>exceptionhandler.h</in>
-          <in>exceptionstub.h</in>
-          <in>gpioclock.h</in>
-          <in>gpiomanager.h</in>
-          <in>gpiopin.h</in>
-          <in>i2cmaster.h</in>
-          <in>i2cslave.h</in>
-          <in>interrupt.h</in>
-          <in>koptions.h</in>
-          <in>logger.h</in>
-          <in>machineinfo.h</in>
-          <in>macros.h</in>
-          <in>memio.h</in>
-          <in>memory.h</in>
-          <in>multicore.h</in>
-          <in>nulldevice.h</in>
-          <in>pagetable.h</in>
-          <in>ptrarray.h</in>
-          <in>ptrlist.h</in>
-          <in>pwmoutput.h</in>
-          <in>pwmsounddevice.h</in>
-          <in>screen.h</in>
-          <in>serial.h</in>
-          <in>spimaster.h</in>
-          <in>spimasterdma.h</in>
-          <in>spinlock.h</in>
-          <in>startup.h</in>
-          <in>stdarg.h</in>
-          <in>string.h</in>
-          <in>synchronize.h</in>
-          <in>sysconfig.h</in>
-          <in>time.h</in>
-          <in>timer.h</in>
-          <in>tracer.h</in>
-          <in>types.h</in>
+      <df name="emulator">
+        <df name="include">
+          <in>cpu.h</in>
+          <in>dependencies.h</in>
+          <in>nes.h</in>
+          <in>ppu.h</in>
+          <in>rom.h</in>
           <in>util.h</in>
-          <in>version.h</in>
-          <in>virtualgpiopin.h</in>
         </df>
-        <in>assert.h</in>
-        <in>stdint.h</in>
+        <df name="test">
+          <in>catch.hpp</in>
+          <in>cputest.cpp</in>
+          <in>tests-main.cpp</in>
+        </df>
+        <in>cpu.cpp</in>
+        <in>nes.cpp</in>
+        <in>ppu.cpp</in>
+        <in>rom.cpp</in>
       </df>
-      <df name="lib">
-        <df name="sched">
-          <in>scheduler.cpp</in>
-          <in>synchronizationevent.cpp</in>
-          <in>task.cpp</in>
-          <in>taskswitch.S</in>
+      <df name="kernel">
+        <in>kernel.cpp</in>
+        <in>kernel.h</in>
+        <in>main.cpp</in>
+      </df>
+      <df name="release-build">
+        <df name="emulator">
+          <df name="emulator@sta">
+          </df>
+          <df name="emulator_native@sta">
+          </df>
+          <df name="test">
+            <df name="emulator_tests@exe">
+            </df>
+          </df>
         </df>
-        <df name="usb">
-          <in>dwhcidevice.cpp</in>
-          <in>dwhciframeschednper.cpp</in>
-          <in>dwhciframeschednsplit.cpp</in>
-          <in>dwhciframeschedper.cpp</in>
-          <in>dwhciregister.cpp</in>
-          <in>dwhcirootport.cpp</in>
-          <in>dwhcixferstagedata.cpp</in>
-          <in>macaddress.cpp</in>
-          <in>netdevice.cpp</in>
-          <in>smsc951x.cpp</in>
-          <in>usbconfigparser.cpp</in>
-          <in>usbdevice.cpp</in>
-          <in>usbdevicefactory.cpp</in>
-          <in>usbendpoint.cpp</in>
-          <in>usbfunction.cpp</in>
-          <in>usbgamepad.cpp</in>
-          <in>usbhostcontroller.cpp</in>
-          <in>usbrequest.cpp</in>
-          <in>usbstandardhub.cpp</in>
+        <df name="kernel">
+          <df name="kernel.elf@exe">
+          </df>
         </df>
-        <in>actled.cpp</in>
-        <in>alloc.cpp</in>
-        <in>assert.cpp</in>
-        <in>bcmframebuffer.cpp</in>
-        <in>bcmmailbox.cpp</in>
-        <in>bcmpropertytags.cpp</in>
-        <in>bcmrandom.cpp</in>
-        <in>cache-v7.S</in>
-        <in>chargenerator.cpp</in>
-        <in>cputhrottle.cpp</in>
-        <in>debug.cpp</in>
-        <in>delayloop.S</in>
-        <in>device.cpp</in>
-        <in>devicenameservice.cpp</in>
-        <in>dmachannel.cpp</in>
-        <in>exceptionhandler.cpp</in>
-        <in>exceptionstub.S</in>
-        <in>font.h</in>
-        <in>gpioclock.cpp</in>
-        <in>gpiomanager.cpp</in>
-        <in>gpiopin.cpp</in>
-        <in>i2cmaster.cpp</in>
-        <in>i2cslave.cpp</in>
-        <in>interrupt.cpp</in>
-        <in>koptions.cpp</in>
-        <in>libhelper.cpp</in>
-        <in>libstub.S</in>
-        <in>logger.cpp</in>
-        <in>machineinfo.cpp</in>
-        <in>memory.cpp</in>
-        <in>multicore.cpp</in>
-        <in>new.cpp</in>
-        <in>nulldevice.cpp</in>
-        <in>pagetable.cpp</in>
-        <in>ptrarray.cpp</in>
-        <in>ptrlist.cpp</in>
-        <in>purecall.cpp</in>
-        <in>pwmoutput.cpp</in>
-        <in>pwmsounddevice.cpp</in>
-        <in>screen.cpp</in>
-        <in>serial.cpp</in>
-        <in>spimaster.cpp</in>
-        <in>spimasterdma.cpp</in>
-        <in>spinlock.cpp</in>
-        <in>startup.S</in>
-        <in>string.cpp</in>
-        <in>synchronize.cpp</in>
-        <in>sysinit.cpp</in>
-        <in>time.cpp</in>
-        <in>timer.cpp</in>
-        <in>tracer.cpp</in>
-        <in>util.cpp</in>
-        <in>util_fast.S</in>
-        <in>virtualgpiopin.cpp</in>
+        <df name="meson-logs">
+        </df>
+        <df name="meson-private">
+          <in>sanitycheckcpp.cc</in>
+        </df>
+        <df name="subprojects">
+          <df name="circle">
+            <df name="lib">
+              <df name="circle@sta">
+              </df>
+              <df name="sched">
+                <df name="circle_sched@sta">
+                </df>
+              </df>
+              <df name="usb">
+                <df name="circle_usb@sta">
+                </df>
+              </df>
+            </df>
+          </df>
+        </df>
+      </df>
+      <df name="subprojects">
+        <df name="circle">
+          <df name="addon">
+            <df name="dio">
+              <df name="sample">
+                <in>kernel.cpp</in>
+                <in>kernel.h</in>
+                <in>main.cpp</in>
+              </df>
+              <in>spidio.cpp</in>
+              <in>spidio.h</in>
+            </df>
+            <df name="OneWire">
+              <df name="sample">
+                <in>ds18x20.cpp</in>
+                <in>ds18x20.h</in>
+                <in>kernel.cpp</in>
+                <in>kernel.h</in>
+                <in>main.cpp</in>
+              </df>
+              <in>OneWire.cpp</in>
+              <in>OneWire.h</in>
+            </df>
+            <df name="Properties">
+              <df name="sample">
+                <in>kernel.cpp</in>
+                <in>kernel.h</in>
+                <in>main.cpp</in>
+              </df>
+              <in>properties.cpp</in>
+              <in>properties.h</in>
+              <in>propertiesfile.cpp</in>
+              <in>propertiesfile.h</in>
+            </df>
+            <df name="rtc">
+              <df name="sample">
+                <in>kernel.cpp</in>
+                <in>kernel.h</in>
+                <in>main.cpp</in>
+              </df>
+              <in>mcp7941x.cpp</in>
+              <in>mcp7941x.h</in>
+              <in>rtc.h</in>
+            </df>
+            <df name="SDCard">
+              <df name="sample">
+                <in>kernel.cpp</in>
+                <in>kernel.h</in>
+                <in>main.cpp</in>
+              </df>
+              <in>emmc.cpp</in>
+              <in>emmc.h</in>
+            </df>
+            <df name="Spectrum">
+              <df name="sample">
+                <in>BruceLeeScr.h</in>
+                <in>kernel.cpp</in>
+                <in>kernel.h</in>
+                <in>main.cpp</in>
+              </df>
+              <in>SpectrumScreen.cpp</in>
+              <in>SpectrumScreen.h</in>
+            </df>
+            <df name="tftpfileserver">
+              <df name="sample">
+                <in>kernel.cpp</in>
+                <in>kernel.h</in>
+                <in>main.cpp</in>
+              </df>
+              <in>tftpfileserver.cpp</in>
+              <in>tftpfileserver.h</in>
+            </df>
+            <df name="ugui">
+              <df name="sample">
+                <in>controlwindow.cpp</in>
+                <in>controlwindow.h</in>
+                <in>kernel.cpp</in>
+                <in>kernel.h</in>
+                <in>main.cpp</in>
+                <in>recorder.cpp</in>
+                <in>recorder.h</in>
+                <in>sampler.S</in>
+                <in>sampler.h</in>
+                <in>scopeconfig.cpp</in>
+                <in>scopeconfig.h</in>
+                <in>scopewindow.cpp</in>
+                <in>scopewindow.h</in>
+                <in>timeline.cpp</in>
+                <in>timeline.h</in>
+              </df>
+              <in>system.h</in>
+              <in>ugui.c</in>
+              <in>ugui.h</in>
+              <in>ugui_config.h</in>
+              <in>uguicpp.cpp</in>
+              <in>uguicpp.h</in>
+            </df>
+            <df name="webconsole">
+              <df name="sample">
+                <in>kernel.cpp</in>
+                <in>kernel.h</in>
+                <in>main.cpp</in>
+              </df>
+              <in>logbuffer.cpp</in>
+              <in>logbuffer.h</in>
+              <in>webconsole.cpp</in>
+              <in>webconsole.h</in>
+            </df>
+            <df name="WS28XX">
+              <df name="sample">
+                <in>kernel.cpp</in>
+                <in>kernel.h</in>
+                <in>main.cpp</in>
+              </df>
+              <in>ws28xxstripe.cpp</in>
+              <in>ws28xxstripe.h</in>
+            </df>
+          </df>
+          <df name="app">
+            <df name="kernel">
+              <in>kernel.cpp</in>
+              <in>kernel.h</in>
+              <in>main.cpp</in>
+            </df>
+            <df name="lib">
+              <df name="emulator">
+                <in>cpu.cpp</in>
+                <in>cpu.h</in>
+                <in>nes.cpp</in>
+                <in>nes.h</in>
+                <in>ppu.cpp</in>
+                <in>ppu.h</in>
+                <in>rom.cpp</in>
+                <in>rom.h</in>
+                <in>util.h</in>
+              </df>
+              <df name="test">
+                <in>catch.hpp</in>
+                <in>cputest.cpp</in>
+                <in>tests-main.cpp</in>
+              </df>
+            </df>
+          </df>
+          <df name="boot">
+          </df>
+          <df name="doc">
+          </df>
+          <df name="include">
+            <df name="circle">
+              <df name="sched">
+                <in>scheduler.h</in>
+                <in>synchronizationevent.h</in>
+                <in>task.h</in>
+                <in>taskswitch.h</in>
+              </df>
+              <df name="usb">
+                <in>dwhci.h</in>
+                <in>dwhcidevice.h</in>
+                <in>dwhciframeschednper.h</in>
+                <in>dwhciframeschednsplit.h</in>
+                <in>dwhciframeschedper.h</in>
+                <in>dwhciframescheduler.h</in>
+                <in>dwhciregister.h</in>
+                <in>dwhcirootport.h</in>
+                <in>dwhcixferstagedata.h</in>
+                <in>macaddress.h</in>
+                <in>netdevice.h</in>
+                <in>smsc951x.h</in>
+                <in>usb.h</in>
+                <in>usbconfigparser.h</in>
+                <in>usbdevice.h</in>
+                <in>usbdevicefactory.h</in>
+                <in>usbendpoint.h</in>
+                <in>usbfunction.h</in>
+                <in>usbgamepad.h</in>
+                <in>usbhid.h</in>
+                <in>usbhiddevice.h</in>
+                <in>usbhostcontroller.h</in>
+                <in>usbhub.h</in>
+                <in>usbrequest.h</in>
+                <in>usbstandardhub.h</in>
+              </df>
+              <in>actled.h</in>
+              <in>alloc.h</in>
+              <in>armv6mmu.h</in>
+              <in>bcm2835.h</in>
+              <in>bcm2835int.h</in>
+              <in>bcm2836.h</in>
+              <in>bcmframebuffer.h</in>
+              <in>bcmmailbox.h</in>
+              <in>bcmpropertytags.h</in>
+              <in>bcmrandom.h</in>
+              <in>chargenerator.h</in>
+              <in>cputhrottle.h</in>
+              <in>debug.h</in>
+              <in>device.h</in>
+              <in>devicenameservice.h</in>
+              <in>dmachannel.h</in>
+              <in>exception.h</in>
+              <in>exceptionhandler.h</in>
+              <in>exceptionstub.h</in>
+              <in>gpioclock.h</in>
+              <in>gpiomanager.h</in>
+              <in>gpiopin.h</in>
+              <in>i2cmaster.h</in>
+              <in>i2cslave.h</in>
+              <in>interrupt.h</in>
+              <in>koptions.h</in>
+              <in>logger.h</in>
+              <in>machineinfo.h</in>
+              <in>macros.h</in>
+              <in>memio.h</in>
+              <in>memory.h</in>
+              <in>multicore.h</in>
+              <in>nulldevice.h</in>
+              <in>pagetable.h</in>
+              <in>ptrarray.h</in>
+              <in>ptrlist.h</in>
+              <in>pwmoutput.h</in>
+              <in>pwmsounddevice.h</in>
+              <in>screen.h</in>
+              <in>serial.h</in>
+              <in>spimaster.h</in>
+              <in>spimasterdma.h</in>
+              <in>spinlock.h</in>
+              <in>startup.h</in>
+              <in>stdarg.h</in>
+              <in>string.h</in>
+              <in>synchronize.h</in>
+              <in>sysconfig.h</in>
+              <in>time.h</in>
+              <in>timer.h</in>
+              <in>tracer.h</in>
+              <in>types.h</in>
+              <in>util.h</in>
+              <in>version.h</in>
+              <in>virtualgpiopin.h</in>
+            </df>
+            <in>assert.h</in>
+            <in>stdint.h</in>
+          </df>
+          <df name="lib">
+            <df name="sched">
+              <in>scheduler.cpp</in>
+              <in>synchronizationevent.cpp</in>
+              <in>task.cpp</in>
+              <in>taskswitch.S</in>
+            </df>
+            <df name="usb">
+              <in>dwhcidevice.cpp</in>
+              <in>dwhciframeschednper.cpp</in>
+              <in>dwhciframeschednsplit.cpp</in>
+              <in>dwhciframeschedper.cpp</in>
+              <in>dwhciregister.cpp</in>
+              <in>dwhcirootport.cpp</in>
+              <in>dwhcixferstagedata.cpp</in>
+              <in>macaddress.cpp</in>
+              <in>netdevice.cpp</in>
+              <in>smsc951x.cpp</in>
+              <in>usbconfigparser.cpp</in>
+              <in>usbdevice.cpp</in>
+              <in>usbdevicefactory.cpp</in>
+              <in>usbendpoint.cpp</in>
+              <in>usbfunction.cpp</in>
+              <in>usbgamepad.cpp</in>
+              <in>usbhostcontroller.cpp</in>
+              <in>usbrequest.cpp</in>
+              <in>usbstandardhub.cpp</in>
+            </df>
+            <in>actled.cpp</in>
+            <in>alloc.cpp</in>
+            <in>assert.cpp</in>
+            <in>bcmframebuffer.cpp</in>
+            <in>bcmmailbox.cpp</in>
+            <in>bcmpropertytags.cpp</in>
+            <in>bcmrandom.cpp</in>
+            <in>cache-v7.S</in>
+            <in>chargenerator.cpp</in>
+            <in>cputhrottle.cpp</in>
+            <in>debug.cpp</in>
+            <in>delayloop.S</in>
+            <in>device.cpp</in>
+            <in>devicenameservice.cpp</in>
+            <in>dmachannel.cpp</in>
+            <in>exceptionhandler.cpp</in>
+            <in>exceptionstub.S</in>
+            <in>font.h</in>
+            <in>gpioclock.cpp</in>
+            <in>gpiomanager.cpp</in>
+            <in>gpiopin.cpp</in>
+            <in>i2cmaster.cpp</in>
+            <in>i2cslave.cpp</in>
+            <in>interrupt.cpp</in>
+            <in>koptions.cpp</in>
+            <in>libhelper.cpp</in>
+            <in>libstub.S</in>
+            <in>logger.cpp</in>
+            <in>machineinfo.cpp</in>
+            <in>memory.cpp</in>
+            <in>multicore.cpp</in>
+            <in>new.cpp</in>
+            <in>nulldevice.cpp</in>
+            <in>pagetable.cpp</in>
+            <in>ptrarray.cpp</in>
+            <in>ptrlist.cpp</in>
+            <in>purecall.cpp</in>
+            <in>pwmoutput.cpp</in>
+            <in>pwmsounddevice.cpp</in>
+            <in>screen.cpp</in>
+            <in>serial.cpp</in>
+            <in>spimaster.cpp</in>
+            <in>spimasterdma.cpp</in>
+            <in>spinlock.cpp</in>
+            <in>startup.S</in>
+            <in>string.cpp</in>
+            <in>synchronize.cpp</in>
+            <in>sysinit.cpp</in>
+            <in>time.cpp</in>
+            <in>timer.cpp</in>
+            <in>tracer.cpp</in>
+            <in>util.cpp</in>
+            <in>util_fast.S</in>
+            <in>virtualgpiopin.cpp</in>
+          </df>
+        </df>
+      </df>
+      <df name="test-build">
+        <df name="emulator">
+          <df name="emulator_native@sta">
+          </df>
+          <df name="test">
+            <df name="emulator_tests@exe">
+            </df>
+          </df>
+        </df>
+        <df name="meson-logs">
+        </df>
+        <df name="meson-private">
+          <in>sanitycheckcpp.cc</in>
+        </df>
       </df>
     </df>
   </logicalFolder>
   <projectmakefile>app/Makefile</projectmakefile>
   <confs>
-    <conf name="Default" type="0">
+    <conf name="Tests_Configuration" type="0">
+      <toolsSet>
+        <developmentServer>localhost</developmentServer>
+        <platform>2</platform>
+      </toolsSet>
+      <compile>
+        <compiledirpicklist>
+          <compiledirpicklistitem>.</compiledirpicklistitem>
+          <compiledirpicklistitem>${AUTO_FOLDER}</compiledirpicklistitem>
+        </compiledirpicklist>
+        <compiledir>${AUTO_FOLDER}</compiledir>
+        <compilecommandpicklist>
+          <compilecommandpicklistitem>${MAKE} ${ITEM_NAME}.o</compilecommandpicklistitem>
+          <compilecommandpicklistitem>${AUTO_COMPILE}</compilecommandpicklistitem>
+        </compilecommandpicklist>
+        <compilecommand>${AUTO_COMPILE}</compilecommand>
+      </compile>
+      <dbx_gdbdebugger version="1">
+        <gdb_pathmaps>
+        </gdb_pathmaps>
+        <gdb_interceptlist>
+          <gdbinterceptoptions gdb_all="false" gdb_unhandled="true" gdb_unexpected="true"/>
+        </gdb_interceptlist>
+        <gdb_options>
+          <DebugOptions>
+            <option name="debug_dir"
+                    value="/home/mgoyette/Documents/Frankenstein/test-build"/>
+          </DebugOptions>
+        </gdb_options>
+        <gdb_buildfirst gdb_buildfirst_overriden="false" gdb_buildfirst_old="false"/>
+      </dbx_gdbdebugger>
+      <nativedebugger version="1">
+        <engine>gdb</engine>
+      </nativedebugger>
+      <runprofile version="9">
+        <runcommandpicklist>
+          <runcommandpicklistitem>"${OUTPUT_PATH}"</runcommandpicklistitem>
+          <runcommandpicklistitem>ninja test</runcommandpicklistitem>
+        </runcommandpicklist>
+        <runcommand>ninja test</runcommand>
+        <rundir>/home/mgoyette/Documents/Frankenstein/test-build</rundir>
+        <buildfirst>false</buildfirst>
+        <terminal-type>0</terminal-type>
+        <remove-instrumentation>0</remove-instrumentation>
+        <environment>
+        </environment>
+      </runprofile>
+    </conf>
+    <conf name="Pi_Configuration" type="0">
       <toolsSet>
         <developmentServer>localhost</developmentServer>
         <platform>2</platform>
@@ -360,7 +493,7 @@
           <runcommandpicklistitem>"${OUTPUT_PATH}"</runcommandpicklistitem>
         </runcommandpicklist>
         <runcommand>"${OUTPUT_PATH}"</runcommand>
-        <rundir>app</rundir>
+        <rundir></rundir>
         <buildfirst>false</buildfirst>
         <terminal-type>0</terminal-type>
         <remove-instrumentation>0</remove-instrumentation>
