@@ -5,7 +5,7 @@
 
 class Cpu {
     public:
-    union NESCPUMemoryMap {
+    union MemoryMap {
         struct {
             u8 zeroPage[0x0100];
             u8 stack[0x0100];
@@ -22,7 +22,7 @@ class Cpu {
         u8 raw[0x10000];
     };
 
-    struct NESCPURegisters {
+    struct Registers {
         u16 PC;
         u8 SP = 0xFF;
         u8 A;
@@ -31,7 +31,7 @@ class Cpu {
         u8 P = 0b00100000;
     };
 
-    enum NESCPUFlags {
+    enum Flags {
         C,      //Carry
         Z,      //Zero
         I,      //Interrupt
@@ -42,8 +42,8 @@ class Cpu {
         S       //Sign : 1 is negative
     };
 
-    NESCPURegisters registers;
-    NESCPUMemoryMap memory;
+    Registers registers;
+    MemoryMap memory;
 
     const u8 instructionSizes[256] ={
         0, //BRK
@@ -664,5 +664,7 @@ class Cpu {
 
     Cpu();
     Cpu(const Rom* rom);
+    
+    u8 cycles;
 };
 

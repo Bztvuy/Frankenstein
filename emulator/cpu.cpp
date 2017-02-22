@@ -34,12 +34,12 @@ u8 Cpu::GetFlag(u8 flag){
 }
 
 bool Cpu::IsPageCrossed(u16 startAddress, u16 endAddress){
-    return (startAddress / NES_PAGE_SIZE) == (endAddress / NES_PAGE_SIZE);
+    return (startAddress & 0xFF00) != (endAddress & 0xFF00);
 }
 
 void Cpu::Execute(){
     auto opCode = OpCode();
-    auto cycles = (this->*instructions[opCode])();
+    this->cycles = (this->*instructions[opCode])();
     this->registers.PC += this->instructionSizes[opCode];
 }
 
