@@ -1,0 +1,23 @@
+[binaries]
+c = 'arm-none-eabi-gcc'
+as = 'arm-none-eabi-gcc'
+cpp = 'arm-none-eabi-g++'
+ar = 'arm-none-eabi-ar'
+ld = 'arm-none-eabi-ld'
+strip = 'arm-none-eabi-strip'
+objcopy = 'arm-none-eabi-objcopy'
+objdump = 'arm-none-eabi-objdump'
+
+[properties]
+objcopy = 'arm-none-eabi-objcopy'
+root = '/usr/arm-none-eabi'
+compilation_target = 'kernel7'
+rpi_version = '3'
+c_args = ['-march=armv8-a', '-mtune=cortex-a53', '-mfpu=neon-fp-armv8', '-mfloat-abi=hard']
+a_args = ['-march=armv8-a', '-mtune=cortex-a53', '-mfpu=neon-fp-armv8', '-mfloat-abi=hard']
+
+[host_machine]
+system = 'raspberry-pi'
+cpu_family = 'arm'
+cpu = 'armv8-a'
+endian = 'little'
