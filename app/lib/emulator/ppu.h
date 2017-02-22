@@ -135,11 +135,17 @@ public:
     NESPPURegisters registers;
     NESPPUMemoryMap memory;
     
-    RGBColor* frame[256][240];
+    RGBColor* frontBuffer[256][240];
+    RGBColor* backBuffer[256][240];
     
     u8 objectAttributeMemory[256];
+    u16 cycle;          // 0-340
+    u16 scanline;       // 0-261, 0-239=visible, 240=post, 241-260=vblank, 261=pre
+    u64 frame;
 
     Ppu(const Rom* rom);
+    
+    void Reset();
 };
 
 #endif // PPU_H

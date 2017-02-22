@@ -21,3 +21,9 @@ Ppu::Ppu(const Rom* rom)
             break;
     }
 }
+
+Ppu::Reset(){
+    cycle = 340;
+    scanline = 240;
+    frame = 0;
+}
