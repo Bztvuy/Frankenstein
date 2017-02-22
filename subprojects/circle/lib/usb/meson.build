@@ -6,8 +6,4 @@ usb_src = ['dwhcidevice.cpp', 'dwhciregister.cpp', 'dwhcixferstagedata.cpp',
            'dwhcirootport.cpp', 'usbgamepad.cpp', 'usbfunction.cpp',
            'dwhciframeschednsplit.cpp']
 
-libusb = static_library('circle_usb', usb_src, include_directories: circle_include)
-
-libusb_dep = declare_dependency(
-	include_directories: circle_include,
-	link_with: libusb)
+libusb = static_library('circle_usb', usb_src, include_directories: circle_include, pic: false)

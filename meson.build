@@ -1,36 +1,36 @@
 project('frankenstein', 'cpp',
   version: '0.1.0',
   meson_version: '>= 0.36.0',
+  default_options: ['buildtype=debugoptimized',
+                    'cpp_std=c++11']
 )
 
 #-------------------------------------------------------------------------------
 # compilation variables
 #-------------------------------------------------------------------------------
+cpp_args       = ['-Wall', '-Wno-psabi', '-fsigned-char']
 
 if meson.is_cross_build()
-	rpi_version = meson.get_cross_property('rpi_version')
-	rpi_version_arg = ['-DRASPPI=@0@'.format(rpi_version)]
+    rpi_version = meson.get_cross_property('rpi_version')
+    rpi_version_arg = ['-DRASPPI=@0@'.format(rpi_version)]
 
-	a_args = meson.get_cross_property('a_args')
-	c_args = meson.get_cross_property('c_args')
-	a_source_args = a_args + rpi_version_arg
-	c_source_args = c_args + rpi_version_arg + ['-Wall', '-Wno-psabi', '-fsigned-char', '-fno-builtin',
-		         '-nostdinc', '-nostdlib', '-D__circle__']
-	cpp_source_args = c_source_args + ['-fno-exceptions', '-fno-rtti', '-std=c++14']
-
-	#-------------------------------------------------------------------------------
-	# Targets
-	#-------------------------------------------------------------------------------
-	circle = subproject('circle')
-
-	libcircle_dep = circle.get_variable('libcircle_dep')
-	libcircle_include = circle.get_variable('circle_include')
-	libsched_dep = circle.get_variable('libsched_dep')
-	libusb_dep = circle.get_variable('libusb_dep')
+    cpp_args += rpi_version_arg
+    cpp_cross_args = cpp_args + ['-fno-builtin', '-nostdinc', '-nostdlib', '-ffreestanding', 
+                                 '-D__circle__', '-fno-exceptions', '-fno-non-call-exceptions', 
+                                 '-fno-rtti']
 endif
 
-subdir('emulator')
+#-------------------------------------------------------------------------------
+# Targets
+#-------------------------------------------------------------------------------
+if not meson.is_cross_build()
+    subdir('emulator')
+else
+    circle = subproject('circle')
 
-if meson.is_cross_build()
-	subdir('kernel')
+    libcircle_dep = circle.get_variable('libcircle_dep')
+    libcircle_include = circle.get_variable('circle_include')
+    
+    subdir('emulator')
+    subdir('kernel')
 endif

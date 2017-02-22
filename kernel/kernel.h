@@ -17,8 +17,6 @@
 #include <circle/types.h>
 #include <circle/util.h>
 
-#include "nes.h"
-
 enum TShutdownMode
 {
 	ShutdownNone,
@@ -50,7 +48,6 @@ private:
 	CLogger			m_Logger;
 
 	// TODO: add more members here
-        Nes                     nes;
 };
 
 #endif

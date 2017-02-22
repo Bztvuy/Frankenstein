@@ -13,8 +13,9 @@ objcopy = 'arm-none-eabi-objcopy'
 root = '/usr/arm-none-eabi'
 compilation_target = 'kernel7'
 rpi_version = '3'
+
 c_args = ['-march=armv8-a', '-mtune=cortex-a53', '-mfpu=neon-fp-armv8', '-mfloat-abi=hard']
-a_args = ['-march=armv8-a', '-mtune=cortex-a53', '-mfpu=neon-fp-armv8', '-mfloat-abi=hard']
+cpp_args = ['-march=armv8-a', '-mtune=cortex-a53', '-mfpu=neon-fp-armv8', '-mfloat-abi=hard']
 
 [host_machine]
 system = 'raspberry-pi'

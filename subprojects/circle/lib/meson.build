@@ -15,11 +15,10 @@ circle_src = ['actled.cpp', 'alloc.cpp', 'bcmmailbox.cpp', 'bcmpropertytags.cpp'
               'ptrlist.cpp', 'time.cpp', 'cache-v7.S', 'libstub.S', 'util_fast.S',
               'delayloop.S', 'exceptionstub.S']
 
-libcircle = static_library('circle', circle_src, include_directories: circle_include)
+libcircle = static_library('circle', circle_src, include_directories: circle_include, pic: false)
 
 libcircle_dep = declare_dependency(
 	include_directories: circle_include,
-	link_with: libcircle,
+	link_with: [libcircle, libusb, libsched],
 	link_depends: ld_script,
-	link_args: ['-Wl,-Map,kernel7.map,-T,@0@'.format(ld_script_location), '-fno-builtin','-nostdinc', '-nostdlib'],
-	sources: ['startup.S'])
+	link_args: ['-Wl,-Map,kernel7.map,-T,@0@'.format(ld_script_location)])

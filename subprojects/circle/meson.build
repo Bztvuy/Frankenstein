@@ -11,21 +11,13 @@ endif
 #-------------------------------------------------------------------------------
 rpi_version = meson.get_cross_property('rpi_version')
 rpi_version_arg = ['-DRASPPI=@0@'.format(rpi_version)]
-optimisation = 2
 
-a_args = meson.get_cross_property('a_args')
-c_args = meson.get_cross_property('c_args')
+cpp_args       = rpi_version_arg + ['-Wall', '-Wno-psabi', '-fsigned-char']
+cpp_cross_args = cpp_args + ['-fno-builtin', '-nostdinc', '-nostdlib', '-ffreestanding', 
+                             '-D__circle__', '-fno-exceptions', '-fno-non-call-exceptions', 
+                             '-fno-rtti']
 
-a_source_args = a_args + rpi_version_arg
-c_source_args = c_args + rpi_version_arg + ['-Wall', '-Wno-psabi', '-fsigned-char', '-fno-builtin',
-                 '-nostdinc', '-nostdlib', '-D__circle__']
-cpp_source_args = c_source_args + ['-fno-exceptions', '-fno-rtti', '-std=c++0x']
-
-add_project_arguments(a_source_args, language:'assembly')
-add_project_arguments(c_source_args, language:'c')
-add_project_arguments(cpp_source_args, language:'cpp')
-add_project_link_arguments(c_source_args, language:'c')
-add_project_link_arguments(cpp_source_args, language:'cpp')
+add_project_arguments(cpp_cross_args, language:'cpp')
 
 #-------------------------------------------------------------------------------
 # targets

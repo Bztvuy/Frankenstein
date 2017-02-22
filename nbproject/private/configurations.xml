@@ -25,6 +25,7 @@
         <in>kernel.cpp</in>
         <in>kernel.h</in>
         <in>main.cpp</in>
+        <in>startup.S</in>
       </df>
       <df name="release-build">
         <df name="emulator">

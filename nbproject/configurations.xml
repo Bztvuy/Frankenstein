@@ -217,12 +217,12 @@
       </toolsSet>
       <flagsDictionary>
         <element flagsID="0"
-                 commonFlags="-march=armv8-a -mtune=cortex-a53 -O2 -std=c++11 -fno-exceptions -fno-rtti -fPIC"/>
+                 commonFlags="-march=armv8-a -mtune=cortex-a53 -O2 -O2 -std=c++11 -fno-exceptions -fno-rtti"/>
         <element flagsID="1"
-                 commonFlags="-march=armv8-a -mtune=cortex-a53 -O2 -std=c++14 -fPIC -fno-exceptions -fno-rtti"/>
+                 commonFlags="-march=armv8-a -mtune=cortex-a53 -O2 -std=c++11 -fPIC -fno-exceptions -fno-rtti"/>
         <element flagsID="2"
-                 commonFlags="-march=armv8-a -mtune=cortex-a53 -O2 -std=c++14 -fno-exceptions -fno-rtti"/>
-        <element flagsID="3" commonFlags="-mtune=generic -march=x86-64 -O2"/>
+                 commonFlags="-march=armv8-a -mtune=cortex-a53 -O2 -std=c++11 -fno-exceptions -fno-rtti"/>
+        <element flagsID="3" commonFlags="-std=c++11 -O2 -std=c++11"/>
         <element flagsID="4" commonFlags="-std=c++14"/>
       </flagsDictionary>
       <codeAssistance>
@@ -230,7 +230,7 @@
       <makefileType>
         <makeTool>
           <buildCommandWorkingDir>test-build</buildCommandWorkingDir>
-          <buildCommand>ninja</buildCommand>
+          <buildCommand>ninja test</buildCommand>
           <cleanCommand>ninja clean</cleanCommand>
           <executablePath></executablePath>
           <ccTool>
@@ -239,10 +239,11 @@
         </makeTool>
         <preBuild>
           <preBuildCommandWorkingDir>.</preBuildCommandWorkingDir>
-          <preBuildCommand>meson test-build --buildtype=debugoptimized</preBuildCommand>
+          <preBuildCommand>meson test-build</preBuildCommand>
+          <preBuildFirst>true</preBuildFirst>
         </preBuild>
       </makefileType>
-      <item path="emulator/cpu.cpp" ex="false" tool="1" flavor2="11">
+      <item path="emulator/cpu.cpp" ex="false" tool="1" flavor2="8">
         <ccTool flags="1">
           <incDir>
             <pElem>emulator</pElem>
@@ -252,7 +253,7 @@
           </incDir>
         </ccTool>
       </item>
-      <item path="emulator/nes.cpp" ex="false" tool="1" flavor2="11">
+      <item path="emulator/nes.cpp" ex="false" tool="1" flavor2="8">
         <ccTool flags="1">
           <incDir>
             <pElem>emulator</pElem>
@@ -261,7 +262,7 @@
           </incDir>
         </ccTool>
       </item>
-      <item path="emulator/ppu.cpp" ex="false" tool="1" flavor2="11">
+      <item path="emulator/ppu.cpp" ex="false" tool="1" flavor2="8">
         <ccTool flags="1">
           <incDir>
             <pElem>emulator</pElem>
@@ -271,7 +272,7 @@
           </incDir>
         </ccTool>
       </item>
-      <item path="emulator/rom.cpp" ex="false" tool="1" flavor2="11">
+      <item path="emulator/rom.cpp" ex="false" tool="1" flavor2="8">
         <ccTool flags="1">
           <incDir>
             <pElem>emulator</pElem>
@@ -280,25 +281,22 @@
           </incDir>
         </ccTool>
       </item>
-      <item path="emulator/test/cputest.cpp" ex="false" tool="1" flavor2="0">
+      <item path="emulator/test/cputest.cpp" ex="false" tool="1" flavor2="8">
         <ccTool flags="3">
-          <incDir>
-            <pElem>emulator/include</pElem>
-            <pElem>release-build</pElem>
-          </incDir>
         </ccTool>
       </item>
-      <item path="emulator/test/tests-main.cpp" ex="false" tool="1" flavor2="0">
+      <item path="emulator/test/tests-main.cpp" ex="false" tool="1" flavor2="8">
         <ccTool flags="3">
-          <incDir>
-            <pElem>release-build</pElem>
-          </incDir>
         </ccTool>
       </item>
       <folder path="0/emulator/test">
         <ccTool>
           <incDir>
+            <pElem>test-build/emulator/test/emulator_tests@exe</pElem>
+            <pElem>test-build/emulator/test</pElem>
             <pElem>emulator/test</pElem>
+            <pElem>emulator/include</pElem>
+            <pElem>test-build</pElem>
           </incDir>
         </ccTool>
       </folder>
@@ -307,7 +305,6 @@
           <incDir>
             <pElem>kernel</pElem>
             <pElem>subprojects/circle/include/circle</pElem>
-            <pElem>emulator/include</pElem>
             <pElem>subprojects/circle/include</pElem>
             <pElem>release-build</pElem>
           </incDir>
@@ -327,11 +324,11 @@
           </incDir>
         </ccTool>
       </folder>
-      <item path="kernel/kernel.cpp" ex="false" tool="1" flavor2="11">
+      <item path="kernel/kernel.cpp" ex="false" tool="1" flavor2="8">
         <ccTool flags="2">
         </ccTool>
       </item>
-      <item path="kernel/main.cpp" ex="false" tool="1" flavor2="11">
+      <item path="kernel/main.cpp" ex="false" tool="1" flavor2="8">
         <ccTool flags="2">
         </ccTool>
       </item>
@@ -1504,7 +1501,9 @@
       <flagsDictionary>
         <element flagsID="0" commonFlags="-O2"/>
         <element flagsID="1" commonFlags="-O2 -fPIC"/>
-        <element flagsID="2" commonFlags="-std=c++14"/>
+        <element flagsID="2"
+                 commonFlags="-march=armv8-a -mtune=cortex-a53 -O2 -std=c++11 -fno-exceptions -fno-rtti"/>
+        <element flagsID="3" commonFlags="-std=c++14"/>
       </flagsDictionary>
       <codeAssistance>
       </codeAssistance>
@@ -1517,11 +1516,11 @@
         </makeTool>
         <preBuild>
           <preBuildCommandWorkingDir>.</preBuildCommandWorkingDir>
-          <preBuildCommand>meson release-build --cross-file subprojects/circle/rpi3-cross.txt --buildtype=debugoptimized</preBuildCommand>
+          <preBuildCommand>meson release-build --cross-file subprojects/circle/rpi3-cross.txt</preBuildCommand>
           <preBuildFirst>true</preBuildFirst>
         </preBuild>
       </makefileType>
-      <item path="emulator/cpu.cpp" ex="false" tool="1" flavor2="0">
+      <item path="emulator/cpu.cpp" ex="false" tool="1" flavor2="4">
         <ccTool flags="1">
           <incDir>
             <pElem>release-build/emulator/emulator_native@sta</pElem>
@@ -1532,7 +1531,7 @@
           </incDir>
         </ccTool>
       </item>
-      <item path="emulator/nes.cpp" ex="false" tool="1" flavor2="0">
+      <item path="emulator/nes.cpp" ex="false" tool="1" flavor2="4">
         <ccTool flags="1">
           <incDir>
             <pElem>release-build/emulator/emulator_native@sta</pElem>
@@ -1543,7 +1542,7 @@
           </incDir>
         </ccTool>
       </item>
-      <item path="emulator/ppu.cpp" ex="false" tool="1" flavor2="0">
+      <item path="emulator/ppu.cpp" ex="false" tool="1" flavor2="4">
         <ccTool flags="1">
           <incDir>
             <pElem>release-build/emulator/emulator_native@sta</pElem>
@@ -1554,7 +1553,7 @@
           </incDir>
         </ccTool>
       </item>
-      <item path="emulator/rom.cpp" ex="false" tool="1" flavor2="0">
+      <item path="emulator/rom.cpp" ex="false" tool="1" flavor2="4">
         <ccTool flags="1">
           <incDir>
             <pElem>release-build/emulator/emulator_native@sta</pElem>
@@ -1565,11 +1564,11 @@
           </incDir>
         </ccTool>
       </item>
-      <item path="emulator/test/cputest.cpp" ex="false" tool="1" flavor2="0">
+      <item path="emulator/test/cputest.cpp" ex="false" tool="1" flavor2="4">
         <ccTool flags="0">
         </ccTool>
       </item>
-      <item path="emulator/test/tests-main.cpp" ex="false" tool="1" flavor2="0">
+      <item path="emulator/test/tests-main.cpp" ex="false" tool="1" flavor2="4">
         <ccTool flags="0">
         </ccTool>
       </item>
@@ -1584,243 +1583,257 @@
           </incDir>
         </ccTool>
       </folder>
+      <folder path="0/subprojects/circle/lib/sched">
+        <ccTool>
+          <incDir>
+            <pElem>subprojects/circle/lib/sched</pElem>
+          </incDir>
+        </ccTool>
+      </folder>
+      <folder path="0/subprojects/circle/lib/usb">
+        <ccTool>
+          <incDir>
+            <pElem>subprojects/circle/lib/usb</pElem>
+          </incDir>
+        </ccTool>
+      </folder>
       <item path="kernel/kernel.cpp" ex="false" tool="1" flavor2="11">
-        <ccTool flags="2">
+        <ccTool flags="3">
         </ccTool>
       </item>
       <item path="kernel/main.cpp" ex="false" tool="1" flavor2="11">
-        <ccTool flags="2">
+        <ccTool flags="3">
         </ccTool>
       </item>
       <item path="subprojects/circle/addon/OneWire/OneWire.cpp"
             ex="false"
             tool="1"
             flavor2="11">
-        <ccTool flags="2">
+        <ccTool flags="3">
         </ccTool>
       </item>
       <item path="subprojects/circle/addon/OneWire/sample/ds18x20.cpp"
             ex="false"
             tool="1"
             flavor2="11">
-        <ccTool flags="2">
+        <ccTool flags="3">
         </ccTool>
       </item>
       <item path="subprojects/circle/addon/OneWire/sample/kernel.cpp"
             ex="false"
             tool="1"
             flavor2="11">
-        <ccTool flags="2">
+        <ccTool flags="3">
         </ccTool>
       </item>
       <item path="subprojects/circle/addon/OneWire/sample/main.cpp"
             ex="false"
             tool="1"
             flavor2="11">
-        <ccTool flags="2">
+        <ccTool flags="3">
         </ccTool>
       </item>
       <item path="subprojects/circle/addon/Properties/properties.cpp"
             ex="false"
             tool="1"
             flavor2="11">
-        <ccTool flags="2">
+        <ccTool flags="3">
         </ccTool>
       </item>
       <item path="subprojects/circle/addon/Properties/propertiesfile.cpp"
             ex="false"
             tool="1"
             flavor2="11">
-        <ccTool flags="2">
+        <ccTool flags="3">
         </ccTool>
       </item>
       <item path="subprojects/circle/addon/Properties/sample/kernel.cpp"
             ex="false"
             tool="1"
             flavor2="11">
-        <ccTool flags="2">
+        <ccTool flags="3">
         </ccTool>
       </item>
       <item path="subprojects/circle/addon/Properties/sample/main.cpp"
             ex="false"
             tool="1"
             flavor2="11">
-        <ccTool flags="2">
+        <ccTool flags="3">
         </ccTool>
       </item>
       <item path="subprojects/circle/addon/SDCard/emmc.cpp"
             ex="false"
             tool="1"
             flavor2="11">
-        <ccTool flags="2">
+        <ccTool flags="3">
         </ccTool>
       </item>
       <item path="subprojects/circle/addon/SDCard/sample/kernel.cpp"
             ex="false"
             tool="1"
             flavor2="11">
-        <ccTool flags="2">
+        <ccTool flags="3">
         </ccTool>
       </item>
       <item path="subprojects/circle/addon/SDCard/sample/main.cpp"
             ex="false"
             tool="1"
             flavor2="11">
-        <ccTool flags="2">
+        <ccTool flags="3">
         </ccTool>
       </item>
       <item path="subprojects/circle/addon/Spectrum/SpectrumScreen.cpp"
             ex="false"
             tool="1"
             flavor2="11">
-        <ccTool flags="2">
+        <ccTool flags="3">
         </ccTool>
       </item>
       <item path="subprojects/circle/addon/Spectrum/sample/kernel.cpp"
             ex="false"
             tool="1"
             flavor2="11">
-        <ccTool flags="2">
+        <ccTool flags="3">
         </ccTool>
       </item>
       <item path="subprojects/circle/addon/Spectrum/sample/main.cpp"
             ex="false"
             tool="1"
             flavor2="11">
-        <ccTool flags="2">
+        <ccTool flags="3">
         </ccTool>
       </item>
       <item path="subprojects/circle/addon/WS28XX/sample/kernel.cpp"
             ex="false"
             tool="1"
             flavor2="11">
-        <ccTool flags="2">
+        <ccTool flags="3">
         </ccTool>
       </item>
       <item path="subprojects/circle/addon/WS28XX/sample/main.cpp"
             ex="false"
             tool="1"
             flavor2="11">
-        <ccTool flags="2">
+        <ccTool flags="3">
         </ccTool>
       </item>
       <item path="subprojects/circle/addon/WS28XX/ws28xxstripe.cpp"
             ex="false"
             tool="1"
             flavor2="11">
-        <ccTool flags="2">
+        <ccTool flags="3">
         </ccTool>
       </item>
       <item path="subprojects/circle/addon/dio/sample/kernel.cpp"
             ex="false"
             tool="1"
             flavor2="11">
-        <ccTool flags="2">
+        <ccTool flags="3">
         </ccTool>
       </item>
       <item path="subprojects/circle/addon/dio/sample/main.cpp"
             ex="false"
             tool="1"
             flavor2="11">
-        <ccTool flags="2">
+        <ccTool flags="3">
         </ccTool>
       </item>
       <item path="subprojects/circle/addon/dio/spidio.cpp"
             ex="false"
             tool="1"
             flavor2="11">
-        <ccTool flags="2">
+        <ccTool flags="3">
         </ccTool>
       </item>
       <item path="subprojects/circle/addon/rtc/mcp7941x.cpp"
             ex="false"
             tool="1"
             flavor2="11">
-        <ccTool flags="2">
+        <ccTool flags="3">
         </ccTool>
       </item>
       <item path="subprojects/circle/addon/rtc/sample/kernel.cpp"
             ex="false"
             tool="1"
             flavor2="11">
-        <ccTool flags="2">
+        <ccTool flags="3">
         </ccTool>
       </item>
       <item path="subprojects/circle/addon/rtc/sample/main.cpp"
             ex="false"
             tool="1"
             flavor2="11">
-        <ccTool flags="2">
+        <ccTool flags="3">
         </ccTool>
       </item>
       <item path="subprojects/circle/addon/tftpfileserver/sample/kernel.cpp"
             ex="false"
             tool="1"
             flavor2="11">
-        <ccTool flags="2">
+        <ccTool flags="3">
         </ccTool>
       </item>
       <item path="subprojects/circle/addon/tftpfileserver/sample/main.cpp"
             ex="false"
             tool="1"
             flavor2="11">
-        <ccTool flags="2">
+        <ccTool flags="3">
         </ccTool>
       </item>
       <item path="subprojects/circle/addon/tftpfileserver/tftpfileserver.cpp"
             ex="false"
             tool="1"
             flavor2="11">
-        <ccTool flags="2">
+        <ccTool flags="3">
         </ccTool>
       </item>
       <item path="subprojects/circle/addon/ugui/sample/controlwindow.cpp"
             ex="false"
             tool="1"
             flavor2="11">
-        <ccTool flags="2">
+        <ccTool flags="3">
         </ccTool>
       </item>
       <item path="subprojects/circle/addon/ugui/sample/kernel.cpp"
             ex="false"
             tool="1"
             flavor2="11">
-        <ccTool flags="2">
+        <ccTool flags="3">
         </ccTool>
       </item>
       <item path="subprojects/circle/addon/ugui/sample/main.cpp"
             ex="false"
             tool="1"
             flavor2="11">
-        <ccTool flags="2">
+        <ccTool flags="3">
         </ccTool>
       </item>
       <item path="subprojects/circle/addon/ugui/sample/recorder.cpp"
             ex="false"
             tool="1"
             flavor2="11">
-        <ccTool flags="2">
+        <ccTool flags="3">
         </ccTool>
       </item>
       <item path="subprojects/circle/addon/ugui/sample/scopeconfig.cpp"
             ex="false"
             tool="1"
             flavor2="11">
-        <ccTool flags="2">
+        <ccTool flags="3">
         </ccTool>
       </item>
       <item path="subprojects/circle/addon/ugui/sample/scopewindow.cpp"
             ex="false"
             tool="1"
             flavor2="11">
-        <ccTool flags="2">
+        <ccTool flags="3">
         </ccTool>
       </item>
       <item path="subprojects/circle/addon/ugui/sample/timeline.cpp"
             ex="false"
             tool="1"
             flavor2="11">
-        <ccTool flags="2">
+        <ccTool flags="3">
         </ccTool>
       </item>
       <item path="subprojects/circle/addon/ugui/ugui.c"
@@ -1832,529 +1845,923 @@
             ex="false"
             tool="1"
             flavor2="11">
-        <ccTool flags="2">
+        <ccTool flags="3">
         </ccTool>
       </item>
       <item path="subprojects/circle/addon/webconsole/logbuffer.cpp"
             ex="false"
             tool="1"
             flavor2="11">
-        <ccTool flags="2">
+        <ccTool flags="3">
         </ccTool>
       </item>
       <item path="subprojects/circle/addon/webconsole/sample/kernel.cpp"
             ex="false"
             tool="1"
             flavor2="11">
-        <ccTool flags="2">
+        <ccTool flags="3">
         </ccTool>
       </item>
       <item path="subprojects/circle/addon/webconsole/sample/main.cpp"
             ex="false"
             tool="1"
             flavor2="11">
-        <ccTool flags="2">
+        <ccTool flags="3">
         </ccTool>
       </item>
       <item path="subprojects/circle/addon/webconsole/webconsole.cpp"
             ex="false"
             tool="1"
             flavor2="11">
-        <ccTool flags="2">
+        <ccTool flags="3">
         </ccTool>
       </item>
       <item path="subprojects/circle/app/kernel/kernel.cpp"
             ex="false"
             tool="1"
             flavor2="11">
-        <ccTool flags="2">
+        <ccTool flags="3">
         </ccTool>
       </item>
       <item path="subprojects/circle/app/kernel/main.cpp"
             ex="false"
             tool="1"
             flavor2="11">
-        <ccTool flags="2">
+        <ccTool flags="3">
         </ccTool>
       </item>
       <item path="subprojects/circle/app/lib/emulator/cpu.cpp"
             ex="false"
             tool="1"
             flavor2="11">
-        <ccTool flags="2">
+        <ccTool flags="3">
         </ccTool>
       </item>
       <item path="subprojects/circle/app/lib/emulator/nes.cpp"
             ex="false"
             tool="1"
             flavor2="11">
-        <ccTool flags="2">
+        <ccTool flags="3">
         </ccTool>
       </item>
       <item path="subprojects/circle/app/lib/emulator/ppu.cpp"
             ex="false"
             tool="1"
             flavor2="11">
-        <ccTool flags="2">
+        <ccTool flags="3">
         </ccTool>
       </item>
       <item path="subprojects/circle/app/lib/emulator/rom.cpp"
             ex="false"
             tool="1"
             flavor2="11">
-        <ccTool flags="2">
+        <ccTool flags="3">
         </ccTool>
       </item>
       <item path="subprojects/circle/app/lib/test/cputest.cpp"
             ex="false"
             tool="1"
             flavor2="11">
-        <ccTool flags="2">
+        <ccTool flags="3">
         </ccTool>
       </item>
       <item path="subprojects/circle/app/lib/test/tests-main.cpp"
             ex="false"
             tool="1"
             flavor2="11">
-        <ccTool flags="2">
+        <ccTool flags="3">
         </ccTool>
       </item>
-      <item path="subprojects/circle/lib/actled.cpp" ex="false" tool="1" flavor2="11">
+      <item path="subprojects/circle/lib/actled.cpp" ex="false" tool="1" flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/lib</pElem>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
-      <item path="subprojects/circle/lib/alloc.cpp" ex="false" tool="1" flavor2="11">
+      <item path="subprojects/circle/lib/alloc.cpp" ex="false" tool="1" flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/lib</pElem>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
-      <item path="subprojects/circle/lib/assert.cpp" ex="false" tool="1" flavor2="11">
+      <item path="subprojects/circle/lib/assert.cpp" ex="false" tool="1" flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/lib</pElem>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
       <item path="subprojects/circle/lib/bcmframebuffer.cpp"
             ex="false"
             tool="1"
-            flavor2="11">
+            flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/lib</pElem>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
       <item path="subprojects/circle/lib/bcmmailbox.cpp"
             ex="false"
             tool="1"
-            flavor2="11">
+            flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/lib</pElem>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
       <item path="subprojects/circle/lib/bcmpropertytags.cpp"
             ex="false"
             tool="1"
-            flavor2="11">
+            flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/lib</pElem>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
       <item path="subprojects/circle/lib/bcmrandom.cpp"
             ex="false"
             tool="1"
-            flavor2="11">
+            flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/lib</pElem>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
       <item path="subprojects/circle/lib/chargenerator.cpp"
             ex="false"
             tool="1"
-            flavor2="11">
+            flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/lib</pElem>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
       <item path="subprojects/circle/lib/cputhrottle.cpp"
             ex="false"
             tool="1"
-            flavor2="11">
+            flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/lib</pElem>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
-      <item path="subprojects/circle/lib/debug.cpp" ex="false" tool="1" flavor2="11">
+      <item path="subprojects/circle/lib/debug.cpp" ex="false" tool="1" flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/lib</pElem>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
-      <item path="subprojects/circle/lib/device.cpp" ex="false" tool="1" flavor2="11">
+      <item path="subprojects/circle/lib/device.cpp" ex="false" tool="1" flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/lib</pElem>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
       <item path="subprojects/circle/lib/devicenameservice.cpp"
             ex="false"
             tool="1"
-            flavor2="11">
+            flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/lib</pElem>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
       <item path="subprojects/circle/lib/dmachannel.cpp"
             ex="false"
             tool="1"
-            flavor2="11">
+            flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/lib</pElem>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
       <item path="subprojects/circle/lib/exceptionhandler.cpp"
             ex="false"
             tool="1"
-            flavor2="11">
+            flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/lib</pElem>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
       <item path="subprojects/circle/lib/gpioclock.cpp"
             ex="false"
             tool="1"
-            flavor2="11">
+            flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/lib</pElem>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
       <item path="subprojects/circle/lib/gpiomanager.cpp"
             ex="false"
             tool="1"
-            flavor2="11">
+            flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/lib</pElem>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
-      <item path="subprojects/circle/lib/gpiopin.cpp"
-            ex="false"
-            tool="1"
-            flavor2="11">
+      <item path="subprojects/circle/lib/gpiopin.cpp" ex="false" tool="1" flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/lib</pElem>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
       <item path="subprojects/circle/lib/i2cmaster.cpp"
             ex="false"
             tool="1"
-            flavor2="11">
+            flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/lib</pElem>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
       <item path="subprojects/circle/lib/i2cslave.cpp"
             ex="false"
             tool="1"
-            flavor2="11">
+            flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/lib</pElem>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
       <item path="subprojects/circle/lib/interrupt.cpp"
             ex="false"
             tool="1"
-            flavor2="11">
+            flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/lib</pElem>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
       <item path="subprojects/circle/lib/koptions.cpp"
             ex="false"
             tool="1"
-            flavor2="11">
+            flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/lib</pElem>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
       <item path="subprojects/circle/lib/libhelper.cpp"
             ex="false"
             tool="1"
-            flavor2="11">
+            flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/lib</pElem>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
-      <item path="subprojects/circle/lib/logger.cpp" ex="false" tool="1" flavor2="11">
+      <item path="subprojects/circle/lib/logger.cpp" ex="false" tool="1" flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/lib</pElem>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
       <item path="subprojects/circle/lib/machineinfo.cpp"
             ex="false"
             tool="1"
-            flavor2="11">
+            flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/lib</pElem>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
-      <item path="subprojects/circle/lib/memory.cpp" ex="false" tool="1" flavor2="11">
+      <item path="subprojects/circle/lib/memory.cpp" ex="false" tool="1" flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/lib</pElem>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
       <item path="subprojects/circle/lib/multicore.cpp"
             ex="false"
             tool="1"
             flavor2="11">
-        <ccTool flags="2">
+        <ccTool flags="3">
         </ccTool>
       </item>
-      <item path="subprojects/circle/lib/new.cpp" ex="false" tool="1" flavor2="11">
+      <item path="subprojects/circle/lib/new.cpp" ex="false" tool="1" flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/lib</pElem>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
       <item path="subprojects/circle/lib/nulldevice.cpp"
             ex="false"
             tool="1"
-            flavor2="11">
+            flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/lib</pElem>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
       <item path="subprojects/circle/lib/pagetable.cpp"
             ex="false"
             tool="1"
-            flavor2="11">
+            flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/lib</pElem>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
       <item path="subprojects/circle/lib/ptrarray.cpp"
             ex="false"
             tool="1"
-            flavor2="11">
+            flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/lib</pElem>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
-      <item path="subprojects/circle/lib/ptrlist.cpp"
-            ex="false"
-            tool="1"
-            flavor2="11">
+      <item path="subprojects/circle/lib/ptrlist.cpp" ex="false" tool="1" flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/lib</pElem>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
       <item path="subprojects/circle/lib/purecall.cpp"
             ex="false"
             tool="1"
-            flavor2="11">
+            flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/lib</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
       <item path="subprojects/circle/lib/pwmoutput.cpp"
             ex="false"
             tool="1"
-            flavor2="11">
+            flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/lib</pElem>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
       <item path="subprojects/circle/lib/pwmsounddevice.cpp"
             ex="false"
             tool="1"
-            flavor2="11">
+            flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/lib</pElem>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
       <item path="subprojects/circle/lib/sched/scheduler.cpp"
             ex="false"
             tool="1"
-            flavor2="11">
+            flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/include/circle/sched</pElem>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
       <item path="subprojects/circle/lib/sched/synchronizationevent.cpp"
             ex="false"
             tool="1"
-            flavor2="11">
+            flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/include/circle/sched</pElem>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
       <item path="subprojects/circle/lib/sched/task.cpp"
             ex="false"
             tool="1"
-            flavor2="11">
+            flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include/circle/sched</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
-      <item path="subprojects/circle/lib/screen.cpp" ex="false" tool="1" flavor2="11">
+      <item path="subprojects/circle/lib/screen.cpp" ex="false" tool="1" flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/lib</pElem>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
-      <item path="subprojects/circle/lib/serial.cpp" ex="false" tool="1" flavor2="11">
+      <item path="subprojects/circle/lib/serial.cpp" ex="false" tool="1" flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/lib</pElem>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
       <item path="subprojects/circle/lib/spimaster.cpp"
             ex="false"
             tool="1"
-            flavor2="11">
+            flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/lib</pElem>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
       <item path="subprojects/circle/lib/spimasterdma.cpp"
             ex="false"
             tool="1"
-            flavor2="11">
+            flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/lib</pElem>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
       <item path="subprojects/circle/lib/spinlock.cpp"
             ex="false"
             tool="1"
-            flavor2="11">
+            flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
-      <item path="subprojects/circle/lib/string.cpp" ex="false" tool="1" flavor2="11">
+      <item path="subprojects/circle/lib/string.cpp" ex="false" tool="1" flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/lib</pElem>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
       <item path="subprojects/circle/lib/synchronize.cpp"
             ex="false"
             tool="1"
-            flavor2="11">
+            flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/lib</pElem>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
-      <item path="subprojects/circle/lib/sysinit.cpp"
-            ex="false"
-            tool="1"
-            flavor2="11">
+      <item path="subprojects/circle/lib/sysinit.cpp" ex="false" tool="1" flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/lib</pElem>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
-      <item path="subprojects/circle/lib/time.cpp" ex="false" tool="1" flavor2="11">
+      <item path="subprojects/circle/lib/time.cpp" ex="false" tool="1" flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/lib</pElem>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
-      <item path="subprojects/circle/lib/timer.cpp" ex="false" tool="1" flavor2="11">
+      <item path="subprojects/circle/lib/timer.cpp" ex="false" tool="1" flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/lib</pElem>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
-      <item path="subprojects/circle/lib/tracer.cpp" ex="false" tool="1" flavor2="11">
+      <item path="subprojects/circle/lib/tracer.cpp" ex="false" tool="1" flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/lib</pElem>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
       <item path="subprojects/circle/lib/usb/dwhcidevice.cpp"
             ex="false"
             tool="1"
-            flavor2="11">
+            flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include/circle/usb</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
       <item path="subprojects/circle/lib/usb/dwhciframeschednper.cpp"
             ex="false"
             tool="1"
-            flavor2="11">
+            flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include/circle/usb</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
       <item path="subprojects/circle/lib/usb/dwhciframeschednsplit.cpp"
             ex="false"
             tool="1"
-            flavor2="11">
+            flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/include/circle/usb</pElem>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
       <item path="subprojects/circle/lib/usb/dwhciframeschedper.cpp"
             ex="false"
             tool="1"
-            flavor2="11">
+            flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include/circle/usb</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
       <item path="subprojects/circle/lib/usb/dwhciregister.cpp"
             ex="false"
             tool="1"
-            flavor2="11">
+            flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include/circle/usb</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
       <item path="subprojects/circle/lib/usb/dwhcirootport.cpp"
             ex="false"
             tool="1"
-            flavor2="11">
+            flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include/circle/usb</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
       <item path="subprojects/circle/lib/usb/dwhcixferstagedata.cpp"
             ex="false"
             tool="1"
-            flavor2="11">
+            flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/include/circle/usb</pElem>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
       <item path="subprojects/circle/lib/usb/macaddress.cpp"
             ex="false"
             tool="1"
-            flavor2="11">
+            flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/include/circle/usb</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
       <item path="subprojects/circle/lib/usb/netdevice.cpp"
             ex="false"
             tool="1"
-            flavor2="11">
+            flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/include/circle/usb</pElem>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
       <item path="subprojects/circle/lib/usb/smsc951x.cpp"
             ex="false"
             tool="1"
-            flavor2="11">
+            flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/include/circle/usb</pElem>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
       <item path="subprojects/circle/lib/usb/usbconfigparser.cpp"
             ex="false"
             tool="1"
-            flavor2="11">
+            flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/include/circle/usb</pElem>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
       <item path="subprojects/circle/lib/usb/usbdevice.cpp"
             ex="false"
             tool="1"
-            flavor2="11">
+            flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/include/circle/usb</pElem>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
       <item path="subprojects/circle/lib/usb/usbdevicefactory.cpp"
             ex="false"
             tool="1"
-            flavor2="11">
+            flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/include/circle/usb</pElem>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
       <item path="subprojects/circle/lib/usb/usbendpoint.cpp"
             ex="false"
             tool="1"
-            flavor2="11">
+            flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/include/circle/usb</pElem>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
       <item path="subprojects/circle/lib/usb/usbfunction.cpp"
             ex="false"
             tool="1"
-            flavor2="11">
+            flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/include/circle/usb</pElem>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
       <item path="subprojects/circle/lib/usb/usbgamepad.cpp"
             ex="false"
             tool="1"
-            flavor2="11">
+            flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/include/circle/usb</pElem>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
       <item path="subprojects/circle/lib/usb/usbhostcontroller.cpp"
             ex="false"
             tool="1"
-            flavor2="11">
+            flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include/circle/usb</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
       <item path="subprojects/circle/lib/usb/usbrequest.cpp"
             ex="false"
             tool="1"
-            flavor2="11">
+            flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/include/circle/usb</pElem>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
       <item path="subprojects/circle/lib/usb/usbstandardhub.cpp"
             ex="false"
             tool="1"
-            flavor2="11">
+            flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include/circle/usb</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
-      <item path="subprojects/circle/lib/util.cpp" ex="false" tool="1" flavor2="11">
+      <item path="subprojects/circle/lib/util.cpp" ex="false" tool="1" flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/lib</pElem>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
       <item path="subprojects/circle/lib/virtualgpiopin.cpp"
             ex="false"
             tool="1"
-            flavor2="11">
+            flavor2="8">
         <ccTool flags="2">
+          <incDir>
+            <pElem>subprojects/circle/lib</pElem>
+            <pElem>subprojects/circle/include/circle</pElem>
+            <pElem>subprojects/circle/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
         </ccTool>
       </item>
     </conf>
