@@ -1,7 +1,18 @@
 #include "ppu.h"
 #include "dependencies.h"
 
-Ppu::Ppu(const Rom* rom, const Cpu* cpu)
+Ppu::Registers::Registers(Cpu *const cpu) :
+    controlRegister(cpu->Memory(0x2000)),
+    maskRegister(cpu->Memory(0x2001)),
+    processorStatus(cpu->Memory(0x2002)),
+    oamAddress(cpu->Memory(0x2003)),
+    oamData(cpu->Memory(0x2004)),
+    vramAddress1(cpu->Memory(0x2005)),
+    vramAddress2(cpu->Memory(0x2006)),
+    vramIO(cpu->Memory(0x2007)),
+    spriteDma(cpu->Memory(0x4014)) {}
+
+Ppu::Ppu(const Rom* rom, Cpu *const cpu) : registers(cpu)
 {
     const iNesHeader* header = rom->GetHeader();
     int prgRomBanks = header->prgRomBanks;
@@ -16,19 +27,13 @@ Ppu::Ppu(const Rom* rom, const Cpu* cpu)
         default: //TODO: implement multiple V-ROM banks
             break;
     }
-    
-    registers.controlRegister = cpu->Memory(0x2000);
-    registers.maskRegister = cpu->Memory(0x2001);
-    registers.processorStatus = cpu->Memory(0x2002);
-    registers.oamAddress = cpu->Memory(0x2003);
-    registers.oamData = cpu->Memory(0x2004);
-    registers.vramAddress1 = cpu->Memory(0x2005);
-    registers.vramAddress2 = cpu->Memory(0x2006);
-    registers.vramIO = cpu->Memory(0x2007);
-    registers.spriteDma = cpu->Memory(0x4014);
+
+    cycle = 0;
+    scanline = 0;
+    frame = 0;
 }
 
-Ppu::Reset(){
+void Ppu::Reset(){
     cycle = 340;
     scanline = 240;
     frame = 0;

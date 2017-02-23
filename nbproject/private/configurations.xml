@@ -14,7 +14,6 @@
         <df name="test">
           <in>catch.hpp</in>
           <in>cputest.cpp</in>
-          <in>tests-main.cpp</in>
         </df>
         <in>cpu.cpp</in>
         <in>nes.cpp</in>
@@ -35,6 +34,12 @@
           </df>
           <df name="test">
             <df name="emulator_tests@exe">
+            </df>
+            <df name="gtest@sha">
+              <df name="emulator">
+                <df name="test">
+                </df>
+              </df>
             </df>
           </df>
         </df>
@@ -60,6 +65,10 @@
                 <df name="circle_usb@sta">
                 </df>
               </df>
+            </df>
+          </df>
+          <df name="googletest-release-1.8.0">
+            <df name="googletest">
             </df>
           </df>
         </df>
@@ -185,23 +194,16 @@
           <df name="app">
             <df name="kernel">
               <in>kernel.cpp</in>
-              <in>kernel.h</in>
               <in>main.cpp</in>
             </df>
             <df name="lib">
               <df name="emulator">
                 <in>cpu.cpp</in>
-                <in>cpu.h</in>
                 <in>nes.cpp</in>
-                <in>nes.h</in>
                 <in>ppu.cpp</in>
-                <in>ppu.h</in>
                 <in>rom.cpp</in>
-                <in>rom.h</in>
-                <in>util.h</in>
               </df>
               <df name="test">
-                <in>catch.hpp</in>
                 <in>cputest.cpp</in>
                 <in>tests-main.cpp</in>
               </df>
@@ -389,74 +391,253 @@
             <in>virtualgpiopin.cpp</in>
           </df>
         </df>
-      </df>
-      <df name="test-build">
-        <df name="emulator">
-          <df name="emulator_native@sta">
+        <df name="googletest-release-1.8.0">
+          <df name="googlemock">
+            <df name="build-aux">
+            </df>
+            <df name="docs">
+              <df name="v1_5">
+              </df>
+              <df name="v1_6">
+              </df>
+              <df name="v1_7">
+              </df>
+            </df>
+            <df name="include">
+              <df name="gmock">
+                <df name="internal">
+                  <df name="custom">
+                    <in>gmock-generated-actions.h</in>
+                    <in>gmock-matchers.h</in>
+                    <in>gmock-port.h</in>
+                  </df>
+                  <in>gmock-generated-internal-utils.h</in>
+                  <in>gmock-internal-utils.h</in>
+                  <in>gmock-port.h</in>
+                </df>
+                <in>gmock-actions.h</in>
+                <in>gmock-cardinalities.h</in>
+                <in>gmock-generated-actions.h</in>
+                <in>gmock-generated-function-mockers.h</in>
+                <in>gmock-generated-matchers.h</in>
+                <in>gmock-generated-nice-strict.h</in>
+                <in>gmock-matchers.h</in>
+                <in>gmock-more-actions.h</in>
+                <in>gmock-more-matchers.h</in>
+                <in>gmock-spec-builders.h</in>
+                <in>gmock.h</in>
+              </df>
+            </df>
+            <df name="make">
+            </df>
+            <df name="msvc">
+              <df name="2005">
+              </df>
+              <df name="2010">
+              </df>
+              <df name="2015">
+              </df>
+            </df>
+            <df name="scripts">
+              <df name="generator">
+                <df name="cpp">
+                </df>
+              </df>
+            </df>
+            <df name="src">
+              <in>gmock-all.cc</in>
+              <in>gmock-cardinalities.cc</in>
+              <in>gmock-internal-utils.cc</in>
+              <in>gmock-matchers.cc</in>
+              <in>gmock-spec-builders.cc</in>
+              <in>gmock.cc</in>
+              <in>gmock_main.cc</in>
+            </df>
+            <df name="test">
+              <in>gmock-actions_test.cc</in>
+              <in>gmock-cardinalities_test.cc</in>
+              <in>gmock-generated-actions_test.cc</in>
+              <in>gmock-generated-function-mockers_test.cc</in>
+              <in>gmock-generated-internal-utils_test.cc</in>
+              <in>gmock-generated-matchers_test.cc</in>
+              <in>gmock-internal-utils_test.cc</in>
+              <in>gmock-matchers_test.cc</in>
+              <in>gmock-more-actions_test.cc</in>
+              <in>gmock-nice-strict_test.cc</in>
+              <in>gmock-port_test.cc</in>
+              <in>gmock-spec-builders_test.cc</in>
+              <in>gmock_all_test.cc</in>
+              <in>gmock_ex_test.cc</in>
+              <in>gmock_leak_test_.cc</in>
+              <in>gmock_link2_test.cc</in>
+              <in>gmock_link_test.cc</in>
+              <in>gmock_link_test.h</in>
+              <in>gmock_output_test_.cc</in>
+              <in>gmock_stress_test.cc</in>
+              <in>gmock_test.cc</in>
+            </df>
           </df>
-          <df name="test">
-            <df name="emulator_tests@exe">
+          <df name="googletest">
+            <df name="build-aux">
+            </df>
+            <df name="cmake">
+            </df>
+            <df name="codegear">
+              <in>gtest_all.cc</in>
+              <in>gtest_link.cc</in>
+            </df>
+            <df name="docs">
+            </df>
+            <df name="include">
+              <df name="gtest">
+                <df name="internal">
+                  <df name="custom">
+                    <in>gtest-port.h</in>
+                    <in>gtest-printers.h</in>
+                    <in>gtest.h</in>
+                  </df>
+                  <in>gtest-death-test-internal.h</in>
+                  <in>gtest-filepath.h</in>
+                  <in>gtest-internal.h</in>
+                  <in>gtest-linked_ptr.h</in>
+                  <in>gtest-param-util-generated.h</in>
+                  <in>gtest-param-util.h</in>
+                  <in>gtest-port-arch.h</in>
+                  <in>gtest-port.h</in>
+                  <in>gtest-string.h</in>
+                  <in>gtest-tuple.h</in>
+                  <in>gtest-type-util.h</in>
+                </df>
+                <in>gtest-death-test.h</in>
+                <in>gtest-message.h</in>
+                <in>gtest-param-test.h</in>
+                <in>gtest-printers.h</in>
+                <in>gtest-spi.h</in>
+                <in>gtest-test-part.h</in>
+                <in>gtest-typed-test.h</in>
+                <in>gtest.h</in>
+                <in>gtest_pred_impl.h</in>
+                <in>gtest_prod.h</in>
+              </df>
+            </df>
+            <df name="m4">
+            </df>
+            <df name="make">
+            </df>
+            <df name="msvc">
+            </df>
+            <df name="samples">
+              <in>prime_tables.h</in>
+              <in>sample1.cc</in>
+              <in>sample1.h</in>
+              <in>sample10_unittest.cc</in>
+              <in>sample1_unittest.cc</in>
+              <in>sample2.cc</in>
+              <in>sample2.h</in>
+              <in>sample2_unittest.cc</in>
+              <in>sample3-inl.h</in>
+              <in>sample3_unittest.cc</in>
+              <in>sample4.cc</in>
+              <in>sample4.h</in>
+              <in>sample4_unittest.cc</in>
+              <in>sample5_unittest.cc</in>
+              <in>sample6_unittest.cc</in>
+              <in>sample7_unittest.cc</in>
+              <in>sample8_unittest.cc</in>
+              <in>sample9_unittest.cc</in>
+            </df>
+            <df name="scripts">
+              <df name="test">
+              </df>
+            </df>
+            <df name="src">
+              <in>gtest-all.cc</in>
+              <in>gtest-death-test.cc</in>
+              <in>gtest-filepath.cc</in>
+              <in>gtest-internal-inl.h</in>
+              <in>gtest-port.cc</in>
+              <in>gtest-printers.cc</in>
+              <in>gtest-test-part.cc</in>
+              <in>gtest-typed-test.cc</in>
+              <in>gtest.cc</in>
+              <in>gtest_main.cc</in>
+            </df>
+            <df name="test">
+              <in>gtest-death-test_ex_test.cc</in>
+              <in>gtest-death-test_test.cc</in>
+              <in>gtest-filepath_test.cc</in>
+              <in>gtest-linked_ptr_test.cc</in>
+              <in>gtest-listener_test.cc</in>
+              <in>gtest-message_test.cc</in>
+              <in>gtest-options_test.cc</in>
+              <in>gtest-param-test2_test.cc</in>
+              <in>gtest-param-test_test.cc</in>
+              <in>gtest-param-test_test.h</in>
+              <in>gtest-port_test.cc</in>
+              <in>gtest-printers_test.cc</in>
+              <in>gtest-test-part_test.cc</in>
+              <in>gtest-tuple_test.cc</in>
+              <in>gtest-typed-test2_test.cc</in>
+              <in>gtest-typed-test_test.cc</in>
+              <in>gtest-typed-test_test.h</in>
+              <in>gtest-unittest-api_test.cc</in>
+              <in>gtest_all_test.cc</in>
+              <in>gtest_break_on_failure_unittest_.cc</in>
+              <in>gtest_catch_exceptions_test_.cc</in>
+              <in>gtest_color_test_.cc</in>
+              <in>gtest_env_var_test_.cc</in>
+              <in>gtest_environment_test.cc</in>
+              <in>gtest_filter_unittest_.cc</in>
+              <in>gtest_help_test_.cc</in>
+              <in>gtest_list_tests_unittest_.cc</in>
+              <in>gtest_main_unittest.cc</in>
+              <in>gtest_no_test_unittest.cc</in>
+              <in>gtest_output_test_.cc</in>
+              <in>gtest_pred_impl_unittest.cc</in>
+              <in>gtest_premature_exit_test.cc</in>
+              <in>gtest_prod_test.cc</in>
+              <in>gtest_repeat_test.cc</in>
+              <in>gtest_shuffle_test_.cc</in>
+              <in>gtest_sole_header_test.cc</in>
+              <in>gtest_stress_test.cc</in>
+              <in>gtest_throw_on_failure_ex_test.cc</in>
+              <in>gtest_throw_on_failure_test_.cc</in>
+              <in>gtest_uninitialized_test_.cc</in>
+              <in>gtest_unittest.cc</in>
+              <in>gtest_xml_outfile1_test_.cc</in>
+              <in>gtest_xml_outfile2_test_.cc</in>
+              <in>gtest_xml_output_unittest_.cc</in>
+              <in>production.cc</in>
+              <in>production.h</in>
+            </df>
+            <df name="xcode">
+              <df name="Config">
+              </df>
+              <df name="gtest.xcodeproj">
+              </df>
+              <df name="Resources">
+              </df>
+              <df name="Samples">
+                <df name="FrameworkSample">
+                  <df name="WidgetFramework.xcodeproj">
+                  </df>
+                  <in>widget.cc</in>
+                  <in>widget.h</in>
+                  <in>widget_test.cc</in>
+                </df>
+              </df>
+              <df name="Scripts">
+              </df>
             </df>
           </df>
         </df>
-        <df name="meson-logs">
-        </df>
-        <df name="meson-private">
-          <in>sanitycheckcpp.cc</in>
+        <df name="packagecache">
         </df>
       </df>
     </df>
   </logicalFolder>
   <projectmakefile>app/Makefile</projectmakefile>
   <confs>
-    <conf name="Tests_Configuration" type="0">
-      <toolsSet>
-        <developmentServer>localhost</developmentServer>
-        <platform>2</platform>
-      </toolsSet>
-      <compile>
-        <compiledirpicklist>
-          <compiledirpicklistitem>.</compiledirpicklistitem>
-          <compiledirpicklistitem>${AUTO_FOLDER}</compiledirpicklistitem>
-        </compiledirpicklist>
-        <compiledir>${AUTO_FOLDER}</compiledir>
-        <compilecommandpicklist>
-          <compilecommandpicklistitem>${MAKE} ${ITEM_NAME}.o</compilecommandpicklistitem>
-          <compilecommandpicklistitem>${AUTO_COMPILE}</compilecommandpicklistitem>
-        </compilecommandpicklist>
-        <compilecommand>${AUTO_COMPILE}</compilecommand>
-      </compile>
-      <dbx_gdbdebugger version="1">
-        <gdb_pathmaps>
-        </gdb_pathmaps>
-        <gdb_interceptlist>
-          <gdbinterceptoptions gdb_all="false" gdb_unhandled="true" gdb_unexpected="true"/>
-        </gdb_interceptlist>
-        <gdb_options>
-          <DebugOptions>
-            <option name="debug_dir"
-                    value="/home/mgoyette/Documents/Frankenstein/test-build"/>
-          </DebugOptions>
-        </gdb_options>
-        <gdb_buildfirst gdb_buildfirst_overriden="false" gdb_buildfirst_old="false"/>
-      </dbx_gdbdebugger>
-      <nativedebugger version="1">
-        <engine>gdb</engine>
-      </nativedebugger>
-      <runprofile version="9">
-        <runcommandpicklist>
-          <runcommandpicklistitem>"${OUTPUT_PATH}"</runcommandpicklistitem>
-          <runcommandpicklistitem>ninja test</runcommandpicklistitem>
-        </runcommandpicklist>
-        <runcommand>ninja test</runcommand>
-        <rundir>/home/mgoyette/Documents/Frankenstein/test-build</rundir>
-        <buildfirst>false</buildfirst>
-        <terminal-type>0</terminal-type>
-        <remove-instrumentation>0</remove-instrumentation>
-        <environment>
-        </environment>
-      </runprofile>
-    </conf>
     <conf name="Pi_Configuration" type="0">
       <toolsSet>
         <developmentServer>localhost</developmentServer>
@@ -492,10 +673,12 @@
       <runprofile version="9">
         <runcommandpicklist>
           <runcommandpicklistitem>"${OUTPUT_PATH}"</runcommandpicklistitem>
+          <runcommandpicklistitem>./cputest</runcommandpicklistitem>
+          <runcommandpicklistitem>./emulator_tests</runcommandpicklistitem>
         </runcommandpicklist>
-        <runcommand>"${OUTPUT_PATH}"</runcommand>
-        <rundir></rundir>
-        <buildfirst>false</buildfirst>
+        <runcommand>./emulator_tests</runcommand>
+        <rundir>/home/mgoyette/Projects/Frankenstein/./release-build/emulator/test</rundir>
+        <buildfirst>true</buildfirst>
         <terminal-type>0</terminal-type>
         <remove-instrumentation>0</remove-instrumentation>
         <environment>

@@ -2,11 +2,12 @@
 #define PPU_H
 
 #include "rom.h"
+#include "cpu.h"
 
 class Ppu
 {
 public:
-    union MemoryMap{
+    union MemoryMap {
         struct {
             u8 patternTable0[0x1000];
             u8 patternTable1[0x1000];
@@ -27,7 +28,7 @@ public:
         u8 raw[0x10000];
     };
 
-    struct Registers{
+    struct Registers {
         u8& controlRegister;    //0x2000
         u8& maskRegister;       //0x2001
         u8& processorStatus;    //0x2002
@@ -37,6 +38,8 @@ public:
         u8& vramAddress2;       //0x2006
         u8& vramIO;             //0x2007
         u8& spriteDma;          //0x4014
+
+        Registers(Cpu *const cpu);
     };
     
     union Tile {
@@ -55,10 +58,11 @@ public:
     };
 
     struct RGBColor{
-            u8 red;
-            u8 green;
-            u8 blue;
+        u8 red;
+        u8 green;
+        u8 blue;
     };
+
     const RGBColor systemPalette[0x40] = {
             {0x80,0x80,0x80},
             {0x00,0x3D,0xA6},
@@ -150,11 +154,11 @@ public:
     
     enum StatusFlags {
         IgnoreWrite = 4,            //If set, indicates that writes to VRAM should be ignored. 
-        ScanlineSpriteCount = 5,    //Scanline sprite count, if set, indicates more than 8 sprites on the current scanline. 
+        ScanlineSpriteCount = 5,    //Scanline sprite count, if set, indicates more than 8 sprites on the current scanline.
         SpriteZeroHit = 6,          //Sprite 0 hit flag, set when a non-transparent pixel of sprite 0 overlaps a non-transparent background pixel.
         VBlank = 7                  //Indicates whether V-Blank is occurring.
     };
-    
+
     enum SpriteFlags {
         LowerColor,             //Most significant two bits of the color. 
         UpperColor,
@@ -165,18 +169,18 @@ public:
     
     Registers registers;
     MemoryMap memory;
-    
+
     RGBColor* frontBuffer[256][240];
     RGBColor* backBuffer[256][240];
-    
+
     u8 objectAttributeMemory[256];
     u16 cycle;          // 0-340
     u16 scanline;       // 0-261, 0-239=visible, 240=post, 241-260=vblank, 261=pre
     u64 frame;
 
-    Ppu(const Rom* rom);
-    
+    Ppu(const Rom* rom, Cpu *const cpu);
+
     void Reset();
 };
 
-#endif // PPU_H
+#endif // PPU_Hd

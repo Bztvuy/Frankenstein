@@ -5,10 +5,15 @@ project('frankenstein', 'cpp',
                     'cpp_std=c++11']
 )
 
+gtest = subproject('gtest', native: true, main: false)
+gtest_inc = gtest.get_variable('incdir')
+gtest_lib_src = gtest.get_variable('libsources')
+gtest_main_src = gtest.get_variable('mainsources')
+
 #-------------------------------------------------------------------------------
 # compilation variables
 #-------------------------------------------------------------------------------
-cpp_args       = ['-Wall', '-Wno-psabi', '-fsigned-char']
+cpp_args = ['-Wall', '-Wno-psabi', '-fsigned-char']
 
 if meson.is_cross_build()
     rpi_version = meson.get_cross_property('rpi_version')

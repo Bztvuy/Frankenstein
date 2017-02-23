@@ -14,10 +14,6 @@
             </sourceRootList>
             <confList>
                 <confElem>
-                    <name>Tests_Configuration</name>
-                    <type>0</type>
-                </confElem>
-                <confElem>
                     <name>Pi_Configuration</name>
                     <type>0</type>
                 </confElem>

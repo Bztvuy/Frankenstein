@@ -1,19 +1,27 @@
-#include "catch.hpp"
+#include <gtest/gtest.h>
 #include <cpu.h>
 
-TEST_CASE( "ADC", "[6502 instruction set]" ) {
-    Cpu* cpu = new Cpu;
-    
-    SECTION( "without addressing modes" ){
-        SECTION( "basic test" ){
-            cpu->registers.A = 1;
-	    auto value = u8(1);
-            cpu->ADC(value);
-            REQUIRE(cpu->registers.A == 2);
-            REQUIRE(cpu->GetFlag(cpu->Z) == 0);
-            REQUIRE(cpu->GetFlag(cpu->S) == 0);
-            REQUIRE(cpu->GetFlag(cpu->V) == 0);
-            REQUIRE(cpu->GetFlag(cpu->C) == 0);
-        }
-    }
+struct CPUTest : testing::Test
+{
+  Cpu* cpu;
+  CPUTest()
+  {
+    cpu = new Cpu;
+  }
+  virtual ~CPUTest()
+  {
+    delete cpu;
+  }
+};
+
+TEST_F(CPUTest, ADC)
+{
+    cpu->registers.A = 1;
+    u8 value = 1;
+    cpu->ADC(value);
+    EXPECT_EQ(2, cpu->registers.A);
+    EXPECT_EQ(0, cpu->GetFlag(cpu->Z));
+    EXPECT_EQ(0, cpu->GetFlag(cpu->S));
+    EXPECT_EQ(0, cpu->GetFlag(cpu->V));
+    EXPECT_EQ(0, cpu->GetFlag(cpu->C));
 }

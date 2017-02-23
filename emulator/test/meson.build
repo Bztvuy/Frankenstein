@@ -1,10 +1,13 @@
-#gtest = subproject('gtest', native: true)
+thread = dependency('threads', native: true)
+gtest_dep = library('gtest', gtest_lib_src, gtest_main_src,
+    include_directories: gtest_inc,
+    dependencies: thread,
+    native: true)
 
-emuTests = executable('emulator_tests', 'tests-main.cpp', 'cputest.cpp',
-	link_with: emulator_native,
-	include_directories: emulator_include,
-        cpp_args: cpp_args,
-	native: true)
-#        dependencies: gtest)
+emuTests = executable('emulator_tests', 'cputest.cpp',
+    link_with: [emulator_native,gtest_dep],
+    include_directories: [emulator_include, gtest_inc],
+    cpp_args: cpp_args,
+    native: true)
 
-test('can_run_tests', emuTests)
+test('can_run_tests', emuTests, native: true)
