@@ -17,6 +17,6 @@ unsigned int Rom::GetLength() const{
 }
 
 unsigned int Rom::GetTrainerOffset() const{
-	return CHECK_BIT(this->GetHeader()->controlByte1, 2) * trainerSize;
+	return CheckBit<3>(this->GetHeader()->controlByte1) * trainerSize;
 }
 // ...

@@ -31,15 +31,15 @@ class Cpu {
         u8 P = 0b00100000;
     };
 
-    enum Flags {
-        C,      //Carry
-        Z,      //Zero
-        I,      //Interrupt
-        D,      //Decimal
-        B,      //Break
-        A,      //Always
-        V,      //Overflow
-        S       //Sign : 1 is negative
+    enum class Flags : int {
+        C = 1,      //Carry
+        Z,          //Zero
+        I,          //Interrupt
+        D,          //Decimal
+        B,          //Break
+        A,          //Always
+        V,          //Overflow
+        S           //Sign : 1 is negative
     };
 
     Registers registers;
@@ -659,8 +659,15 @@ class Cpu {
      */
     bool IsPageCrossed(u16 startAddress, u16 endAddress);
 
-    void SetFlag(u8 flag, u8 value);
-    u8 GetFlag(u8 flag);
+    template<typename Cpu::Flags f>
+    void Set(bool value){
+        AssignBit<static_cast<int>(f)>(this->registers.P, value);
+    }
+
+    template<typename Cpu::Flags f>
+    bool Get(){
+        return CheckBit<static_cast<int>(f)>(this->registers.P);
+    }
 
     Cpu();
     Cpu(const Rom* rom);

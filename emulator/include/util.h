@@ -12,10 +12,63 @@ typedef signed int		s32;
 typedef signed long long	s64;
 
 #define KILOBYTE 1024
-#define CHECK_BIT(var,pos) ((var) & (1<<(pos)))
-#define SET_BIT(var,pos) ((var) |= (1 << (pos)))
-#define CLEAR_BIT(var,pos) ((var) &= ~(1 << (pos)))
-#define ASSIGN_BIT(var,pos,val) ((var) ^= (-(val) ^ (var)) & (1 << (pos)))
+
+//#define CHECK_BIT(var,pos) (((var) & (1<<(pos))) >> (pos))
+//#define SET_BIT(var,pos) ((var) |= (1 << (pos)))
+//#define CLEAR_BIT(var,pos) ((var) &= ~(1 << (pos)))
+//#define ASSIGN_BIT(var,pos,val) ((var) ^= (-(val) ^ (var)) & (1 << (pos)))
+
+template <unsigned int Position, typename T = u8>
+inline bool CheckBit(T src) {
+    static_assert((Position-1) <= (sizeof(T) * 8) && Position >= 1, 
+            "Position must be lower than sizeof(T) and greater or equals to 1");
+    
+    int position = Position - 1;
+    return (src & (1 << position )) >> position;
+}
+
+template <unsigned int Position, typename T = u8>
+inline void SetBit(T& src) {
+    static_assert((Position-1) <= (sizeof(T) * 8) && Position >= 1, 
+            "Position must be lower than sizeof(T) and greater or equals to 1");
+    
+    int position = Position - 1;
+    src |= (1 << position);
+}
+
+template <unsigned int Position, typename T = u8>
+inline void ClearBit(T& src) {
+    static_assert((Position-1) <= (sizeof(T) * 8) && Position >= 1, 
+            "Position must be lower than sizeof(T) and greater or equals to 1");
+    
+    int position = Position - 1;
+    src &= ~(1 << position);
+}
+
+template <unsigned int Position, typename T = u8>
+inline void AssignBit(T& src, bool value) {
+    static_assert((Position-1) <= (sizeof(T) * 8) && Position >= 1, 
+            "Position must be lower than sizeof(T) and greater or equals to 1");
+    
+    int position = Position - 1;
+    src ^= (-((int)value) ^ src) & (1 << position);
+}
+
+template <typename T = u8, typename U = u16>
+inline bool CheckOverflow(T src, T value, U result) {
+    return !((src ^ value) & 0x80) && ((src ^ result) & 0x80);
+}
+
+template <typename T = u8>
+inline bool CheckSign(T& src){
+    return CheckBit<8, T>(src);
+}
+
+template <typename T = u8>
+inline bool CheckZero(T src){
+    return src == 0;
+}
+
 
 //sizes related to hardware (in bytes) :
 const u16 NES_PAGE_SIZE = 256;

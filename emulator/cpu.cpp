@@ -25,14 +25,6 @@ Cpu::Cpu(const Rom* rom) {
     this->registers.PC = (Memory(0xFFFC) | Memory(0xFFFD) << 8);
 }
 
-void Cpu::SetFlag(u8 flag, u8 value){
-    ASSIGN_BIT(this->registers.P, flag, value);
-}
-
-u8 Cpu::GetFlag(u8 flag){
-    return CHECK_BIT(this->registers.P, flag);
-}
-
 bool Cpu::IsPageCrossed(u16 startAddress, u16 endAddress){
     return (startAddress & 0xFF00) != (endAddress & 0xFF00);
 }
@@ -118,60 +110,60 @@ u16 Cpu::PostIndexedIndirect(const u8 low, const u8 index) {
 
 void Cpu::AND(u8& value){
     this->registers.A &= value;
-    SetFlag(Z, value);
-    SetFlag(S, CHECK_BIT(value, 7));
+    Set<Flags::Z>(CheckZero(value));
+    Set<Flags::S>(CheckSign(value));
 }
 
 void Cpu::ASL(u8& value){
     // 0 is shifted into bit 0 and the original bit 7 is shifted into the Carry.
-    SetFlag(C, CHECK_BIT(value, 7));
+    Set<Flags::C>(CheckBit<8>(value));
     value <<= 1;
-    SetFlag(Z, value);
-    SetFlag(S, CHECK_BIT(value, 7));
+    Set<Flags::Z>(CheckZero(value));
+    Set<Flags::S>(CheckSign(value));
 }
 
 void Cpu::BIT(u8& value){
-    SetFlag(Z, value & this->registers.A);
-    SetFlag(S, CHECK_BIT(value, 7));
-    SetFlag(V, CHECK_BIT(value, 6));
+    Set<Flags::Z>(CheckZero(value & this->registers.A));
+    Set<Flags::S>(CheckSign(value));
+    Set<Flags::V>(CheckBit<7>(value));
 }
 
 void Cpu::EOR(u8& value){
     this->registers.A ^= value;
-    SetFlag(Z, value);
-    SetFlag(S, CHECK_BIT(value, 7));
+    Set<Flags::Z>(CheckZero(value));
+    Set<Flags::S>(CheckSign(value));
 }
 
 void Cpu::LSR(u8& value){
     // 0 is shifted into bit 7 and the original bit 0 is shifted into the Carry.
-    SetFlag(C, CHECK_BIT(value, 0));
+    Set<Flags::C>(CheckBit<1>(value));
     value >>= 1;
-    SetFlag(Z, value);
-    SetFlag(S, CHECK_BIT(value, 7));
+    Set<Flags::Z>(CheckZero(value));
+    Set<Flags::S>(CheckSign(value));
 }
 
 void Cpu::ORA(u8& value){
     this->registers.A |= value;
-    SetFlag(Z, this->registers.A);
-    SetFlag(S, CHECK_BIT(this->registers.A, 7));
+    Set<Flags::Z>(CheckZero(this->registers.A));
+    Set<Flags::S>(CheckSign(this->registers.A));
 }
 
 void Cpu::ROL(u8& value){
-    auto carry = GetFlag(C);
-    SetFlag(C, CHECK_BIT(value, 7));
+    bool carry = Get<Flags::C>();
+    Set<Flags::C>(CheckSign(value));
     value <<= 1;
-    ASSIGN_BIT(value, 0, carry);
-    SetFlag(Z, value);
-    SetFlag(S, CHECK_BIT(value, 7));
+    AssignBit<1>(value, carry);
+    Set<Flags::Z>(CheckZero(value));
+    Set<Flags::S>(CheckSign(value));
 }
 
 void Cpu::ROR(u8& value){
-    auto carry = GetFlag(C);
-    SetFlag(C, CHECK_BIT(value, 0));
+    auto carry = Get<Flags::C>();
+    Set<Flags::C>(CheckBit<1>(value));
     value >>= 1;
-    ASSIGN_BIT(value, 7, carry);
-    SetFlag(Z, value);
-    SetFlag(S, CHECK_BIT(value, 7));
+    AssignBit<8>(value, carry);
+    Set<Flags::Z>(CheckZero(value));
+    Set<Flags::S>(CheckSign(value));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -179,32 +171,32 @@ void Cpu::ROR(u8& value){
 ////////////////////////////////////////////////////////////////////////////////
 
 void Cpu::ADC(u8& value){
-    u16 result = value + this->registers.A + GetFlag(C);
-    SetFlag(Z, result & 0xFF);
-    SetFlag(S, CHECK_BIT(value, 7));
-    SetFlag(V, !((this->registers.A ^ value) & 0x80) && ((this->registers.A ^ result) & 0x80));
-    SetFlag(C, result > 0xFF);
+    u16 result = value + this->registers.A + Get<Flags::C>();
+    Set<Flags::Z>(CheckZero(result));
+    Set<Flags::S>(CheckSign(value));
+    Set<Flags::V>(CheckOverflow<>(this->registers.A, value, result));
+    Set<Flags::C>(result > 0xFF);
     this->registers.A = (u8) result;
 }
 
 void Cpu::DEC(u8& value){
     value -= 1;
-    SetFlag(Z, value);
-    SetFlag(S, CHECK_BIT(value, 7));
+    Set<Flags::Z>(CheckZero(value));
+    Set<Flags::S>(CheckSign(value));
 }
 
 void Cpu::INC(u8& value){
     value += 1;
-    SetFlag(Z, value);
-    SetFlag(S, CHECK_BIT(value, 7));
+    Set<Flags::Z>(CheckZero(value));
+    Set<Flags::S>(CheckSign(value));
 }
 
 void Cpu::SBC(u8& value){
-    u16 result = this->registers.A - value - GetFlag(C);
-    SetFlag(Z, result & 0xFF);
-    SetFlag(S, CHECK_BIT(value, 7));
-    SetFlag(V, !((this->registers.A ^ value) & 0x80) && ((this->registers.A ^ result) & 0x80));
-    SetFlag(C, result < 0x100);
+    u16 result = this->registers.A - value - Get<Flags::C>();
+    Set<Flags::Z>(CheckZero(result));
+    Set<Flags::S>(CheckSign(value));
+    Set<Flags::V>(CheckOverflow<>(this->registers.A, value, result));
+    Set<Flags::C>(result < 0x100);
     this->registers.A = (result & 0xFF);
 }
 
@@ -214,20 +206,20 @@ void Cpu::SBC(u8& value){
 
 void Cpu::LDA(u8& value){
     this->registers.A = value;
-    SetFlag(Z, value);
-    SetFlag(S, CHECK_BIT(value, 7));
+    Set<Flags::Z>(CheckZero(value));
+    Set<Flags::S>(CheckSign(value));
 }
 
 void Cpu::LDX(u8& value){
     this->registers.X = value;
-    SetFlag(Z, value);
-    SetFlag(S, CHECK_BIT(value, 7));
+    Set<Flags::Z>(CheckZero(value));
+    Set<Flags::S>(CheckSign(value));
 }
 
 void Cpu::LDY(u8& value){
     this->registers.Y = value;
-    SetFlag(Z, value);
-    SetFlag(S, CHECK_BIT(value, 7));
+    Set<Flags::Z>(CheckZero(value));
+    Set<Flags::S>(CheckSign(value));
 }
 
 void Cpu::STA(u8& value){
@@ -248,7 +240,7 @@ void Cpu::STY(u8& value){
 
 //Branch on plus
 u8 Cpu::BPL() {
-    if (!GetFlag(S)) {
+    if (!Get<Flags::S>()) {
         auto pageCrossed = IsPageCrossed(this->registers.PC + 2, (this->registers.PC + 2 + Operand(1)) & 0xFF);
 	this->registers.PC = (this->registers.PC + Operand(1)) & 0xFF;
         return 3 + pageCrossed;
@@ -258,7 +250,7 @@ u8 Cpu::BPL() {
 
 //Branch on minus
 u8 Cpu::BMI() {
-    if (GetFlag(S)) {
+    if (Get<Flags::S>()) {
     auto pageCrossed = IsPageCrossed(this->registers.PC + 2, (this->registers.PC + 2 + Operand(1)) & 0xFF);
 	this->registers.PC = (this->registers.PC + Operand(1)) & 0xFF;
         return 3 + pageCrossed;
@@ -268,7 +260,7 @@ u8 Cpu::BMI() {
 
 //Branch on overflow clear
 u8 Cpu::BVC() {
-    if (!GetFlag(V)) {
+    if (!Get<Flags::V>()) {
     auto pageCrossed = IsPageCrossed(this->registers.PC + 2, (this->registers.PC + 2 + Operand(1)) & 0xFF);
 	this->registers.PC = (this->registers.PC + Operand(1)) & 0xFF;
         return 3 + pageCrossed;
@@ -278,7 +270,7 @@ u8 Cpu::BVC() {
 
 //Branch on overflow set
 u8 Cpu::BVS() {
-    if (GetFlag(V)) {
+    if (Get<Flags::V>()) {
     auto pageCrossed = IsPageCrossed(this->registers.PC + 2, (this->registers.PC + 2 + Operand(1)) & 0xFF);
 	this->registers.PC = (this->registers.PC + Operand(1)) & 0xFF;
         return 3 + pageCrossed;
@@ -288,7 +280,7 @@ u8 Cpu::BVS() {
 
 //Branch on carry clear
 u8 Cpu::BCC() {
-    if (!GetFlag(C)) {
+    if (!Get<Flags::C>()) {
     auto pageCrossed = IsPageCrossed(this->registers.PC + 2, (this->registers.PC + 2 + Operand(1)) & 0xFF);
 	this->registers.PC = (this->registers.PC + Operand(1)) & 0xFF;
         return 3 + pageCrossed;
@@ -298,7 +290,7 @@ u8 Cpu::BCC() {
 
 //Branch on carry set
 u8 Cpu::BCS() {
-    if (GetFlag(C)) {
+    if (Get<Flags::C>()) {
     auto pageCrossed = IsPageCrossed(this->registers.PC + 2, (this->registers.PC + 2 + Operand(1)) & 0xFF);
 	this->registers.PC = (this->registers.PC + Operand(1)) & 0xFF;
         return 3 + pageCrossed;
@@ -308,7 +300,7 @@ u8 Cpu::BCS() {
 
 //Branch on not equal
 u8 Cpu::BNE() {
-    if (!GetFlag(Z)) {
+    if (!Get<Flags::Z>()) {
     auto pageCrossed = IsPageCrossed(this->registers.PC + 2, (this->registers.PC + 2 + Operand(1)) & 0xFF);
 	this->registers.PC = (this->registers.PC + Operand(1)) & 0xFF;
         return 3 + pageCrossed;
@@ -318,7 +310,7 @@ u8 Cpu::BNE() {
 
 //Branch on equal
 u8 Cpu::BEQ() {
-    if (GetFlag(Z)) {
+    if (Get<Flags::Z>()) {
     auto pageCrossed = IsPageCrossed(this->registers.PC + 2, (this->registers.PC + 2 + Operand(1)) & 0xFF);
 	this->registers.PC = (this->registers.PC + Operand(1)) & 0xFF;
         return 3 + pageCrossed;
@@ -336,64 +328,64 @@ u8 Cpu::BEQ() {
 u8 Cpu::TAX() {
     auto& value = this->registers.A;
     this->registers.X = value;
-    SetFlag(Z, value);
-    SetFlag(S, CHECK_BIT(value, 7));
+    Set<Flags::Z>(CheckZero(value));
+    Set<Flags::S>(CheckSign(value));
     return 2;
 }
 
 u8 Cpu::TXA() {
     auto& value = this->registers.X;
     this->registers.A = value;
-    SetFlag(Z, value);
-    SetFlag(S, CHECK_BIT(value, 7));
+    Set<Flags::Z>(CheckZero(value));
+    Set<Flags::S>(CheckSign(value));
     return 2;
 }
 
 u8 Cpu::DEX() {
     auto& value = this->registers.X;
     value -= 1 ;
-    SetFlag(Z, value);
-    SetFlag(S, CHECK_BIT(value, 7));
+    Set<Flags::Z>(CheckZero(value));
+    Set<Flags::S>(CheckSign(value));
     return 2;
 }
 
 u8 Cpu::INX() {
     auto& value = this->registers.X;
     value += 1 ;
-    SetFlag(Z, value);
-    SetFlag(S, CHECK_BIT(value, 7));
+    Set<Flags::Z>(CheckZero(value));
+    Set<Flags::S>(CheckSign(value));
     return 2;
 }
 
 u8 Cpu::TAY() {
     auto& value = this->registers.A;
     this->registers.Y = value;
-    SetFlag(Z, value);
-    SetFlag(S, CHECK_BIT(value, 7));
+    Set<Flags::Z>(CheckZero(value));
+    Set<Flags::S>(CheckSign(value));
     return 2;
 }
 
 u8 Cpu::TYA() {
     auto& value = this->registers.Y;
     this->registers.A = value;
-    SetFlag(Z, value);
-    SetFlag(S, CHECK_BIT(value, 7));
+    Set<Flags::Z>(CheckZero(value));
+    Set<Flags::S>(CheckSign(value));
     return 2;
 }
 
 u8 Cpu::DEY() {
     auto& value = this->registers.Y;
     value -= 1 ;
-    SetFlag(Z, value);
-    SetFlag(S, CHECK_BIT(value, 7));
+    Set<Flags::Z>(CheckZero(value));
+    Set<Flags::S>(CheckSign(value));
     return 2;
 }
 
 u8 Cpu::INY() {
     auto& value = this->registers.Y;
     value += 1 ;
-    SetFlag(Z, value);
-    SetFlag(S, CHECK_BIT(value, 7));
+    Set<Flags::Z>(CheckZero(value));
+    Set<Flags::S>(CheckSign(value));
     return 2;
 }
 
@@ -410,8 +402,8 @@ u8 Cpu::TXS() {
 u8 Cpu::TSX() {
     auto value = PopFromStack();
     this->registers.X = value;
-    SetFlag(Z, value);
-    SetFlag(S, CHECK_BIT(value, 7));
+    Set<Flags::Z>(CheckZero(value));
+    Set<Flags::S>(CheckSign(value));
     return 2;
 }
 
@@ -425,8 +417,8 @@ u8 Cpu::PHA() {
 u8 Cpu::PLA() {
     auto value = PopFromStack();
     this->registers.A = value;
-    SetFlag(Z, value);
-    SetFlag(S, CHECK_BIT(value, 7));
+    Set<Flags::Z>(CheckZero(value));
+    Set<Flags::S>(CheckSign(value));
     return 4;
 }
 
@@ -450,9 +442,9 @@ u8 Cpu::BRK(){
     this->registers.PC += 1;
     PushOnStack((this->registers.PC >> 8) & 0xFF);     /* Push return address onto the stack. */
     PushOnStack(this->registers.PC & 0xFF);
-    SetFlag(B, 1);                                      /* Set BFlag before pushing */
+    Set<Flags::B>(true);                           /* Set BFlag before pushing */
     PushOnStack(this->registers.P);
-    SetFlag(I, 1);
+    Set<Flags::I>(true);
     this->registers.PC = (Memory(0xFFFE) | Memory(0xFFFF) << 8);
     return 7;
 }
@@ -492,57 +484,57 @@ u8 Cpu::RTS() {
 
 void Cpu::CMP(u8& value){
     u16 result = this->registers.A - value;
-    SetFlag(C, result < 0x100);
-    SetFlag(S, CHECK_BIT(result, 7));
-    SetFlag(Z, result &= 0xFF);
+    Set<Flags::C>(result < 0x100);
+    Set<Flags::S>(CheckSign(result));
+    Set<Flags::Z>(CheckZero(result));
 }
 
 void Cpu::CPX(u8& value){
     u16 result = this->registers.X - value;
-    SetFlag(C, result < 0x100);
-    SetFlag(S, CHECK_BIT(result, 7));
-    SetFlag(Z, result &= 0xFF);
+    Set<Flags::C>(result < 0x100);
+    Set<Flags::S>(CheckSign(result));
+    Set<Flags::Z>(CheckZero(result));
 }
 
 void Cpu::CPY(u8& value){
     u16 result = this->registers.Y - value;
-    SetFlag(C, result < 0x100);
-    SetFlag(S, CHECK_BIT(result, 7));
-    SetFlag(Z, result &= 0xFF);
+    Set<Flags::C>(result < 0x100);
+    Set<Flags::S>(CheckSign(result));
+    Set<Flags::Z>(CheckZero(result));
 }
 
 u8 Cpu::CLC() {
-    SetFlag(C, 0);
+    Set<Flags::C>(false);
     return 2;
 }
 
 u8 Cpu::SEC() {
-    SetFlag(C, 1);
+    Set<Flags::C>(true);
     return 2;
 }
 
 u8 Cpu::CLI() {
-    SetFlag(I, 0);
+    Set<Flags::I>(false);
     return 2;
 }
 
 u8 Cpu::SEI() {
-    SetFlag(I, 1);
+    Set<Flags::I>(true);
     return 2;
 }
 
 u8 Cpu::CLV() {
-    SetFlag(V, 0);
+    Set<Flags::V>(false);
     return 2;
 }
 
 u8 Cpu::CLD() {
-    SetFlag(D, 0);
+    Set<Flags::D>(false);
     return 2;
 }
 
 u8 Cpu::SED() {
-    SetFlag(D, 1);
+    Set<Flags::D>(false);
     return 2;
 }
 
