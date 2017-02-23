@@ -110,28 +110,29 @@ u16 Cpu::PostIndexedIndirect(const u8 low, const u8 index) {
 
 void Cpu::AND(u8& value){
     this->registers.A &= value;
-    Set<Flags::Z>(CheckZero(value));
-    Set<Flags::S>(CheckSign(value));
+    Set<Flags::Z>(CheckZero(this->registers.A));
+    Set<Flags::S>(CheckSign(this->registers.A));
 }
 
 void Cpu::ASL(u8& value){
     // 0 is shifted into bit 0 and the original bit 7 is shifted into the Carry.
     Set<Flags::C>(CheckBit<8>(value));
     value <<= 1;
-    Set<Flags::Z>(CheckZero(value));
-    Set<Flags::S>(CheckSign(value));
+    Set<Flags::Z>(CheckZero(this->registers.A));
+    Set<Flags::S>(CheckSign(this->registers.A));
 }
 
 void Cpu::BIT(u8& value){
-    Set<Flags::Z>(CheckZero(value & this->registers.A));
-    Set<Flags::S>(CheckSign(value));
+    auto result = value & this->registers.A;
+    Set<Flags::Z>(CheckZero(result));
     Set<Flags::V>(CheckBit<7>(value));
+    Set<Flags::S>(CheckBit<8>(value));
 }
 
 void Cpu::EOR(u8& value){
     this->registers.A ^= value;
-    Set<Flags::Z>(CheckZero(value));
-    Set<Flags::S>(CheckSign(value));
+    Set<Flags::Z>(CheckZero(this->registers.A));
+    Set<Flags::S>(CheckSign(this->registers.A));
 }
 
 void Cpu::LSR(u8& value){
@@ -150,7 +151,7 @@ void Cpu::ORA(u8& value){
 
 void Cpu::ROL(u8& value){
     bool carry = Get<Flags::C>();
-    Set<Flags::C>(CheckSign(value));
+    Set<Flags::C>(CheckBit<8>(value));
     value <<= 1;
     AssignBit<1>(value, carry);
     Set<Flags::Z>(CheckZero(value));
@@ -172,11 +173,14 @@ void Cpu::ROR(u8& value){
 
 void Cpu::ADC(u8& value){
     u16 result = value + this->registers.A + Get<Flags::C>();
-    Set<Flags::Z>(CheckZero(result));
-    Set<Flags::S>(CheckSign(value));
-    Set<Flags::V>(CheckOverflow<>(this->registers.A, value, result));
-    Set<Flags::C>(result > 0xFF);
-    this->registers.A = (u8) result;
+    u8 truncResult = static_cast<u8>(result);
+    
+    Set<Flags::Z>(CheckZero(truncResult));
+    Set<Flags::S>(CheckSign(truncResult));
+    Set<Flags::C>(CheckBit<9, u16>(result));
+    Set<Flags::V>(CheckOverflow<>(this->registers.A, value, truncResult));
+    
+    this->registers.A = truncResult;
 }
 
 void Cpu::DEC(u8& value){
@@ -193,10 +197,12 @@ void Cpu::INC(u8& value){
 
 void Cpu::SBC(u8& value){
     u16 result = this->registers.A - value - Get<Flags::C>();
-    Set<Flags::Z>(CheckZero(result));
-    Set<Flags::S>(CheckSign(value));
-    Set<Flags::V>(CheckOverflow<>(this->registers.A, value, result));
-    Set<Flags::C>(result < 0x100);
+    u8 truncResult = static_cast<u8>(result);
+    
+    Set<Flags::Z>(CheckZero(truncResult));
+    Set<Flags::S>(CheckSign(truncResult));
+    Set<Flags::C>(CheckBit<9, u16>(result));
+    Set<Flags::V>(CheckOverflow<>(this->registers.A, value, truncResult));
     this->registers.A = (result & 0xFF);
 }
 
@@ -206,20 +212,20 @@ void Cpu::SBC(u8& value){
 
 void Cpu::LDA(u8& value){
     this->registers.A = value;
-    Set<Flags::Z>(CheckZero(value));
-    Set<Flags::S>(CheckSign(value));
+    Set<Flags::Z>(CheckZero(this->registers.A));
+    Set<Flags::S>(CheckSign(this->registers.A));
 }
 
 void Cpu::LDX(u8& value){
     this->registers.X = value;
-    Set<Flags::Z>(CheckZero(value));
-    Set<Flags::S>(CheckSign(value));
+    Set<Flags::Z>(CheckZero(this->registers.X));
+    Set<Flags::S>(CheckSign(this->registers.X));
 }
 
 void Cpu::LDY(u8& value){
     this->registers.Y = value;
-    Set<Flags::Z>(CheckZero(value));
-    Set<Flags::S>(CheckSign(value));
+    Set<Flags::Z>(CheckZero(this->registers.Y));
+    Set<Flags::S>(CheckSign(this->registers.Y));
 }
 
 void Cpu::STA(u8& value){
@@ -328,64 +334,57 @@ u8 Cpu::BEQ() {
 u8 Cpu::TAX() {
     auto& value = this->registers.A;
     this->registers.X = value;
-    Set<Flags::Z>(CheckZero(value));
-    Set<Flags::S>(CheckSign(value));
+    Set<Flags::Z>(CheckZero(this->registers.X));
+    Set<Flags::S>(CheckSign(this->registers.X));
     return 2;
 }
 
 u8 Cpu::TXA() {
-    auto& value = this->registers.X;
-    this->registers.A = value;
-    Set<Flags::Z>(CheckZero(value));
-    Set<Flags::S>(CheckSign(value));
+    this->registers.A = this->registers.X;
+    Set<Flags::Z>(CheckZero(this->registers.A));
+    Set<Flags::S>(CheckSign(this->registers.A));
     return 2;
 }
 
 u8 Cpu::DEX() {
-    auto& value = this->registers.X;
-    value -= 1 ;
-    Set<Flags::Z>(CheckZero(value));
-    Set<Flags::S>(CheckSign(value));
+    this->registers.X -= 1;
+    Set<Flags::Z>(CheckZero(this->registers.X));
+    Set<Flags::S>(CheckSign(this->registers.X));
     return 2;
 }
 
 u8 Cpu::INX() {
-    auto& value = this->registers.X;
-    value += 1 ;
-    Set<Flags::Z>(CheckZero(value));
-    Set<Flags::S>(CheckSign(value));
+    this->registers.X += 1;
+    Set<Flags::Z>(CheckZero(this->registers.X));
+    Set<Flags::S>(CheckSign(this->registers.X));
     return 2;
 }
 
 u8 Cpu::TAY() {
-    auto& value = this->registers.A;
-    this->registers.Y = value;
-    Set<Flags::Z>(CheckZero(value));
-    Set<Flags::S>(CheckSign(value));
+    this->registers.Y = this->registers.A;
+    Set<Flags::Z>(CheckZero(this->registers.Y));
+    Set<Flags::S>(CheckSign(this->registers.Y));
     return 2;
 }
 
 u8 Cpu::TYA() {
-    auto& value = this->registers.Y;
-    this->registers.A = value;
-    Set<Flags::Z>(CheckZero(value));
-    Set<Flags::S>(CheckSign(value));
+    this->registers.A = this->registers.Y;
+    Set<Flags::Z>(CheckZero(this->registers.A));
+    Set<Flags::S>(CheckSign(this->registers.A));
     return 2;
 }
 
 u8 Cpu::DEY() {
-    auto& value = this->registers.Y;
-    value -= 1 ;
-    Set<Flags::Z>(CheckZero(value));
-    Set<Flags::S>(CheckSign(value));
+    this->registers.Y -= 1;
+    Set<Flags::Z>(CheckZero(this->registers.Y));
+    Set<Flags::S>(CheckSign(this->registers.Y));
     return 2;
 }
 
 u8 Cpu::INY() {
-    auto& value = this->registers.Y;
-    value += 1 ;
-    Set<Flags::Z>(CheckZero(value));
-    Set<Flags::S>(CheckSign(value));
+    this->registers.Y += 1;
+    Set<Flags::Z>(CheckZero(this->registers.Y));
+    Set<Flags::S>(CheckSign(this->registers.Y));
     return 2;
 }
 

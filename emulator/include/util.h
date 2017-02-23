@@ -54,8 +54,8 @@ inline void AssignBit(T& src, bool value) {
     src ^= (-((int)value) ^ src) & (1 << position);
 }
 
-template <typename T = u8, typename U = u16>
-inline bool CheckOverflow(T src, T value, U result) {
+template <typename T = u8>
+inline bool CheckOverflow(T src, T value, T result) {
     return !((src ^ value) & 0x80) && ((src ^ result) & 0x80);
 }
 
