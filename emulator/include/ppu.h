@@ -51,11 +51,24 @@ public:
         u8 raw[16];
     };
     
-    struct Sprite {
-        u8 Y;
-        u8 index;
-        u8 attributes;
-        u8 X;
+    union Sprite {
+        struct {
+            u8 Y;
+            u8 index;
+            u8 attributes;
+            u8 X;
+        };
+        u8 raw[4];
+        
+        template<typename Ppu::SpriteFlags f>
+        void Set(bool value){
+            AssignBit<static_cast<int>(f)>(this->attributes, value);
+        }
+
+        template<typename Ppu::SpriteFlags f>
+        bool Get(){
+            return CheckBit<static_cast<int>(f)>(this->attributes);
+        }
     };
 
     struct RGBColor{
@@ -174,14 +187,52 @@ public:
     RGBColor* frontBuffer[256][240];
     RGBColor* backBuffer[256][240];
 
-    u8 objectAttributeMemory[256];
+    Sprite primaryOAM[64];
+    Sprite secondaryOAM[8];
     u16 cycle;          // 0-340
     u16 scanline;       // 0-261, 0-239=visible, 240=post, 241-260=vblank, 261=pre
     u64 frame;
+    u8 sprite;   
+    u32 spritePatterns[8];
+    u8 spritePositions[8];
+    u8 spritePriorities[8];
+    u8 spriteIndexes[8];
 
     Ppu(Memory& ram, Rom& rom);
 
+    template<typename Ppu::ControlFlags f>
+    void Set(bool value){
+        AssignBit<static_cast<int>(f)>(this->registers.controlRegister, value);
+    }
+
+    template<typename Ppu::ControlFlags f>
+    bool Get(){
+        return CheckBit<static_cast<int>(f)>(this->registers.controlRegister);
+    }
+    
+    template<typename Ppu::MaskFlags f>
+    void Set(bool value){
+        AssignBit<static_cast<int>(f)>(this->registers.maskRegister, value);
+    }
+
+    template<typename Ppu::MaskFlags f>
+    bool Get(){
+        return CheckBit<static_cast<int>(f)>(this->registers.maskRegister);
+    }
+    
+    template<typename Ppu::StatusFlags f>
+    void Set(bool value){
+        AssignBit<static_cast<int>(f)>(this->registers.processorStatus, value);
+    }
+
+    template<typename Ppu::StatusFlags f>
+    bool Get(){
+        return CheckBit<static_cast<int>(f)>(this->registers.processorStatus);
+    }
+
     void Reset();
+    void EvaluateSprites();
+    u32 FetchSpritePattern(u16 x, u16 y);
 };
 }
 #endif // PPU_Hd
