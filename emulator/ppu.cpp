@@ -45,12 +45,7 @@ void Ppu::Reset(){
 }
 
 void Ppu::EvaluateSprites(){
-    u8 h;
-    if (!Get<ControlFlags::SpriteSize>()) {
-            h = 8;
-    } else {
-            h = 16;
-    }
+    u8 height = Get<ControlFlags::SpriteSize>() ? 16 : 8;
     u8 count = 0;
     for (u8 i = 0; i < 64; i++) {
         Sprite sprite = this->primaryOAM[i];
@@ -58,7 +53,7 @@ void Ppu::EvaluateSprites(){
             u8 a = sprite.attributes;
             u8 x = sprite.X;
             u8 row = this->scanline - y;
-            if (row < 0 || row >= h) {
+            if (row < 0 || row >= height) {
                     continue;
             }
             if (count < 8) {
@@ -76,48 +71,47 @@ void Ppu::EvaluateSprites(){
     this->sprite = count;
 }
 
-u32 Ppu::FetchSpritePattern(u8 x, u8 y){
+u32 Ppu::FetchSpritePattern(u16 x, u16 y){
     u8 tile = this->primaryOAM[x].index;
     u8 attributes = this->primaryOAM[x].attributes;
     u16 address;
+    bool table;
     if (!Get<ControlFlags::SpriteSize>()) {
-        
-            if (this->primaryOAM[x].Get<SpriteFlags::FlipVertical>()) {
-                    y = 7 - y;
-            }
-            bool table = Get<ControlFlags::SpriteTable>();
-            address = (0x1000 * table) + (tile * 16) + y;
+        if (this->primaryOAM[x].Get<SpriteFlags::FlipVertical>()) {
+            y = 7 - y;
+        }
+        table = Get<ControlFlags::SpriteTable>();
     } else {
-            if (this->primaryOAM[x].Get<SpriteFlags::FlipVertical>()) {
-                    y = 15 - y;
-            }
-            bool table = tile & 1;
-            tile &= 0xFE;
-            if (y > 7) {
-                    tile++;
-                    y -= 8;
-            }
-            address = (0x1000 * table) + (tile * 16) + y;
+        if (this->primaryOAM[x].Get<SpriteFlags::FlipVertical>()) {
+            y = 15 - y;
+        }
+        table = tile & 1;
+        tile &= 0xFE;
+        if (y > 7) {
+            tile++;
+            y -= 8;
+        }
     }
+    address = (0x1000 * table) + (tile * 16) + y;
     u8 a = (attributes & 3) << 2;
     u8 lowTileByte = this->memory.raw[address];
     u8 highTileByte = this->memory.raw[address+8];
     u32 data;
     for (u8 i = 0; i < 8; i++) {
-            u8 p1, p2;
-            if (this->primaryOAM[x].Get<SpriteFlags::FlipHorizontal>()) {
-                    p1 = (lowTileByte & 1) << 0;
-                    p2 = (highTileByte & 1) << 1;
-                    lowTileByte >>= 1;
-                    highTileByte >>= 1;
-            } else {
-                    p1 = (lowTileByte & 0x80) >> 7;
-                    p2 = (highTileByte & 0x80) >> 6;
-                    lowTileByte <<= 1;
-                    highTileByte <<= 1;
-            }
-            data <<= 4;
-            data |= a | p1 | p2;
+        u8 p1, p2;
+        if (this->primaryOAM[x].Get<SpriteFlags::FlipHorizontal>()) {
+            p1 = (lowTileByte & 1) << 0;
+            p2 = (highTileByte & 1) << 1;
+            lowTileByte >>= 1;
+            highTileByte >>= 1;
+        } else {
+            p1 = (lowTileByte & 0x80) >> 7;
+            p2 = (highTileByte & 0x80) >> 6;
+            lowTileByte <<= 1;
+            highTileByte <<= 1;
+        }
+        data <<= 4;
+        data |= a | p1 | p2;
     }
     return data;
 }
