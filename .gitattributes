@@ -1,0 +1,9 @@
+* text=auto
+
+*.c     text
+*.cpp   text
+*.h     text
+*.S     text
+*.build text
+*.wrap  text
+*.xml   text
