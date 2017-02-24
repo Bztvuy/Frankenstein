@@ -12,7 +12,6 @@
           <in>util.h</in>
         </df>
         <df name="test">
-          <in>catch.hpp</in>
           <in>cputest.cpp</in>
         </df>
         <in>cpu.cpp</in>
