@@ -59,7 +59,7 @@ void Ppu::EvaluateSprites(){
             if (count < 8) {
                     spritePatterns[count] = FetchSpritePattern(i, row);
                     spritePositions[count] = x;
-                    spritePriorities[count] = (a >> 5) & 1;
+                    spritePriorities[count] = sprite.Get<SpriteFlags::Priority>();
                     spriteIndexes[count] = i;
             }
             ++count;
@@ -76,13 +76,14 @@ u32 Ppu::FetchSpritePattern(u16 x, u16 y){
     u8 attributes = this->primaryOAM[x].attributes;
     u16 address;
     bool table;
+    bool flipVertical = this->primaryOAM[x].Get<SpriteFlags::FlipVertical>();
     if (!Get<ControlFlags::SpriteSize>()) {
-        if (this->primaryOAM[x].Get<SpriteFlags::FlipVertical>()) {
+        if (flipVertical) {
             y = 7 - y;
         }
         table = Get<ControlFlags::SpriteTable>();
     } else {
-        if (this->primaryOAM[x].Get<SpriteFlags::FlipVertical>()) {
+        if (flipVertical) {
             y = 15 - y;
         }
         table = tile & 1;
@@ -100,7 +101,7 @@ u32 Ppu::FetchSpritePattern(u16 x, u16 y){
     for (u8 i = 0; i < 8; i++) {
         u8 p1, p2;
         if (this->primaryOAM[x].Get<SpriteFlags::FlipHorizontal>()) {
-            p1 = (lowTileByte & 1) << 0;
+            p1 = lowTileByte & 1;
             p2 = (highTileByte & 1) << 1;
             lowTileByte >>= 1;
             highTileByte >>= 1;

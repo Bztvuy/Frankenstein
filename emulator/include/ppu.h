@@ -46,10 +46,24 @@ public:
         FlipVertical = 7        //Indicates whether to flip the sprite vertically.
     };
     
+    union Tile {
+        struct {
+            u8 low[8];
+            u8 high[8];
+        };
+        u8 raw[16];
+    };
+    
     union MemoryMap {
         struct {
-            u8 patternTable0[0x1000];
-            u8 patternTable1[0x1000];
+            union {
+                u8 patternTable0[0x1000];
+                Tile tiles0[256];
+            };
+            union {
+                u8 patternTable1[0x1000];
+                Tile tiles1[256];
+            };
             u8 nameTable0[0x03C0];
             u8 attributeTable0[0x0040];
             u8 nameTable1[0x03C0];
@@ -79,14 +93,6 @@ public:
         u8& spriteDma;          //0x4014
 
         Registers(Memory& cpu);
-    };
-    
-    union Tile {
-        struct {
-            u8 low[8];
-            u8 high[8];
-        };
-        u8 raw[16];
     };
     
     union Sprite {
