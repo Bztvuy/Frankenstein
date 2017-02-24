@@ -8,6 +8,44 @@ namespace Frankenstein {
 class Ppu
 {
 public:
+    
+    enum ControlFlags {
+        LowerNameTable,         //Name table address, changes between the four name tables at 0x2000 (0), 0x2400 (1), 0x2800 (2) and 0x2C00 (3).
+        UpperNameTable,         
+        Increment,              //Specifies amount to increment address by, either 1 if this is 0 or 32 if this is 1.
+        SpriteTable,            //Identifies which pattern table sprites are stored in, either 0x0000 (0) or 0x1000 (1). 
+        BackgroundTable,        //Identifies which pattern table the background is stored in, either 0x0000 (0) or 0x1000 (1). 
+        SpriteSize,             //Specifies the size of sprites in pixels, 8x8 if this is 0, otherwise 8x16.
+        SlaveMode,              //Changes PPU between master and slave modes.  This is not used by the NES.
+        NMI                     //Indicates whether a NMI should occur upon V-Blank. 
+    };
+    
+    enum MaskFlags {
+        Monochrome,             //Indicates whether the system is in colour (0) or monochrome mode (1)
+        ClipBackground,         //Specifies whether to clip the background, that is whether to hide the background in the left 8 pixels on screen (0) or to show them (1).
+        ClipSprites,            //Specifies whether to clip the sprites, that is whether to hide sprites in the left 8 pixels on screen (0) or to show them (1).
+        ShowBackground,         //If this is 0, the background should not be displayed.
+        ShowSprites,            //If this is 0, sprites should not be displayed. 
+        RedTint,                //Indicates background colour in monochrome mode or colour intensity in colour mode. 
+        GreenTint,              
+        BlueTint                
+    };
+    
+    enum StatusFlags {
+        IgnoreWrite = 4,            //If set, indicates that writes to VRAM should be ignored. 
+        ScanlineSpriteCount = 5,    //Scanline sprite count, if set, indicates more than 8 sprites on the current scanline.
+        SpriteZeroHit = 6,          //Sprite 0 hit flag, set when a non-transparent pixel of sprite 0 overlaps a non-transparent background pixel.
+        VBlank = 7                  //Indicates whether V-Blank is occurring.
+    };
+
+    enum class SpriteFlags {
+        LowerColor,             //Most significant two bits of the color. 
+        UpperColor,
+        Priority = 5,           //Indicates whether this sprite has priority over the background. 
+        FlipHorizontal = 6,     //Indicates whether to flip the sprite horizontally. 
+        FlipVertical = 7        //Indicates whether to flip the sprite vertically.
+    };
+    
     union MemoryMap {
         struct {
             u8 patternTable0[0x1000];
@@ -142,43 +180,6 @@ public:
             {0xDD,0xDD,0xDD},
             {0x11,0x11,0x11},
             {0x11,0x11,0x11}
-    };
-    
-    enum ControlFlags {
-        LowerNameTable,         //Name table address, changes between the four name tables at 0x2000 (0), 0x2400 (1), 0x2800 (2) and 0x2C00 (3).
-        UpperNameTable,         
-        Increment,              //Specifies amount to increment address by, either 1 if this is 0 or 32 if this is 1.
-        SpriteTable,            //Identifies which pattern table sprites are stored in, either 0x0000 (0) or 0x1000 (1). 
-        BackgroundTable,        //Identifies which pattern table the background is stored in, either 0x0000 (0) or 0x1000 (1). 
-        SpriteSize,             //Specifies the size of sprites in pixels, 8x8 if this is 0, otherwise 8x16.
-        SlaveMode,              //Changes PPU between master and slave modes.  This is not used by the NES.
-        NMI                     //Indicates whether a NMI should occur upon V-Blank. 
-    };
-    
-    enum MaskFlags {
-        Monochrome,             //Indicates whether the system is in colour (0) or monochrome mode (1)
-        ClipBackground,         //Specifies whether to clip the background, that is whether to hide the background in the left 8 pixels on screen (0) or to show them (1).
-        ClipSprites,            //Specifies whether to clip the sprites, that is whether to hide sprites in the left 8 pixels on screen (0) or to show them (1).
-        ShowBackground,         //If this is 0, the background should not be displayed.
-        ShowSprites,            //If this is 0, sprites should not be displayed. 
-        RedTint,                //Indicates background colour in monochrome mode or colour intensity in colour mode. 
-        GreenTint,              
-        BlueTint                
-    };
-    
-    enum StatusFlags {
-        IgnoreWrite = 4,            //If set, indicates that writes to VRAM should be ignored. 
-        ScanlineSpriteCount = 5,    //Scanline sprite count, if set, indicates more than 8 sprites on the current scanline.
-        SpriteZeroHit = 6,          //Sprite 0 hit flag, set when a non-transparent pixel of sprite 0 overlaps a non-transparent background pixel.
-        VBlank = 7                  //Indicates whether V-Blank is occurring.
-    };
-
-    enum SpriteFlags {
-        LowerColor,             //Most significant two bits of the color. 
-        UpperColor,
-        Priority = 5,           //Indicates whether this sprite has priority over the background. 
-        FlipHorizontal = 6,     //Indicates whether to flip the sprite horizontally. 
-        FlipVertical = 7        //Indicates whether to flip the sprite vertically.
     };
     
     Registers registers;

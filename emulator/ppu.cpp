@@ -76,7 +76,7 @@ void Ppu::EvaluateSprites(){
     this->sprite = count;
 }
 
-u32 Ppu::FetchSpritePattern(u8 x, u8 y){
+u32 Ppu::FetchSpritePattern(u16 x, u16 y){
     u8 tile = this->primaryOAM[x].index;
     u8 attributes = this->primaryOAM[x].attributes;
     u16 address;
@@ -102,7 +102,7 @@ u32 Ppu::FetchSpritePattern(u8 x, u8 y){
     u8 a = (attributes & 3) << 2;
     u8 lowTileByte = this->memory.raw[address];
     u8 highTileByte = this->memory.raw[address+8];
-    u32 data;
+    u32 data = 0;
     for (u8 i = 0; i < 8; i++) {
             u8 p1, p2;
             if (this->primaryOAM[x].Get<SpriteFlags::FlipHorizontal>()) {
