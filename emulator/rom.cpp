@@ -1,5 +1,7 @@
 #include "rom.h"
 
+using namespace Frankenstein;
+
 const iNesHeader* Rom::GetHeader() const{
     iNesHeader* header = new iNesHeader;
     for (unsigned int i = 0; i < sizeof(iNesHeader); ++i){

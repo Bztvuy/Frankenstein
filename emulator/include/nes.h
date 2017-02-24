@@ -4,15 +4,21 @@
 #include "rom.h"
 #include "cpu.h"
 #include "ppu.h"
+#include "memory.h"
 
+namespace Frankenstein {
+    
 class Nes
 {
 private:
-    Rom* rom;
-    Cpu* cpu;
-    Ppu* ppu;
+    Memory ram;
+    Rom rom;
+    Cpu cpu;
+    Ppu ppu;
 public:
     Nes();
 };
+
+}
 
 #endif // CPU_H

@@ -4,6 +4,7 @@
 #include "rom.h"
 #include "cpu.h"
 
+namespace Frankenstein {
 class Ppu
 {
 public:
@@ -39,7 +40,7 @@ public:
         u8& vramIO;             //0x2007
         u8& spriteDma;          //0x4014
 
-        Registers(Cpu *const cpu);
+        Registers(Memory& cpu);
     };
     
     union Tile {
@@ -178,9 +179,9 @@ public:
     u16 scanline;       // 0-261, 0-239=visible, 240=post, 241-260=vblank, 261=pre
     u64 frame;
 
-    Ppu(const Rom* rom, Cpu *const cpu);
+    Ppu(Memory& ram, Rom& rom);
 
     void Reset();
 };
-
+}
 #endif // PPU_Hd

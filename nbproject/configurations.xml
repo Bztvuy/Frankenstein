@@ -5,11 +5,14 @@
       <df name="emulator">
         <df name="test">
           <in>cputest.cpp</in>
+          <in>memory_test.cpp</in>
         </df>
         <in>cpu.cpp</in>
+        <in>memory.cpp</in>
         <in>nes.cpp</in>
         <in>ppu.cpp</in>
         <in>rom.cpp</in>
+        <in>rom_data.cpp</in>
       </df>
       <df name="kernel">
         <in>kernel.cpp</in>
@@ -255,6 +258,15 @@
           </incDir>
         </ccTool>
       </item>
+      <item path="emulator/memory.cpp" ex="false" tool="1" flavor2="8">
+        <ccTool flags="3">
+          <incDir>
+            <pElem>emulator</pElem>
+            <pElem>emulator/include</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
+        </ccTool>
+      </item>
       <item path="emulator/nes.cpp" ex="false" tool="1" flavor2="8">
         <ccTool flags="0">
           <incDir>
@@ -283,7 +295,20 @@
           </incDir>
         </ccTool>
       </item>
+      <item path="emulator/rom_data.cpp" ex="false" tool="1" flavor2="8">
+        <ccTool flags="3">
+          <incDir>
+            <pElem>emulator/include</pElem>
+            <pElem>emulator</pElem>
+            <pElem>release-build</pElem>
+          </incDir>
+        </ccTool>
+      </item>
       <item path="emulator/test/cputest.cpp" ex="false" tool="1" flavor2="8">
+        <ccTool flags="2">
+        </ccTool>
+      </item>
+      <item path="emulator/test/memory_test.cpp" ex="false" tool="1" flavor2="8">
         <ccTool flags="2">
         </ccTool>
       </item>

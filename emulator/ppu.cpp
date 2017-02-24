@@ -1,28 +1,30 @@
 #include "ppu.h"
 #include "dependencies.h"
 
-Ppu::Registers::Registers(Cpu *const cpu) :
-    controlRegister(cpu->Memory(0x2000)),
-    maskRegister(cpu->Memory(0x2001)),
-    processorStatus(cpu->Memory(0x2002)),
-    oamAddress(cpu->Memory(0x2003)),
-    oamData(cpu->Memory(0x2004)),
-    vramAddress1(cpu->Memory(0x2005)),
-    vramAddress2(cpu->Memory(0x2006)),
-    vramIO(cpu->Memory(0x2007)),
-    spriteDma(cpu->Memory(0x4014)) {}
+using namespace Frankenstein;
 
-Ppu::Ppu(const Rom* rom, Cpu *const cpu) : registers(cpu)
+Ppu::Registers::Registers(Memory& ram) :
+    controlRegister(ram[0x2000]),
+    maskRegister(ram[0x2001]),
+    processorStatus(ram[0x2002]),
+    oamAddress(ram[0x2003]),
+    oamData(ram[0x2004]),
+    vramAddress1(ram[0x2005]),
+    vramAddress2(ram[0x2006]),
+    vramIO(ram[0x2007]),
+    spriteDma(ram[0x4014]) {}
+
+Ppu::Ppu(Memory& ram, Rom& rom) : registers(ram)
 {
-    const iNesHeader* header = rom->GetHeader();
+    const iNesHeader* header = rom.GetHeader();
     int prgRomBanks = header->prgRomBanks;
     int vRomBanks = header->vRomBanks;
-    int trainerOffset = rom->GetTrainerOffset();
-    int vRomBanksLocation = rom->headerSize + trainerOffset + prgRomBanks * PRGROM_BANK_SIZE;
+    int trainerOffset = rom.GetTrainerOffset();
+    int vRomBanksLocation = rom.headerSize + trainerOffset + prgRomBanks * PRGROM_BANK_SIZE;
 
     switch (vRomBanks) {
         case 1:
-            memcpy(this->memory.patternTable0, rom->GetRaw() + vRomBanksLocation, VROM_BANK_SIZE);
+            memcpy(this->memory.patternTable0, rom.GetRaw() + vRomBanksLocation, VROM_BANK_SIZE);
             break;
         default: //TODO: implement multiple V-ROM banks
             break;

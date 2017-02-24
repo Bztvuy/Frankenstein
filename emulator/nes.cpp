@@ -1,7 +1,6 @@
 #include "nes.h"
 
-Nes::Nes(){
-    rom = new Rom;
-    cpu = new Cpu(rom);
-    ppu = new Ppu(rom, cpu);
+using namespace Frankenstein;
+
+Nes::Nes() : ram(), rom(), cpu(ram, rom), ppu(ram, rom){
 }

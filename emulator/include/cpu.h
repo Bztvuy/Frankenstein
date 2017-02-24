@@ -2,26 +2,13 @@
 
 #include "util.h"
 #include "rom.h"
+#include "memory.h"
+
+namespace Frankenstein {
 
 class Cpu {
     public:
-    union MemoryMap {
-        struct {
-            u8 zeroPage[0x0100];
-            u8 stack[0x0100];
-            u8 ram[0x0600];
-            u8 mirrors1[0x1800];
-            u8 ioRegisters1[0x0008];
-            u8 mirrors2[0x1FF8];
-            u8 ioRegisters2[0x0020];
-            u8 expansionRom[0x1FE0];
-            u8 sram[0x2000];
-            u8 prgRomLowerBank[0x4000];
-            u8 prgRomUpperBank[0x4000];
-        };
-        u8 raw[0x10000];
-    };
-
+    
     struct Registers {
         u16 PC;
         u8 SP = 0xFF;
@@ -43,7 +30,7 @@ class Cpu {
     };
 
     Registers registers;
-    MemoryMap memory;
+    Memory& memory;
 
     const u8 instructionSizes[256] ={
         0, //BRK
@@ -554,11 +541,6 @@ class Cpu {
     inline u8& Operand(int number);
 
     /**
-     * Fetch the byte at memory[address]
-     */
-    inline u8& Memory(const u16 address);
-
-    /**
      * Store the byte at stack[SP]
      * and decrement the stack pointer
      */
@@ -568,110 +550,22 @@ class Cpu {
      * Fetch the byte at stack[SP]
      * and increment the stack pointer
      */
-    inline u8 PopFromStack();
+    inline u8 PopFromStack();    
 
-    /**
-     * Build an address using only the least significative byte. The first half of
-     * the address is assumed to be zero.
-     *
-     * @param low the least significant byte of the address
-     * @return the two bytes address
-     */
-    u16 FromValues(const u8 low) const;
-
-    /**
-     * Build an address using the most and the least significative bytes. Useful
-     * because the memory is stored as little endian.
-     *
-     * @param low  the least significant byte of the address
-     * @param high the most significant byte of the address
-     * @return the two bytes address
-     */
-    u16 FromValues(const u8 low, const u8 high) const;
-
-    /**
-     * Build the address [00][low].
-     * @param low the least significant byte of the address
-     * @return the builded address
-     */
-    u16 ZeroPage(const u8 low) const;
-
-    /**
-     * Build the address [high][low].
-     * @param low  the least significant byte of the address
-     * @param high the most significant byte of the address
-     * @return the builded address
-     */
-    u16 Absolute(const u8 low, const u8 high) const;
-
-    //u16 Implied();
-    //u16 Accumulator();
-
-    /**
-     * Compute the complete address [high][low] + index
-     * @param low   the least significant byte of the address
-     * @param high  the most significant byte of the address
-     * @param index a value to add to the constructed address
-     * @return the computed address
-     */
-    u16 Indexed(const u8 low, const u8 high, const u8 reg) const;
-
-    /**
-     * Compute the ZeroPage address [00][low] + index.
-     * @param low   the least significant byte of the address
-     * @param index a value to add to the constructed address
-     * @return the computed address
-     */
-    u16 ZeroPageIndexed(const u8 low, const u8 reg) const;
-
-    /**
-     * Fetch an address at memory [high][low].
-     * @param  low  the least significant byte
-     * @param  high the most significant byte
-     * @return the stored address
-     */
-    u16 Indirect(const u8 low, const u8 high);
-
-    /**
-     * Fetch an address at memory [00][low + index]. If [low + index] overflow, only
-     * the lowest byte is kept.
-     *
-     * @param  low   ZeroPage address of the memory containing the address
-     * @param  index a value to add to low to get the actual address
-     * @return the pre-indexed address
-     */
-    u16 PreIndexedIndirect(const u8 low, const u8 reg);
-
-    /**
-     * Fetch an address at memory [00][low] then increase the address by index.
-     * @param  low   ZeroPage address of the memory containing the address
-     * @param  index an index to add to the loaded address. Usually a register [X|Y]
-     * @return the post-indexed address
-     */
-    u16 PostIndexedIndirect(const u8 low, const u8 reg);
-    //u16 Relative();
-
-    /**
-     * Detects if two addresses are on the same page
-     * @param startAddress
-     * @param endAddress
-     * @return if a page is crossed
-     */
-    bool IsPageCrossed(u16 startAddress, u16 endAddress);
-
-    template<typename Cpu::Flags f>
+    template<Cpu::Flags f>
     void Set(bool value){
         AssignBit<static_cast<int>(f)>(this->registers.P, value);
     }
 
-    template<typename Cpu::Flags f>
+    template<Cpu::Flags f>
     bool Get(){
         return CheckBit<static_cast<int>(f)>(this->registers.P);
     }
 
-    Cpu();
-    Cpu(const Rom* rom);
+    Cpu(Memory& ram);
+    Cpu(Memory& ram, Rom& rom);
     
     u8 cycles;
 };
 
+}

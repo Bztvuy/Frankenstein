@@ -4,7 +4,7 @@ gtest_dep = library('gtest', gtest_lib_src, gtest_main_src,
     dependencies: thread,
     native: true)
 
-emuTests = executable('emulator_tests', 'cputest.cpp',
+emuTests = executable('emulator_tests', 'cputest.cpp', 'memory_test.cpp',
     link_with: [emulator_native,gtest_dep],
     include_directories: [emulator_include, gtest_inc],
     cpp_args: cpp_args,
