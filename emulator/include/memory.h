@@ -34,16 +34,16 @@ namespace Frankenstein {
         
         u8& operator[] (const u16 addr);
         
-        u8& get(const u16 addr);
+        u8& Get(const u16 addr);
         
         template <Memory::Addressing N>
-        u8& get(const u8);
+        u8& Get(const u8);
         
         template <Memory::Addressing N>
-        u8& get(const u8, const u8);
+        u8& Get(const u8, const u8);
         
         template <Memory::Addressing N>
-        u8& get(const u8, const u8, const u8);
+        u8& Get(const u8, const u8, const u8);
                
         /**
          * Detects if two addresses are on the same page

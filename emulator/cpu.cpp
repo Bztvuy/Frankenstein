@@ -505,18 +505,18 @@ u8 Cpu::UNIMP() {
 /// Logical OR
 /// 2 bytes; 6 cycles
 u8 Cpu::ORA_IND_X() {
-    ORA(memory.get<Mode::PreIndexedIndirect>(Operand(1), this->registers.X));
+    ORA(memory.Get<Mode::PreIndexedIndirect>(Operand(1), this->registers.X));
     return 6;
 }
 
 /// 2 bytes; 3 cycles
 u8 Cpu::ORA_ZP() {
-    ORA(memory.get<Mode::ZeroPage>(Operand(1)));
+    ORA(memory.Get<Mode::ZeroPage>(Operand(1)));
     return 3;
 }
 
 u8 Cpu::ASL_ZP() {
-    ASL(memory.get<Mode::ZeroPage>(Operand(1)));
+    ASL(memory.Get<Mode::ZeroPage>(Operand(1)));
     return 5;
 }
 
@@ -531,65 +531,65 @@ u8 Cpu::ASL_ACC() {
 }
 
 u8 Cpu::ORA_ABS() {
-    ORA(memory.get<Mode::Absolute>(Operand(1), Operand(2)));
+    ORA(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 4;
 }
 
 u8 Cpu::ASL_ABS() {
-    ASL(memory.get<Mode::Absolute>(Operand(1), Operand(2)));
+    ASL(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 6;
 }
 
 u8 Cpu::ORA_IND_Y() {
-    ORA(memory.get<Mode::PostIndexedIndirect>(Operand(1), this->registers.Y));
+    ORA(memory.Get<Mode::PostIndexedIndirect>(Operand(1), this->registers.Y));
     auto address = memory.Indirect(Operand(1), 0);
     return 5 + Memory::IsPageCrossed(address, address + this->registers.Y);
 }
 
 u8 Cpu::ORA_ZP_X() {
-    ORA(memory.get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
+    ORA(memory.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
     return 4;
 }
 
 u8 Cpu::ASL_ZP_X() {
-    ASL(memory.get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
+    ASL(memory.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
     return 6;
 }
 
 u8 Cpu::ORA_ABS_Y() {
-    ORA(memory.get<Mode::Indexed>(Operand(1), Operand(2), this->registers.Y));
+    ORA(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.Y));
     auto address = Memory::FromValues(Operand(1), Operand(2));
     return 4 + Memory::IsPageCrossed(address, address + this->registers.Y);
 }
 
 u8 Cpu::ORA_ABS_X() {
-    ORA(memory.get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
+    ORA(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
     auto address = Memory::FromValues(Operand(1), Operand(2));
     return 4 + Memory::IsPageCrossed(address, address + this->registers.X);
 }
 
 u8 Cpu::ASL_ABS_X() {
-    ASL(memory.get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
+    ASL(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
     return 7;
 }
 
 u8 Cpu::AND_IND_X() {
-    AND(memory.get<Mode::PreIndexedIndirect>(Operand(1), this->registers.X));
+    AND(memory.Get<Mode::PreIndexedIndirect>(Operand(1), this->registers.X));
     return 6;
 }
 
 u8 Cpu::BIT_ZP() {
-    BIT(memory.get<Mode::ZeroPage>(Operand(1)));
+    BIT(memory.Get<Mode::ZeroPage>(Operand(1)));
     return 3;
 }
 
 u8 Cpu::AND_ZP() {
-    AND(memory.get<Mode::ZeroPage>(Operand(1)));
+    AND(memory.Get<Mode::ZeroPage>(Operand(1)));
     return 3;
 }
 
 u8 Cpu::ROL_ZP() {
-    ROL(memory.get<Mode::ZeroPage>(Operand(1)));
+    ROL(memory.Get<Mode::ZeroPage>(Operand(1)));
     return 5;
 }
 
@@ -604,65 +604,65 @@ u8 Cpu::ROL_ACC() {
 }
 
 u8 Cpu::BIT_ABS() {
-    BIT(memory.get<Mode::Absolute>(Operand(1), Operand(2)));
+    BIT(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 4;
 }
 
 u8 Cpu::AND_ABS() {
-    AND(memory.get<Mode::Absolute>(Operand(1), Operand(2)));
+    AND(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 4;
 }
 
 u8 Cpu::ROL_ABS() {
-    ROL(memory.get<Mode::Absolute>(Operand(1), Operand(2)));
+    ROL(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 6;
 }
 
 u8 Cpu::AND_IND_Y() {
-    AND(memory.get<Mode::PostIndexedIndirect>(Operand(1), this->registers.Y));
+    AND(memory.Get<Mode::PostIndexedIndirect>(Operand(1), this->registers.Y));
     auto address = memory.Indirect(Operand(1), 0);
     return 5 + Memory::IsPageCrossed(address, address + this->registers.Y);
 }
 
 u8 Cpu::AND_ZP_X() {
-    AND(memory.get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
+    AND(memory.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
     return 4;
 }
 
 u8 Cpu::ROL_ZP_X() {
-    ROL(memory.get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
+    ROL(memory.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
     return 6;
 }
 
 u8 Cpu::AND_ABS_Y() {
-    AND(memory.get<Mode::Indexed>(Operand(1), Operand(2), this->registers.Y));
+    AND(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.Y));
     auto address = Memory::FromValues(Operand(1), Operand(2));
     return 4 + Memory::IsPageCrossed(address, address + this->registers.Y);
 }
 
 u8 Cpu::AND_ABS_X() {
-    AND(memory.get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
+    AND(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
     auto address = Memory::FromValues(Operand(1), Operand(2));
     return 4 + Memory::IsPageCrossed(address, address + this->registers.X);
 }
 
 u8 Cpu::ROL_ABS_X() {
-    ROL(memory.get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
+    ROL(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
     return 7;
 }
 
 u8 Cpu::EOR_IND_X() {
-    EOR(memory.get<Mode::PreIndexedIndirect>(Operand(1), this->registers.X));
+    EOR(memory.Get<Mode::PreIndexedIndirect>(Operand(1), this->registers.X));
     return 6;
 }
 
 u8 Cpu::EOR_ZP() {
-    EOR(memory.get<Mode::ZeroPage>(Operand(1)));
+    EOR(memory.Get<Mode::ZeroPage>(Operand(1)));
     return 3;
 }
 
 u8 Cpu::LSR_ZP() {
-    LSR(memory.get<Mode::ZeroPage>(Operand(1)));
+    LSR(memory.Get<Mode::ZeroPage>(Operand(1)));
     return 5;
 }
 
@@ -677,65 +677,65 @@ u8 Cpu::LSR_ACC() {
 }
 
 u8 Cpu::JMP_ABS() {
-    JMP(memory.get<Mode::Absolute>(Operand(1), Operand(2)));
+    JMP(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 3;
 }
 
 u8 Cpu::EOR_ABS() {
-    EOR(memory.get<Mode::Absolute>(Operand(1), Operand(2)));
+    EOR(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 4;
 }
 
 u8 Cpu::LSR_ABS() {
-    LSR(memory.get<Mode::Absolute>(Operand(1), Operand(2)));
+    LSR(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 6;
 }
 
 u8 Cpu::EOR_IND_Y() {
-    EOR(memory.get<Mode::PostIndexedIndirect>(Operand(1), this->registers.Y));
+    EOR(memory.Get<Mode::PostIndexedIndirect>(Operand(1), this->registers.Y));
     auto address = memory.Indirect(Operand(1), 0);
     return 5 + Memory::IsPageCrossed(address, address + this->registers.Y);
 }
 
 u8 Cpu::EOR_ZP_X() {
-    EOR(memory.get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
+    EOR(memory.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
     return 4;
 }
 
 u8 Cpu::LSR_ZP_X() {
-    LSR(memory.get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
+    LSR(memory.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
     return 6;
 }
 
 u8 Cpu::EOR_ABS_Y() {
-    EOR(memory.get<Mode::Indexed>(Operand(1), Operand(2), this->registers.Y));
+    EOR(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.Y));
     auto address = Memory::FromValues(Operand(1), Operand(2));
     return 4 + Memory::IsPageCrossed(address, address + this->registers.Y);
 }
 
 u8 Cpu::EOR_ABS_X() {
-    EOR(memory.get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
+    EOR(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
     auto address = Memory::FromValues(Operand(1), Operand(2));
     return 4 + Memory::IsPageCrossed(address, address + this->registers.X);
 }
 
 u8 Cpu::LSR_ABS_X() {
-    LSR(memory.get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
+    LSR(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
     return 7;
 }
 
 u8 Cpu::ADC_IND_X() {
-    ADC(memory.get<Mode::PreIndexedIndirect>(Operand(1), this->registers.X));
+    ADC(memory.Get<Mode::PreIndexedIndirect>(Operand(1), this->registers.X));
     return 6;
 }
 
 u8 Cpu::ADC_ZP() {
-    ADC(memory.get<Mode::ZeroPage>(Operand(1)));
+    ADC(memory.Get<Mode::ZeroPage>(Operand(1)));
     return 3;
 }
 
 u8 Cpu::ROR_ZP() {
-    ROR(memory.get<Mode::ZeroPage>(Operand(1)));
+    ROR(memory.Get<Mode::ZeroPage>(Operand(1)));
     return 5;
 }
 
@@ -751,117 +751,117 @@ u8 Cpu::ROR_ACC() {
 
 u8 Cpu::JMP_IND() {
     if (Memory::IsPageCrossed(this->registers.PC + 1, this->registers.PC + 2))
-        JMP(memory.get<Mode::Indirect>(Operand(1), Operand(-0xFE))); //wrap around
+        JMP(memory.Get<Mode::Indirect>(Operand(1), Operand(-0xFE))); //wrap around
     else
-        JMP(memory.get<Mode::Indirect>(Operand(1), Operand(2)));
+        JMP(memory.Get<Mode::Indirect>(Operand(1), Operand(2)));
     return 5;
 }
 
 u8 Cpu::ADC_ABS() {
-    ADC(memory.get<Mode::Absolute>(Operand(1), Operand(2)));
+    ADC(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 4;
 }
 
 u8 Cpu::ROR_ABS() {
-    ROR(memory.get<Mode::Absolute>(Operand(1), Operand(2)));
+    ROR(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 6;
 }
 
 u8 Cpu::ADC_IND_Y() {
-    ADC(memory.get<Mode::PostIndexedIndirect>(Operand(1), this->registers.Y));
+    ADC(memory.Get<Mode::PostIndexedIndirect>(Operand(1), this->registers.Y));
     auto address = memory.Indirect(Operand(1), 0);
     return 5 + Memory::IsPageCrossed(address, address + this->registers.Y);
 }
 
 u8 Cpu::ADC_ZP_X() {
-    ADC(memory.get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
+    ADC(memory.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
     return 4;
 }
 
 u8 Cpu::ROR_ZP_X() {
-    ROR(memory.get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
+    ROR(memory.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
     return 6;
 }
 
 u8 Cpu::ADC_ABS_Y() {
-    ADC(memory.get<Mode::Indexed>(Operand(1), Operand(2), this->registers.Y));
+    ADC(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.Y));
     auto address = Memory::FromValues(Operand(1), Operand(2));
     return 4 + Memory::IsPageCrossed(address, address + this->registers.Y);
 }
 
 u8 Cpu::ADC_ABS_X() {
-    ADC(memory.get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
+    ADC(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
     auto address = Memory::FromValues(Operand(1), Operand(2));
     return 4 + Memory::IsPageCrossed(address, address + this->registers.X);
 }
 
 u8 Cpu::ROR_ABS_X() {
-    ROR(memory.get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
+    ROR(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
     return 7;
 }
 
 u8 Cpu::STA_IND_X() {
-    STA(memory.get<Mode::PreIndexedIndirect>(Operand(1), this->registers.X));
+    STA(memory.Get<Mode::PreIndexedIndirect>(Operand(1), this->registers.X));
     return 6;
 }
 
 u8 Cpu::STY_ZP() {
-    STY(memory.get<Mode::ZeroPage>(Operand(1)));
+    STY(memory.Get<Mode::ZeroPage>(Operand(1)));
     return 3;
 }
 
 u8 Cpu::STA_ZP() {
-    STA(memory.get<Mode::ZeroPage>(Operand(1)));
+    STA(memory.Get<Mode::ZeroPage>(Operand(1)));
     return 3;
 }
 
 u8 Cpu::STX_ZP() {
-    STX(memory.get<Mode::ZeroPage>(Operand(1)));
+    STX(memory.Get<Mode::ZeroPage>(Operand(1)));
     return 3;
 }
 
 u8 Cpu::STY_ABS() {
-    STY(memory.get<Mode::Absolute>(Operand(1), Operand(2)));
+    STY(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 4;
 }
 
 u8 Cpu::STA_ABS() {
-    STA(memory.get<Mode::Absolute>(Operand(1), Operand(2)));
+    STA(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 4;
 }
 
 u8 Cpu::STX_ABS() {
-    STX(memory.get<Mode::Absolute>(Operand(1), Operand(2)));
+    STX(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 4;
 }
 
 u8 Cpu::STA_IND_Y() {
-    STA(memory.get<Mode::PostIndexedIndirect>(Operand(1), this->registers.Y));
+    STA(memory.Get<Mode::PostIndexedIndirect>(Operand(1), this->registers.Y));
     return 6;
 }
 
 u8 Cpu::STY_ZP_X() {
-    STY(memory.get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
+    STY(memory.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
     return 4;
 }
 
 u8 Cpu::STA_ZP_X() {
-    STA(memory.get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
+    STA(memory.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
     return 4;
 }
 
 u8 Cpu::STX_ZP_Y() {
-    STX(memory.get<Mode::ZeroPageIndexed>(Operand(1), this->registers.Y));
+    STX(memory.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.Y));
     return 4;
 }
 
 u8 Cpu::STA_ABS_Y() {
-    STA(memory.get<Mode::Indexed>(Operand(1), Operand(2), this->registers.Y));
+    STA(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.Y));
     return 5;
 }
 
 u8 Cpu::STA_ABS_X() {
-    STA(memory.get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
+    STA(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
     return 5;
 }
 
@@ -871,7 +871,7 @@ u8 Cpu::LDY_IMM() {
 }
 
 u8 Cpu::LDA_IND_X() {
-    LDA(memory.get<Mode::PreIndexedIndirect>(Operand(1), this->registers.X));
+    LDA(memory.Get<Mode::PreIndexedIndirect>(Operand(1), this->registers.X));
     return 6;
 }
 
@@ -881,17 +881,17 @@ u8 Cpu::LDX_IMM() {
 }
 
 u8 Cpu::LDY_ZP() {
-    LDY(memory.get<Mode::ZeroPage>(Operand(1)));
+    LDY(memory.Get<Mode::ZeroPage>(Operand(1)));
     return 3;
 }
 
 u8 Cpu::LDA_ZP() {
-    LDA(memory.get<Mode::ZeroPage>(Operand(1)));
+    LDA(memory.Get<Mode::ZeroPage>(Operand(1)));
     return 3;
 }
 
 u8 Cpu::LDX_ZP() {
-    LDX(memory.get<Mode::ZeroPage>(Operand(1)));
+    LDX(memory.Get<Mode::ZeroPage>(Operand(1)));
     return 3;
 }
 
@@ -901,61 +901,61 @@ u8 Cpu::LDA_IMM() {
 }
 
 u8 Cpu::LDY_ABS() {
-    LDY(memory.get<Mode::Absolute>(Operand(1), Operand(2)));
+    LDY(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 4;
 }
 
 u8 Cpu::LDA_ABS() {
-    LDA(memory.get<Mode::Absolute>(Operand(1), Operand(2)));
+    LDA(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 4;
 }
 
 u8 Cpu::LDX_ABS() {
-    LDX(memory.get<Mode::Absolute>(Operand(1), Operand(2)));
+    LDX(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 4;
 }
 
 u8 Cpu::LDA_IND_Y() {
-    LDA(memory.get<Mode::PostIndexedIndirect>(Operand(1), this->registers.Y));
+    LDA(memory.Get<Mode::PostIndexedIndirect>(Operand(1), this->registers.Y));
     auto address = memory.Indirect(Operand(1), 0);
     return 5 + Memory::IsPageCrossed(address, address + this->registers.Y);
 }
 
 u8 Cpu::LDY_ZP_X() {
-    LDY(memory.get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
+    LDY(memory.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
     return 4;
 }
 
 u8 Cpu::LDA_ZP_X() {
-    LDA(memory.get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
+    LDA(memory.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
     return 4;
 }
 
 u8 Cpu::LDX_ZP_Y() {
-    LDX(memory.get<Mode::ZeroPageIndexed>(Operand(1), this->registers.Y));
+    LDX(memory.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.Y));
     return 4;
 }
 
 u8 Cpu::LDA_ABS_Y() {
-    LDA(memory.get<Mode::Indexed>(Operand(1), Operand(2), this->registers.Y));
+    LDA(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.Y));
     auto address = Memory::FromValues(Operand(1), Operand(2));
     return 4 + Memory::IsPageCrossed(address, address + this->registers.Y);
 }
 
 u8 Cpu::LDY_ABS_X() {
-    LDY(memory.get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
+    LDY(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
     auto address = Memory::FromValues(Operand(1), Operand(2));
     return 4 + Memory::IsPageCrossed(address, address + this->registers.X);
 }
 
 u8 Cpu::LDA_ABS_X() {
-    LDA(memory.get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
+    LDA(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
     auto address = Memory::FromValues(Operand(1), Operand(2));
     return 4 + Memory::IsPageCrossed(address, address + this->registers.X);
 }
 
 u8 Cpu::LDX_ABS_Y() {
-    LDX(memory.get<Mode::Indexed>(Operand(1), Operand(2), this->registers.Y));
+    LDX(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.Y));
     auto address = Memory::FromValues(Operand(1), Operand(2));
     return 4 + Memory::IsPageCrossed(address, address + this->registers.Y);
 }
@@ -966,22 +966,22 @@ u8 Cpu::CPY_IMM() {
 }
 
 u8 Cpu::CMP_IND_X() {
-    CMP(memory.get<Mode::PreIndexedIndirect>(Operand(1), this->registers.X));
+    CMP(memory.Get<Mode::PreIndexedIndirect>(Operand(1), this->registers.X));
     return 6;
 }
 
 u8 Cpu::CPY_ZP() {
-    CPY(memory.get<Mode::ZeroPage>(Operand(1)));
+    CPY(memory.Get<Mode::ZeroPage>(Operand(1)));
     return 3;
 }
 
 u8 Cpu::CMP_ZP() {
-    CMP(memory.get<Mode::ZeroPage>(Operand(1)));
+    CMP(memory.Get<Mode::ZeroPage>(Operand(1)));
     return 3;
 }
 
 u8 Cpu::DEC_ZP() {
-    DEC(memory.get<Mode::ZeroPage>(Operand(1)));
+    DEC(memory.Get<Mode::ZeroPage>(Operand(1)));
     return 5;
 }
 
@@ -991,50 +991,50 @@ u8 Cpu::CMP_IMM() {
 }
 
 u8 Cpu::CPY_ABS() {
-    CPY(memory.get<Mode::Absolute>(Operand(1), Operand(2)));
+    CPY(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 4;
 }
 
 u8 Cpu::CMP_ABS() {
-    CMP(memory.get<Mode::Absolute>(Operand(1), Operand(2)));
+    CMP(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 4;
 }
 
 u8 Cpu::DEC_ABS() {
-    DEC(memory.get<Mode::Absolute>(Operand(1), Operand(2)));
+    DEC(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 6;
 }
 
 u8 Cpu::CMP_IND_Y() {
-    CMP(memory.get<Mode::PostIndexedIndirect>(Operand(1), this->registers.Y));
+    CMP(memory.Get<Mode::PostIndexedIndirect>(Operand(1), this->registers.Y));
     auto address = memory.Indirect(Operand(1), 0);
     return 5 + Memory::IsPageCrossed(address, address + this->registers.Y);
 }
 
 u8 Cpu::CMP_ZP_X() {
-    CMP(memory.get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
+    CMP(memory.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
     return 4;
 }
 
 u8 Cpu::DEC_ZP_X() {
-    DEC(memory.get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
+    DEC(memory.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
     return 6;
 }
 
 u8 Cpu::CMP_ABS_Y() {
-    CMP(memory.get<Mode::Indexed>(Operand(1), Operand(2), this->registers.Y));
+    CMP(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.Y));
     auto address = Memory::FromValues(Operand(1), Operand(2));
     return 4 + Memory::IsPageCrossed(address, address + this->registers.Y);
 }
 
 u8 Cpu::CMP_ABS_X() {
-    CMP(memory.get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
+    CMP(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
     auto address = Memory::FromValues(Operand(1), Operand(2));
     return 4 + Memory::IsPageCrossed(address, address + this->registers.X);
 }
 
 u8 Cpu::DEC_ABS_X() {
-    DEC(memory.get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
+    DEC(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
     return 7;
 }
 
@@ -1044,22 +1044,22 @@ u8 Cpu::CPX_IMM() {
 }
 
 u8 Cpu::SBC_IND_X() {
-    SBC(memory.get<Mode::PreIndexedIndirect>(Operand(1), this->registers.X));
+    SBC(memory.Get<Mode::PreIndexedIndirect>(Operand(1), this->registers.X));
     return 6;
 }
 
 u8 Cpu::CPX_ZP() {
-    CPX(memory.get<Mode::ZeroPage>(Operand(1)));
+    CPX(memory.Get<Mode::ZeroPage>(Operand(1)));
     return 3;
 }
 
 u8 Cpu::SBC_ZP() {
-    SBC(memory.get<Mode::ZeroPage>(Operand(1)));
+    SBC(memory.Get<Mode::ZeroPage>(Operand(1)));
     return 3;
 }
 
 u8 Cpu::INC_ZP() {
-    INC(memory.get<Mode::ZeroPage>(Operand(1)));
+    INC(memory.Get<Mode::ZeroPage>(Operand(1)));
     return 5;
 }
 
@@ -1069,49 +1069,49 @@ u8 Cpu::SBC_IMM() {
 }
 
 u8 Cpu::CPX_ABS() {
-    CPX(memory.get<Mode::Absolute>(Operand(1), Operand(2)));
+    CPX(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 4;
 }
 
 u8 Cpu::SBC_ABS() {
-    SBC(memory.get<Mode::Absolute>(Operand(1), Operand(2)));
+    SBC(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 4;
 }
 
 u8 Cpu::INC_ABS() {
-    INC(memory.get<Mode::Absolute>(Operand(1), Operand(2)));
+    INC(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 6;
 }
 
 u8 Cpu::SBC_IND_Y() {
-    SBC(memory.get<Mode::PostIndexedIndirect>(Operand(1), this->registers.Y));
+    SBC(memory.Get<Mode::PostIndexedIndirect>(Operand(1), this->registers.Y));
     auto address = memory.Indirect(Operand(1), 0);
     return 5 + Memory::IsPageCrossed(address, address + this->registers.Y);
 }
 
 u8 Cpu::SBC_ZP_X() {
-    SBC(memory.get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
+    SBC(memory.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
     return 4;
 }
 
 u8 Cpu::INC_ZP_X() {
-    INC(memory.get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
+    INC(memory.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
     return 6;
 }
 
 u8 Cpu::SBC_ABS_Y() {
-    SBC(memory.get<Mode::Indexed>(Operand(1), Operand(2), this->registers.Y));
+    SBC(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.Y));
     auto address = Memory::FromValues(Operand(1), Operand(2));
     return 4 + Memory::IsPageCrossed(address, address + this->registers.Y);
 }
 
 u8 Cpu::SBC_ABS_X() {
-    SBC(memory.get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
+    SBC(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
     auto address = Memory::FromValues(Operand(1), Operand(2));
     return 4 + Memory::IsPageCrossed(address, address + this->registers.X);
 }
 
 u8 Cpu::INC_ABS_X() {
-    INC(memory.get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
+    INC(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
     return 7;
 }

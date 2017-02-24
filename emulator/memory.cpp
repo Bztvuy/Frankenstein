@@ -6,7 +6,7 @@ u8& Memory::operator[] (const u16 addr) {
     return raw[addr];
 }
         
-u8& Memory::get(const u16 addr) {
+u8& Memory::Get(const u16 addr) {
     return this->operator [](addr);
 }
 
@@ -58,55 +58,55 @@ u16 Memory::PostIndexedIndirect(const u8 low, const u8 index) {
 
 namespace Frankenstein {
     template <Memory::Addressing N>
-    u8& Memory::get(const u8) {
+    u8& Memory::Get(const u8) {
         static_assert(sizeof(N) >= 0, "failure to specialise template: please use a valid Addressing mode");
         return 0xFF;
     }
 
     template <Memory::Addressing N>
-    u8& Memory::get(const u8, const u8) {
+    u8& Memory::Get(const u8, const u8) {
         static_assert(sizeof(N) >= 0, "failure to specialise template: please use a valid Addressing mode");
         return 0xFF;
     }
 
     template <Memory::Addressing N>
-    u8& Memory::get(const u8, const u8, const u8) {
+    u8& Memory::Get(const u8, const u8, const u8) {
         static_assert(sizeof(N) >= 0, "failure to specialise template: please use a valid Addressing mode");
         return 0xFF;
     }
 
     template <>
-    u8& Memory::get<Memory::Addressing::Absolute>(const u8 low, const u8 high) {
+    u8& Memory::Get<Memory::Addressing::Absolute>(const u8 low, const u8 high) {
         return raw[Absolute(low, high)];
     }
 
     template <>
-    u8& Memory::get<Memory::Addressing::ZeroPage>(const u8 low) {
+    u8& Memory::Get<Memory::Addressing::ZeroPage>(const u8 low) {
         return raw[ZeroPage(low)];
     }
 
     template <>
-    u8& Memory::get<Memory::Addressing::Indexed>(const u8 low, const u8 high, const u8 index) {
+    u8& Memory::Get<Memory::Addressing::Indexed>(const u8 low, const u8 high, const u8 index) {
         return raw[Indexed(low, high, index)];
     }
 
     template <>
-    u8& Memory::get<Memory::Addressing::ZeroPageIndexed>(const u8 low, const u8 index) {
+    u8& Memory::Get<Memory::Addressing::ZeroPageIndexed>(const u8 low, const u8 index) {
         return raw[ZeroPageIndexed(low, index)];
     }
 
     template <>
-    u8& Memory::get<Memory::Addressing::Indirect>(const u8 low, const u8 high) {
+    u8& Memory::Get<Memory::Addressing::Indirect>(const u8 low, const u8 high) {
         return raw[Indirect(low, high)];
     }
 
     template <>
-    u8& Memory::get<Memory::Addressing::PreIndexedIndirect>(const u8 low, const u8 index) {
+    u8& Memory::Get<Memory::Addressing::PreIndexedIndirect>(const u8 low, const u8 index) {
         return raw[PreIndexedIndirect(low, index)];
     }
 
     template <>
-    u8& Memory::get<Memory::Addressing::PostIndexedIndirect>(const u8 low, const u8 index) {
+    u8& Memory::Get<Memory::Addressing::PostIndexedIndirect>(const u8 low, const u8 index) {
         return raw[PostIndexedIndirect(low, index)];
     }       
 }
