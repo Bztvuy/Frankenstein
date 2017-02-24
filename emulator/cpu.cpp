@@ -90,14 +90,13 @@ u16 Cpu::ZeroPageIndexed(const u8 low, const u8 index) const {
 }
 
 u16 Cpu::Indirect(const u8 low, const u8 high) {
-    auto memAddrAddr = FromValues(low, high);
-    auto valLow = Memory(memAddrAddr);
-    auto valHigh = Memory(memAddrAddr+1);
+    auto valLow = Memory(FromValues(low, high));
+    auto valHigh = Memory(FromValues((low+1)%0x100, high));
     return FromValues(valLow, valHigh);
 }
 
 u16 Cpu::PreIndexedIndirect(const u8 low, const u8 index) {
-    return Indirect((low + index) % (0xFF+1), 0);
+    return Indirect((low + index) % (0x100), 0);
 }
 
 u16 Cpu::PostIndexedIndirect(const u8 low, const u8 index) {
