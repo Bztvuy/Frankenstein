@@ -194,8 +194,8 @@ public:
     Registers registers;
     MemoryMap memory;
 
-    RGBColor** front;
-    RGBColor** back;
+    RGBColor front[256][240];
+    RGBColor back[256][240];
 
     Sprite primaryOAM[64];
     Sprite secondaryOAM[8];
@@ -267,7 +267,6 @@ public:
     u8 bufferedData;  // for buffered reads
 
     Ppu(Memory& ram, Rom& rom);
-    ~Ppu();
 
     template<typename Ppu::ControlFlags f>
     void Set(bool value){

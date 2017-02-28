@@ -1,6 +1,5 @@
 #include "ppu.h"
 #include "dependencies.h"
-#include "actled.h"
 
 using namespace Frankenstein;
 
@@ -35,13 +34,10 @@ Ppu::Ppu(Memory& ram, Rom& rom) : registers(ram) {
     ScanLine = 0;
     Frame = 0;
 
-    front = new RGBColor[256][240];
-    back = new RGBColor[256][240];
-}
-
-Ppu::~Ppu(){
-    delete [] front;
-    delete [] back;
+    //TODO:
+    //fix this
+    //front = new RGBColor[256][240];
+    //back = new RGBColor[256][240];
 }
 
 void Ppu::Reset() {
@@ -110,7 +106,7 @@ void Ppu::writeControl(u8 value) {
     flagBackgroundTable = (value >> 4) & 1;
     flagSpriteSize = (value >> 5) & 1;
     flagMasterSlave = (value >> 6) & 1;
-    nmiOutput = (value >> 7)&1 == 1;
+    nmiOutput = ((value >> 7)&1) == 1;
     nmiChange();
     // t: ....BA.. ........ = d: ......BA
     t = (t & 0xF3FF) | ((u16(value) & 0x03) << 10);
@@ -207,7 +203,7 @@ void Ppu::writeAddress(u8 value) {
 u8 Ppu::readData() {
     //TODO:
     //u8 value = Read(v);
-    u8 value;
+    u8 value = 0;
     // emulate buffered reads
     if (v % 0x4000 < 0x3F00) {
         u8 buffered = bufferedData;
@@ -261,7 +257,7 @@ void Ppu::writeDMA(u8 value) {
 void Ppu::incrementX() {
     // increment hori(v)
     // if coarse X == 31
-    if (v & 0x001F == 31) {
+    if ((v & 0x001F) == 31) {
         // coarse X = 0
         v &= 0xFFE0;
         // switch horizontal nametable
@@ -275,7 +271,7 @@ void Ppu::incrementX() {
 void Ppu::incrementY() {
     // increment vert(v)
     // if fine Y < 7
-    if (v & 0x7000 != 0x7000) {
+    if ((v & 0x7000) != 0x7000) {
         // increment fine Y
         v += 0x1000;
     } else {
@@ -323,11 +319,14 @@ void Ppu::nmiChange() {
 }
 
 void Ppu::setVerticalBlank() {
-    RGBColor** temp = front;
+    //TODO: FIX ME
+    /**
+    auto temp = front;
     front = back;
     back = temp;
     nmiOccurred = true;
     nmiChange();
+    **/
 }
 
 void Ppu::clearVerticalBlank() {
@@ -394,7 +393,7 @@ u8 Ppu::backgroundPixel() {
 
 Ppu::BytePair Ppu::spritePixel() {
     if (flagShowSprites == 0) {
-        return BytePair(0, 0);
+        return BytePair{0, 0};
     }
     for (u32 i = 0; i < spriteCount; i++) {
         u32 offset = (Cycle - 1) - u32(spritePositions[i]);
@@ -406,9 +405,9 @@ Ppu::BytePair Ppu::spritePixel() {
         if (color % 4 == 0) {
             continue;
         }
-        return BytePair(u8(i), color);
+        return BytePair{u8(i), color};
     }
-    return BytePair(0, 0);
+    return BytePair{0, 0};
 }
 
 void Ppu::renderPixel() {
@@ -444,21 +443,21 @@ void Ppu::renderPixel() {
         }
     }
     RGBColor c = systemPalette[readPalette(u16(color)) % 64];
-    back.[x][y] = c;
+    back[x][y] = c;
 }
 
 u32 Ppu::fetchSpritePattern(u8 i, u32 row) {
     u8 tile = oamData[i * 4 + 1];
     u8 attributes = oamData[i * 4 + 2];
-    u16 address;
+    u16 address = 0;
     if (flagSpriteSize == 0) {
-        if (attributes & 0x80 == 0x80) {
+        if ((attributes & 0x80) == 0x80) {
             row = 7 - row;
         }
-        u8 table = flagSpriteTable
-                address = 0x1000 * u16(table) + u16(tile)*16 + u16(row);
+        u8 table = flagSpriteTable;
+        address = 0x1000 * u16(table) + u16(tile)*16 + u16(row);
     } else {
-        if (attributes & 0x80 == 0x80) {
+        if ((attributes & 0x80) == 0x80) {
             row = 15 - row;
         }
         u8 table = tile & 1;
@@ -476,7 +475,7 @@ u32 Ppu::fetchSpritePattern(u8 i, u32 row) {
     u32 data = 0;
     for (u8 i = 0; i < 8; i++) {
         u8 p1, p2;
-        if (attributes & 0x40 == 0x40) {
+        if ((attributes & 0x40) == 0x40) {
             p1 = (lowTileByte & 1) << 0;
             p2 = (highTileByte & 1) << 1;
             lowTileByte >>= 1;
@@ -622,7 +621,7 @@ void Ppu::Step() {
         setVerticalBlank();
     }
     if (preLine && Cycle == 1) {
-        clearVerticalBlank()
+        clearVerticalBlank();
         flagSpriteZeroHit = 0;
         flagSpriteOverflow = 0;
     }
