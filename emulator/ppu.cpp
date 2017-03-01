@@ -201,17 +201,14 @@ void Ppu::writeAddress(u8 value) {
 // $2007: PPUDATA (read)
 
 u8 Ppu::readData() {
-    //TODO:
-    //u8 value = Read(v);
-    u8 value = 0;
+    u8 value = this->memory.raw[v];
     // emulate buffered reads
     if (v % 0x4000 < 0x3F00) {
         u8 buffered = bufferedData;
         bufferedData = value;
         value = buffered;
     } else {
-        //TODO:
-        //bufferedData = Read(v - 0x1000);
+        bufferedData = this->memory.raw[v - 0x1000];
     }
     // increment address
     if (flagIncrement == 0) {
@@ -225,8 +222,7 @@ u8 Ppu::readData() {
 // $2007: PPUDATA (write)
 
 void Ppu::writeData(u8 value) {
-    //TODO:
-    //Write(v, value);
+    this->memory.raw[v] = value;
     if (flagIncrement == 0) {
         v += 1;
     } else {
@@ -238,10 +234,11 @@ void Ppu::writeData(u8 value) {
 
 void Ppu::writeDMA(u8 value) {
     //TODO:
-    //cpu = console.CPU;
+    //Cpu* cpu = bus->cpu;
     u16 address = u16(value) << 8;
     for (u16 i = 0; i < 256; i++) {
-        //TODO: oamData[oamAddress] = cpu.Read(address)
+        //TODO:
+        //oamData[oamAddress] = cpu->memory.Get(address);
         oamAddress++;
         address++;
     }
@@ -336,15 +333,13 @@ void Ppu::clearVerticalBlank() {
 
 void Ppu::fetchNameTableByte() {
     u16 address = 0x2000 | (v & 0x0FFF);
-    //TODO:
-    //nameTableByte = Read(address);
+    nameTableByte = this->memory.raw[address];
 }
 
 void Ppu::fetchAttributeTableByte() {
     u16 address = 0x23C0 | (v & 0x0C00) | ((v >> 4) & 0x38) | ((v >> 2) & 0x07);
     u16 shift = ((v >> 4) & 4) | (v & 2);
-    //TODO:
-    //attributeTableByte = ((Read(address) >> shift) & 3) << 2;
+    attributeTableByte = ((this->memory.raw[address] >> shift) & 3) << 2;
 }
 
 void Ppu::fetchLowTileByte() {
@@ -352,8 +347,7 @@ void Ppu::fetchLowTileByte() {
     u8 table = flagBackgroundTable;
     u8 tile = nameTableByte;
     u16 address = 0x1000 * u16(table) + u16(tile)*16 + fineY;
-    //TODO:
-    //lowTileByte = Read(address);
+    lowTileByte = this->memory.raw[address];
 }
 
 void Ppu::fetchHighTileByte() {
@@ -361,8 +355,7 @@ void Ppu::fetchHighTileByte() {
     u8 table = flagBackgroundTable;
     u8 tile = nameTableByte;
     u16 address = 0x1000 * u16(table) + u16(tile)*16 + fineY;
-    //TODO:
-    //highTileByte = Read(address + 8);
+    highTileByte = this->memory.raw[address + 8];
 }
 
 void Ppu::storeTileData() {
@@ -469,9 +462,8 @@ u32 Ppu::fetchSpritePattern(u8 i, u32 row) {
         address = 0x1000 * u16(table) + u16(tile)*16 + u16(row);
     }
     u8 a = (attributes & 3) << 2;
-    //TODO:
-    //lowTileByte = Read(address);
-    //highTileByte = Read(address + 8);
+    lowTileByte = this->memory.raw[address];
+    highTileByte = this->memory.raw[address + 8];
     u32 data = 0;
     for (u8 i = 0; i < 8; i++) {
         u8 p1, p2;
@@ -530,7 +522,7 @@ void Ppu::tick() {
         nmiDelay--;
         if (nmiDelay == 0 && nmiOutput && nmiOccurred) {
             //TODO:
-            //console.CPU.triggerNMI();
+            //bus->cpu->nmiOccurred = true;
         }
     }
 
