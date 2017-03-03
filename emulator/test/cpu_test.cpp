@@ -62,16 +62,40 @@ TEST_F(CPUTest, AND_NegativeResult) {
 // ADC Tests
 ////////////////////////////////////////////////////////////////////////////////
 
-TEST_F(CPUTest, ADC)
+TEST_F(CPUTest, ADC_ZeroAndZero)
 {
-    cpu.registers.A = 1;
+    cpu.registers.A = 0;
+    u8 value = 0;
+    cpu.ADC(value);
+    EXPECT_EQ(0,     cpu.registers.A);
+    EXPECT_EQ(true,  cpu.Get<Cpu::Flags::Z>());
+    EXPECT_EQ(false, cpu.Get<Cpu::Flags::S>());
+    EXPECT_EQ(false, cpu.Get<Cpu::Flags::V>());
+    EXPECT_EQ(false, cpu.Get<Cpu::Flags::C>());
+}
+
+TEST_F(CPUTest, ADC_ZeroAndOne)
+{
+    cpu.registers.A = 0;
     u8 value = 1;
     cpu.ADC(value);
-    EXPECT_EQ(2, cpu.registers.A);
-    EXPECT_EQ(0, cpu.Get<Cpu::Flags::Z>());
-    EXPECT_EQ(0, cpu.Get<Cpu::Flags::S>());
-    EXPECT_EQ(0, cpu.Get<Cpu::Flags::V>());
-    EXPECT_EQ(0, cpu.Get<Cpu::Flags::C>());
+    EXPECT_EQ(1, cpu.registers.A);
+    EXPECT_EQ(false, cpu.Get<Cpu::Flags::Z>());
+    EXPECT_EQ(false, cpu.Get<Cpu::Flags::S>());
+    EXPECT_EQ(false, cpu.Get<Cpu::Flags::V>());
+    EXPECT_EQ(false, cpu.Get<Cpu::Flags::C>());
+}
+
+TEST_F(CPUTest, ADC_ZeroAndOne)
+{
+    cpu.registers.A = 0;
+    u8 value = 1;
+    cpu.ADC(value);
+    EXPECT_EQ(1, cpu.registers.A);
+    EXPECT_EQ(false, cpu.Get<Cpu::Flags::Z>());
+    EXPECT_EQ(false, cpu.Get<Cpu::Flags::S>());
+    EXPECT_EQ(false, cpu.Get<Cpu::Flags::V>());
+    EXPECT_EQ(false, cpu.Get<Cpu::Flags::C>());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
