@@ -292,9 +292,9 @@ class Cpu {
     };
 
     void ADC(u8& value);
-    void AND(u8& value);
+    void AND(const u8& value);
     void ASL(u8& value);
-    void BIT(u8& value);
+    void BIT(const u8& value);
     void CMP(u8& value);
     void CPX(u8& value);
     void CPY(u8& value);
@@ -566,6 +566,7 @@ class Cpu {
     Cpu(Memory& ram, Rom& rom);
     
     u8 cycles;
+    bool nmiOccurred;
 };
 
 }

@@ -4,6 +4,7 @@
     <df root="." name="0">
       <df name="emulator">
         <df name="test">
+          <in>cpu_test.cpp</in>
           <in>cputest.cpp</in>
           <in>memory_test.cpp</in>
         </df>
@@ -259,7 +260,7 @@
         </ccTool>
       </item>
       <item path="emulator/memory.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool flags="3">
+        <ccTool flags="0">
           <incDir>
             <pElem>emulator</pElem>
             <pElem>emulator/include</pElem>
@@ -287,7 +288,7 @@
         </ccTool>
       </item>
       <item path="emulator/rom.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool flags="3">
+        <ccTool flags="0">
           <incDir>
             <pElem>emulator</pElem>
             <pElem>emulator/include</pElem>
@@ -296,12 +297,16 @@
         </ccTool>
       </item>
       <item path="emulator/rom_data.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool flags="3">
+        <ccTool flags="0">
           <incDir>
             <pElem>emulator/include</pElem>
             <pElem>emulator</pElem>
             <pElem>release-build</pElem>
           </incDir>
+        </ccTool>
+      </item>
+      <item path="emulator/test/cpu_test.cpp" ex="false" tool="1" flavor2="8">
+        <ccTool flags="2">
         </ccTool>
       </item>
       <item path="emulator/test/cputest.cpp" ex="false" tool="1" flavor2="8">

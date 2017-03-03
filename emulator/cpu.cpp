@@ -57,7 +57,7 @@ inline u8& Cpu::Operand(int number) {
 /// Binary Operations Definition
 ////////////////////////////////////////////////////////////////////////////////
 
-void Cpu::AND(u8& value){
+void Cpu::AND(const u8& value){
     this->registers.A &= value;
     Set<Flags::Z>(CheckZero(this->registers.A));
     Set<Flags::S>(CheckSign(this->registers.A));
@@ -67,11 +67,11 @@ void Cpu::ASL(u8& value){
     // 0 is shifted into bit 0 and the original bit 7 is shifted into the Carry.
     Set<Flags::C>(CheckBit<8>(value));
     value <<= 1;
-    Set<Flags::Z>(CheckZero(this->registers.A));
-    Set<Flags::S>(CheckSign(this->registers.A));
+    Set<Flags::Z>(CheckZero(value));
+    Set<Flags::S>(CheckSign(value));
 }
 
-void Cpu::BIT(u8& value){
+void Cpu::BIT(const u8& value){
     auto result = value & this->registers.A;
     Set<Flags::Z>(CheckZero(result));
     Set<Flags::V>(CheckBit<7>(value));
