@@ -235,7 +235,7 @@ void Ppu::writeData(u8 value) {
 void Ppu::writeDMA(u8 value) {
     u16 address = u16(value) << 8;
     for (u16 i = 0; i < 256; i++) {
-        oamData[oamAddress] = cpu->memory.Get(address);
+        oamData[oamAddress] = cpu.memory.Get(address);
         oamAddress++;
         address++;
     }
@@ -524,7 +524,7 @@ void Ppu::tick() {
     if (nmiDelay > 0) {
         nmiDelay--;
         if (nmiDelay == 0 && nmiOutput && nmiOccurred) {
-            cpu->nmiOccurred = true;
+            cpu.nmiOccurred = true;
         }
     }
 
