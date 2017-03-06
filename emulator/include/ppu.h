@@ -190,6 +190,7 @@ public:
             {0x11,0x11,0x11},
             {0x11,0x11,0x11}
     };
+    Cpu& cpu;
     
     Registers registers;
     MemoryMap memory;
@@ -266,7 +267,7 @@ public:
     // $2007 PPUDATA
     u8 bufferedData;  // for buffered reads
 
-    Ppu(Memory& ram, Rom& rom);
+    Ppu(Memory& ram, Rom& rom, Cpu& cpu);
 
     template<typename Ppu::ControlFlags f>
     void Set(bool value){

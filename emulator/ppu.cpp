@@ -15,7 +15,7 @@ vramIO(ram[0x2007]),
 spriteDma(ram[0x4014]) {
 }
 
-Ppu::Ppu(Memory& ram, Rom& rom) : registers(ram) {
+Ppu::Ppu(Memory& ram, Rom& rom, Cpu& cpu2) : registers(ram), cpu(cpu2) {
     const iNesHeader* header = rom.GetHeader();
     int prgRomBanks = header->prgRomBanks;
     int vRomBanks = header->vRomBanks;
@@ -233,20 +233,23 @@ void Ppu::writeData(u8 value) {
 // $4014: OAMDMA
 
 void Ppu::writeDMA(u8 value) {
-    //TODO:
-    //Cpu* cpu = bus->cpu;
     u16 address = u16(value) << 8;
     for (u16 i = 0; i < 256; i++) {
-        //TODO:
-        //oamData[oamAddress] = cpu->memory.Get(address);
+        oamData[oamAddress] = cpu->memory.Get(address);
         oamAddress++;
         address++;
     }
-    //TODO:
-    //cpu.stall += 513;
-    //if (cpu.Cycles%2 == 1) {
-    //     cpu.stall++;
-    //}
+    /**
+     * When sprite DMA ($4014) is written to, 
+     * the next instruction always begins on an odd cycle. 
+     * If the $4014 write is on an odd cycle, 
+     * it pauses the CPU for an additional 513 cycles, otherwise 514 cycles. 
+     * We can use this aspect to partially compensate for NMI's variable delay.
+     */
+    cpu.cycles += 513;
+    if (cpu.cycles%2 == 1) {
+         cpu.cycles++;
+    }
 }
 
 // NTSC Timing Helper Functions
@@ -521,8 +524,7 @@ void Ppu::tick() {
     if (nmiDelay > 0) {
         nmiDelay--;
         if (nmiDelay == 0 && nmiOutput && nmiOccurred) {
-            //TODO:
-            //bus->cpu->nmiOccurred = true;
+            cpu->nmiOccurred = true;
         }
     }
 
