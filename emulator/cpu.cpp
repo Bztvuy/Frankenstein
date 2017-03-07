@@ -35,7 +35,7 @@ void Cpu::Reset(){
     this->registers.SP = 0xFD;
 }
 
-void Cpu::Execute(){
+void Cpu::Step(){
     if (nmiOccurred){
 	this->cycles = NMI();
     } else {

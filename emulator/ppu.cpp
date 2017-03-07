@@ -30,10 +30,6 @@ Ppu::Ppu(Memory& ram, Rom& rom, Cpu& cpu2) : cpu(cpu2), registers(ram) {
             break;
     }
 
-    Cycle = 0;
-    ScanLine = 0;
-    Frame = 0;
-
     front = new RGBColor*[256];
     back = new RGBColor*[256];
     
@@ -42,6 +38,8 @@ Ppu::Ppu(Memory& ram, Rom& rom, Cpu& cpu2) : cpu(cpu2), registers(ram) {
 	front[i] = new RGBColor;
 	back[i] = new RGBColor;
     }
+    
+    Reset();
 }
 
 void Ppu::Reset() {

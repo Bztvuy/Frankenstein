@@ -534,7 +534,7 @@ class Cpu {
      * Executes the next instruction at memory[PC]
      * Increments the PC accordingly
      */
-    void Execute();
+    void Step();
 
     /**
      * Fetch the opcode at memory[PC]
