@@ -3,9 +3,11 @@ if not meson.is_cross_build() or host_machine.system() != 'raspberry-pi'
 endif
 
 elf = executable('kernel.elf', 'startup.S', 'main.cpp', 'kernel.cpp',
-	dependencies: [libcircle_dep],
-	cpp_args: cpp_cross_args,
-        link_args: cpp_cross_args)
+    dependencies: [libcircle_dep],
+    cpp_args: cpp_cross_args,
+    link_args: cpp_cross_args,
+    include_directories: emulator_include,
+    link_with: emulator)
 
 objcopy_name = meson.get_cross_property('objcopy')
 objcopy = find_program(objcopy_name)
