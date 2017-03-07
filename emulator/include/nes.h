@@ -10,14 +10,14 @@ namespace Frankenstein {
     
 class Nes
 {
-private:
+public:
     Memory ram;
     Rom rom;
     Cpu cpu;
     Ppu ppu;
-public:
+
     Nes();
-    void Run();
+    void Step();
 };
 
 }
