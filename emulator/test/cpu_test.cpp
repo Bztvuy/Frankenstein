@@ -7,9 +7,9 @@ TEST_F(CPUTest, DefaultState)
     EXPECT_EQ(0, cpu.registers.A);
     EXPECT_EQ(0, cpu.registers.X);
     EXPECT_EQ(0, cpu.registers.Y);
-    EXPECT_EQ(0b00100000, cpu.registers.P);
+    EXPECT_EQ(0b00100100, cpu.registers.P);
     EXPECT_EQ(0, cpu.registers.PC);
-    EXPECT_EQ(0xFF, cpu.registers.SP);
+    EXPECT_EQ(0xFD, cpu.registers.SP);
     EXPECT_EQ(0, cpu.Get<Cpu::Flags::Z>());
     EXPECT_EQ(0, cpu.Get<Cpu::Flags::S>());
     EXPECT_EQ(0, cpu.Get<Cpu::Flags::V>());

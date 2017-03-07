@@ -5,7 +5,9 @@
 using namespace Frankenstein;
 using Mode = Frankenstein::Memory::Addressing;
 
-Cpu::Cpu(Memory& ram) : memory(ram){}
+Cpu::Cpu(Memory& ram) : memory(ram){
+    this->Reset();
+}
 
 Cpu::Cpu(Memory& ram, Rom& rom) : memory(ram) {
     const iNesHeader* header = rom.GetHeader();
@@ -38,6 +40,7 @@ void Cpu::Reset(){
 void Cpu::Step(){
     if (nmiOccurred){
 	this->cycles = NMI();
+	nmiOccurred = false;
     } else {
 	auto opCode = OpCode();
 	this->cycles = (this->*instructions[opCode])();
