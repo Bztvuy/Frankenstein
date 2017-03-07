@@ -17,6 +17,7 @@ private:
     Ppu ppu;
 public:
     Nes();
+    void Run();
 };
 
 }

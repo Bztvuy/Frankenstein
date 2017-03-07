@@ -8,8 +8,9 @@ static const char FromKernel[] = "kernel";
 CKernel::CKernel (void)
 :	m_Screen (m_Options.GetWidth (), m_Options.GetHeight ()),
 	m_Timer (&m_Interrupt),
-	m_Logger (m_Options.GetLogLevel (), &m_Timer)
+	m_Logger (m_Options.GetLogLevel (), &m_Timer),
 	// TODO: add more member initializers here
+	nes()
 {
 }
 
@@ -59,7 +60,7 @@ boolean CKernel::Initialize (void)
 
 TShutdownMode CKernel::Run (void)
 {
-	m_Logger.Write (FromKernel, LogNotice, "Compile time: " __DATE__ " " __TIME__);
+	nes.Run();
 
 	return ShutdownHalt;
 }
