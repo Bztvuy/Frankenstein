@@ -11,22 +11,22 @@ class Cpu {
     
     struct Registers {
         u16 PC;
-        u8 SP = 0xFF;
+        u8 SP;
         u8 A;
         u8 X;
         u8 Y;
-        u8 P = 0b00100000;
+        u8 P;
     };
 
     enum class Flags : int {
-        C = 1,      //Carry
-        Z,          //Zero
-        I,          //Interrupt
-        D,          //Decimal
-        B,          //Break
-        A,          //Always
-        V,          //Overflow
-        S           //Sign : 1 is negative
+        C,      //Carry
+        Z,      //Zero
+        I,      //Interrupt
+        D,      //Decimal
+        B,      //Break
+        A,      //Always
+        V,      //Overflow
+        S       //Sign : 1 is negative
     };
 
     Registers registers;
@@ -466,6 +466,10 @@ class Cpu {
     u8 SBC_ABS_X();
     u8 INC_ABS_X();
     u8 UNIMP();
+    
+    u8 NMI();
+    
+    void Interrupt();
 
     typedef u8 (Cpu::*func)(void);
 
@@ -523,6 +527,8 @@ class Cpu {
         &Cpu::UNIMP, &Cpu::UNIMP, &Cpu::UNIMP, &Cpu::SBC_ABS_X, &Cpu::INC_ABS_X,
         &Cpu::UNIMP
     };
+    
+    void Reset();
 
     /**
      * Executes the next instruction at memory[PC]

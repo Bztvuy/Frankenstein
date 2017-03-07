@@ -25,14 +25,24 @@ Cpu::Cpu(Memory& ram, Rom& rom) : memory(ram) {
         default: //TODO: implement multiple PRG-ROM banks
             break;
     }
+    
+    this->Reset();
+}
 
+void Cpu::Reset(){
     this->registers.PC = (memory[0xFFFC] | memory[0xFFFD] << 8);
+    this->registers.P = 0b00100100;
+    this->registers.SP = 0xFD;
 }
 
 void Cpu::Execute(){
-    auto opCode = OpCode();
-    this->cycles = (this->*instructions[opCode])();
-    this->registers.PC += this->instructionSizes[opCode];
+    if (nmiOccurred){
+	this->cycles = NMI();
+    } else {
+	auto opCode = OpCode();
+	this->cycles = (this->*instructions[opCode])();
+	this->registers.PC += this->instructionSizes[opCode];
+    }
 }
 
 inline u8& Cpu::OpCode(){
@@ -386,13 +396,23 @@ u8 Cpu::PLP() {
 /// PC Operations Definition
 ////////////////////////////////////////////////////////////////////////////////
 
-u8 Cpu::BRK(){
+void Cpu::Interrupt(){
     this->registers.PC += 1;
     PushOnStack((this->registers.PC >> 8) & 0xFF);     /* Push return address onto the stack. */
     PushOnStack(this->registers.PC & 0xFF);
     Set<Flags::B>(true);                           /* Set BFlag before pushing */
     PushOnStack(this->registers.P);
     Set<Flags::I>(true);
+}
+
+u8 Cpu::NMI(){
+    Interrupt();
+    this->registers.PC = (memory[0xFFFA] | memory[0xFFFB] << 8);
+    return 7;
+}
+
+u8 Cpu::BRK(){
+    Interrupt();
     this->registers.PC = (memory[0xFFFE] | memory[0xFFFF] << 8);
     return 7;
 }
