@@ -15,7 +15,7 @@ vramIO(ram[0x2007]),
 spriteDma(ram[0x4014]) {
 }
 
-Ppu::Ppu(Memory& ram, Rom& rom, Cpu& cpu2) : registers(ram), cpu(cpu2) {
+Ppu::Ppu(Memory& ram, Rom& rom, Cpu& cpu2) : cpu(cpu2), registers(ram) {
     const iNesHeader* header = rom.GetHeader();
     int prgRomBanks = header->prgRomBanks;
     int vRomBanks = header->vRomBanks;
@@ -34,10 +34,14 @@ Ppu::Ppu(Memory& ram, Rom& rom, Cpu& cpu2) : registers(ram), cpu(cpu2) {
     ScanLine = 0;
     Frame = 0;
 
-    //TODO:
-    //fix this
-    //front = new RGBColor[256][240];
-    //back = new RGBColor[256][240];
+    front = new RGBColor*[256];
+    back = new RGBColor*[256];
+    
+    for (int i = 0; i < 240; ++i)
+    {
+	front[i] = new RGBColor;
+	back[i] = new RGBColor;
+    }
 }
 
 void Ppu::Reset() {
@@ -319,14 +323,11 @@ void Ppu::nmiChange() {
 }
 
 void Ppu::setVerticalBlank() {
-    //TODO: FIX ME
-    /**
     auto temp = front;
     front = back;
     back = temp;
     nmiOccurred = true;
     nmiChange();
-    **/
 }
 
 void Ppu::clearVerticalBlank() {

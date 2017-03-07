@@ -195,8 +195,8 @@ public:
     Registers registers;
     MemoryMap memory;
 
-    RGBColor front[256][240];
-    RGBColor back[256][240];
+    RGBColor** front;
+    RGBColor** back;
 
     Sprite primaryOAM[64];
     Sprite secondaryOAM[8];
