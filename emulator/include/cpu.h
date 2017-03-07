@@ -19,7 +19,7 @@ class Cpu {
     };
 
     enum class Flags : int {
-        C,      //Carry
+        C = 1,      //Carry
         Z,      //Zero
         I,      //Interrupt
         D,      //Decimal
