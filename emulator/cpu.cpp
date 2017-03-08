@@ -10,6 +10,11 @@ Cpu::Cpu(Memory& ram) : memory(ram){
 }
 
 Cpu::Cpu(Memory& ram, Rom& rom) : memory(ram) {
+    this->LoadRom(rom);
+    this->Reset();
+}
+
+void Cpu::LoadRom(Rom& rom){
     const iNesHeader* header = rom.GetHeader();
     int prgRomBanks = header->prgRomBanks;
     int trainerOffset = rom.GetTrainerOffset();
@@ -27,8 +32,6 @@ Cpu::Cpu(Memory& ram, Rom& rom) : memory(ram) {
         default: //TODO: implement multiple PRG-ROM banks
             break;
     }
-    
-    this->Reset();
 }
 
 void Cpu::Reset(){

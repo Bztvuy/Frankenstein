@@ -571,6 +571,8 @@ class Cpu {
     Cpu(Memory& ram);
     Cpu(Memory& ram, Rom& rom);
     
+    LoadRom()
+    
     u8 cycles;
     bool nmiOccurred;
 };
