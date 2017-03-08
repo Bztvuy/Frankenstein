@@ -23,22 +23,31 @@ namespace Frankenstein {
         char raw[16];
     };
 
-    class Rom
+    class Rom {
+    public:
+        //sizes related to rom file format (in bytes) :
+        static const unsigned int HeaderSize = 16;
+        static const unsigned int TrainerSize = 512;
+        
+        virtual const iNesHeader* GetHeader() const = 0;
+        virtual const char* GetRaw() const = 0;
+        virtual unsigned int GetLength() const = 0;
+        virtual unsigned int GetTrainerOffset() const = 0;
+        virtual ~Rom() {}
+    };
+    
+    class StaticRom : public Rom
     {
     public:
-        const iNesHeader* GetHeader() const;
-        const char* GetRaw() const;
-        unsigned int GetLength() const;
-        unsigned int GetTrainerOffset() const;
+        const iNesHeader* GetHeader() const override;
+        const char* GetRaw() const override;
+        unsigned int GetLength() const override;
+        unsigned int GetTrainerOffset() const override;
 
-        //sizes related to rom file format (in bytes) :
-        const unsigned int headerSize = 16;
-        const unsigned int trainerSize = 512;
-
-    private:    
+        ~StaticRom() override;
+    private:
         static const unsigned int length;
-        static const char raw[262160];
+        static const char raw[40976];
     };
-
 }
 #endif

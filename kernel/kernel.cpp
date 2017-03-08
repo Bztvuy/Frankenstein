@@ -3,6 +3,7 @@
 //
 #include "kernel.h"
 #include <circle/timer.h>
+#include <circle/string.h>
 
 static const char FromKernel[] = "kernel";
 
@@ -11,7 +12,8 @@ CKernel::CKernel (void)
 	m_Timer (&m_Interrupt),
 	m_Logger (m_Options.GetLogLevel (), &m_Timer),
 	// TODO: add more member initializers here
-	nes()
+        rom(),
+	nes(rom)
 {
 }
 
@@ -61,11 +63,19 @@ boolean CKernel::Initialize (void)
 
 TShutdownMode CKernel::Run (void)
 {
+    CString str;
+    str.Format("%x %x %x", nes.ram[0x6001], nes.ram[0x6002], nes.ram[0x6003]);
+    m_Logger.Write(FromKernel, TLogSeverity::LogNotice, str);
+    
     while(true){
 	nes.Step();
+        if(nes.ram[0x6000] != 0x80) {
+        }
+        
 	if (nes.cpu.nmiOccurred){
+            m_Logger.Write(FromKernel, TLogSeverity::LogNotice, "NMI");
 	    for (unsigned int i = 0; i < 256; ++i) {
-		for (unsigned int j = 0; i < 240; ++j) {
+		for (unsigned int j = 0; j < 240; ++j) {
 		    m_Screen.SetPixel(i, j, COLOR32(nes.ppu.front[i][j].red, nes.ppu.front[i][j].green, nes.ppu.front[i][j].blue, 0));
 		}
 	    }

@@ -2,7 +2,7 @@
 
 using namespace Frankenstein;
 
-Nes::Nes() : ram(), rom(), cpu(ram, rom), ppu(ram, rom, cpu){
+Nes::Nes(Rom& romToLoad) : ram(), rom(romToLoad), cpu(ram, rom), ppu(ram, rom, cpu){
 }
 
 void Nes::Step(){

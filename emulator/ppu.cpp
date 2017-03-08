@@ -20,7 +20,7 @@ Ppu::Ppu(Memory& ram, Rom& rom, Cpu& cpu2) : cpu(cpu2), registers(ram) {
     int prgRomBanks = header->prgRomBanks;
     int vRomBanks = header->vRomBanks;
     int trainerOffset = rom.GetTrainerOffset();
-    int vRomBanksLocation = rom.headerSize + trainerOffset + prgRomBanks * PRGROM_BANK_SIZE;
+    int vRomBanksLocation = Rom::HeaderSize + trainerOffset + prgRomBanks * PRGROM_BANK_SIZE;
 
     switch (vRomBanks) {
         case 1:

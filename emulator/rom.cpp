@@ -2,7 +2,7 @@
 
 using namespace Frankenstein;
 
-const iNesHeader* Rom::GetHeader() const{
+const iNesHeader* StaticRom::GetHeader() const{
     iNesHeader* header = new iNesHeader;
     for (unsigned int i = 0; i < sizeof(iNesHeader); ++i){
         header->raw[i] = this->GetRaw()[i];
@@ -10,15 +10,17 @@ const iNesHeader* Rom::GetHeader() const{
     return header;
 }
 
-const char* Rom::GetRaw() const{
+const char* StaticRom::GetRaw() const{
     return raw;
 }
 
-unsigned int Rom::GetLength() const{
+unsigned int StaticRom::GetLength() const {
     return length;
 }
 
-unsigned int Rom::GetTrainerOffset() const{
-	return CheckBit<3>(this->GetHeader()->controlByte1) * trainerSize;
+unsigned int StaticRom::GetTrainerOffset() const{
+	return CheckBit<3>(this->GetHeader()->controlByte1) * Rom::TrainerSize;
 }
+
+StaticRom::~StaticRom() {}
 // ...

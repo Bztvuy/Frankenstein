@@ -18,7 +18,7 @@ void Cpu::LoadRom(Rom& rom){
     const iNesHeader* header = rom.GetHeader();
     int prgRomBanks = header->prgRomBanks;
     int trainerOffset = rom.GetTrainerOffset();
-    int prgRomBanksLocation = rom.headerSize + trainerOffset;
+    int prgRomBanksLocation = Rom::HeaderSize + trainerOffset;
 
     switch (prgRomBanks) {
         case 1:

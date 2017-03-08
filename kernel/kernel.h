@@ -51,6 +51,7 @@ private:
 	CLogger			m_Logger;
 
 	// TODO: add more members here
+        StaticRom rom;
 	Nes nes;
 };
 

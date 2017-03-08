@@ -12,11 +12,11 @@ class Nes
 {
 public:
     Memory ram;
-    Rom rom;
+    Rom& rom;
     Cpu cpu;
     Ppu ppu;
 
-    Nes();
+    Nes(Rom& romToLoad);
     void Step();
 };
 
