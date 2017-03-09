@@ -27,6 +27,12 @@ inline bool CheckBit(T src) {
     return (src & (1 << position )) >> position;
 }
 
+template<typename T = u8>
+inline bool CheckBit(T src, u8 pos) {
+    int position = pos - 1;
+    return (src & (1 << position )) >> position;
+}
+
 template <unsigned int Position, typename T = u8>
 inline void SetBit(T& src) {
     static_assert((Position-1) <= (sizeof(T) * 8) && Position >= 1, 
@@ -36,12 +42,24 @@ inline void SetBit(T& src) {
     src |= (1 << position);
 }
 
+template<typename T = u8>
+inline void SetBit(T src, u8 pos) {
+    int position = pos - 1;
+    src |= (1 << position);
+}
+
 template <unsigned int Position, typename T = u8>
 inline void ClearBit(T& src) {
     static_assert((Position-1) <= (sizeof(T) * 8) && Position >= 1, 
             "Position must be lower than sizeof(T) and greater or equals to 1");
     
     int position = Position - 1;
+    src &= ~(1 << position);
+}
+
+template<typename T = u8>
+inline void ClearBit(T src, u8 pos) {
+    int position = pos - 1;
     src &= ~(1 << position);
 }
 
