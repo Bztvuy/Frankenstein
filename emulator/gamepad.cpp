@@ -5,7 +5,7 @@ Gamepad::Gamepad(u8& readAddress, u8& writeAddress) : readButtons(readAddress), 
 }
 
 u8 Gamepad::Read(){
-    u8 value = index < 9 && CheckBit<index>readButtons;
+    u8 value = index < 9 && CheckBit<>(readButtons, index);
     ++index;
     if (CheckBit<1>(writeButtons)) 
         index = 1;
