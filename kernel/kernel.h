@@ -16,6 +16,9 @@
 #include <circle/logger.h>
 #include <circle/types.h>
 #include <circle/util.h>
+#include "../emulator/include/nes.h"
+
+using namespace Frankenstein;
 
 enum TShutdownMode
 {
@@ -48,6 +51,7 @@ private:
 	CLogger			m_Logger;
 
 	// TODO: add more members here
+	Nes nes;
 };
 
 #endif
