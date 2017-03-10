@@ -10,7 +10,7 @@ const iNesHeader* Rom::GetHeader() const{
     return header;
 }
 
-const char* Rom::GetRaw() const{
+const u8* Rom::GetRaw() const{
     return raw;
 }
 
