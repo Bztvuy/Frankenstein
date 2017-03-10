@@ -5,7 +5,7 @@
 #include <cpu.h>
 
 struct MemoryTest : testing::Test {
-    Frankenstein::Memory ram;
+    Frankenstein::NesMemory ram;
 
     MemoryTest()
     {

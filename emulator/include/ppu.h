@@ -14,7 +14,7 @@ public:
     };
     enum ControlFlags {
         LowerNameTable,         //Name table address, changes between the four name tables at 0x2000 (0), 0x2400 (1), 0x2800 (2) and 0x2C00 (3).
-        UpperNameTable,         
+        UpperNameTable,
         Increment,              //Specifies amount to increment address by, either 1 if this is 0 or 32 if this is 1.
         SpriteTable,            //Identifies which pattern table sprites are stored in, either 0x0000 (0) or 0x1000 (1). 
         BackgroundTable,        //Identifies which pattern table the background is stored in, either 0x0000 (0) or 0x1000 (1). 
@@ -30,8 +30,8 @@ public:
         ShowBackground,         //If this is 0, the background should not be displayed.
         ShowSprites,            //If this is 0, sprites should not be displayed. 
         RedTint,                //Indicates background colour in monochrome mode or colour intensity in colour mode. 
-        GreenTint,              
-        BlueTint                
+        GreenTint,
+        BlueTint
     };
     
     enum StatusFlags {
@@ -85,17 +85,17 @@ public:
     };
 
     struct Registers {
-        u8& controlRegister;    //0x2000
-        u8& maskRegister;       //0x2001
-        u8& processorStatus;    //0x2002
-        u8& oamAddress;         //0x2003
-        u8& oamData;            //0x2004
-        u8& vramAddress1;       //0x2005
-        u8& vramAddress2;       //0x2006
-        u8& vramIO;             //0x2007
-        u8& spriteDma;          //0x4014
+        const NesMemory::Ref controlRegister;    //0x2000
+        const NesMemory::Ref maskRegister;       //0x2001
+        const NesMemory::Ref processorStatus;    //0x2002
+        const NesMemory::Ref oamAddress;         //0x2003
+        const NesMemory::Ref oamData;            //0x2004
+        const NesMemory::Ref vramAddress1;       //0x2005
+        const NesMemory::Ref vramAddress2;       //0x2006
+        const NesMemory::Ref vramIO;             //0x2007
+        const NesMemory::Ref spriteDma;          //0x4014
 
-        Registers(Memory& cpu);
+        Registers(NesMemory& cpu);
     };
     
     union Sprite {
@@ -267,7 +267,7 @@ public:
     // $2007 PPUDATA
     u8 bufferedData;  // for buffered reads
 
-    Ppu(Memory& ram, Rom& rom, Cpu& cpu);
+    Ppu(NesMemory& ram, Rom& rom, Cpu& cpu);
 
     template<typename Ppu::ControlFlags f>
     void Set(bool value){

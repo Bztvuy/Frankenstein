@@ -1,71 +1,80 @@
 #include "cpu.h"
-#include "memory.h"
-#include "dependencies.h"
 
 using namespace Frankenstein;
-using Mode = Frankenstein::Memory::Addressing;
+using Mode = Frankenstein::NesMemory::Addressing;
 
-Cpu::Cpu(Memory& ram) : memory(ram){
+Cpu::Cpu(NesMemory& ram)
+    : memory(ram)
+{
     this->Reset();
 }
 
-Cpu::Cpu(Memory& ram, Rom& rom) : memory(ram) {
+Cpu::Cpu(NesMemory& ram, Rom& rom)
+    : memory(ram)
+{
     this->LoadRom(rom);
     this->Reset();
 }
 
-void Cpu::LoadRom(Rom& rom){
+void Cpu::LoadRom(Rom& rom)
+{
     const iNesHeader* header = rom.GetHeader();
     int prgRomBanks = header->prgRomBanks;
     int trainerOffset = rom.GetTrainerOffset();
     int prgRomBanksLocation = rom.headerSize + trainerOffset;
 
     switch (prgRomBanks) {
-        case 1:
-            memcpy(&this->memory[Memory::ADDR_PRG_ROM_LOWER_BANK], rom.GetRaw() + prgRomBanksLocation, PRGROM_BANK_SIZE);
-            memcpy(&this->memory[Memory::ADDR_PRG_ROM_UPPER_BANK], rom.GetRaw() + prgRomBanksLocation, PRGROM_BANK_SIZE);
-            break;
-        case 2:
-            memcpy(&this->memory[Memory::ADDR_PRG_ROM_LOWER_BANK], rom.GetRaw() + prgRomBanksLocation, PRGROM_BANK_SIZE);
-            memcpy(&this->memory[Memory::ADDR_PRG_ROM_UPPER_BANK], rom.GetRaw() + prgRomBanksLocation + PRGROM_BANK_SIZE, PRGROM_BANK_SIZE);
-            break;
-        default: //TODO: implement multiple PRG-ROM banks
-            break;
+    case 1:
+        memory.Copy(rom.GetRaw() + prgRomBanksLocation, Frankenstein::ADDR_PRG_ROM_LOWER_BANK, PRGROM_BANK_SIZE);
+        memory.Copy(rom.GetRaw() + prgRomBanksLocation, Frankenstein::ADDR_PRG_ROM_UPPER_BANK, PRGROM_BANK_SIZE);
+        break;
+    case 2:
+        memory.Copy(rom.GetRaw() + prgRomBanksLocation, Frankenstein::ADDR_PRG_ROM_LOWER_BANK, PRGROM_BANK_SIZE);
+        memory.Copy(rom.GetRaw() + prgRomBanksLocation + PRGROM_BANK_SIZE, Frankenstein::ADDR_PRG_ROM_UPPER_BANK, PRGROM_BANK_SIZE);
+        break;
+    default: //TODO: implement multiple PRG-ROM banks
+        break;
     }
 }
 
-void Cpu::Reset(){
+void Cpu::Reset()
+{
     this->registers.PC = (memory[0xFFFC] | memory[0xFFFD] << 8);
     this->registers.P = 0b00100100;
     this->registers.SP = 0xFD;
 }
 
-void Cpu::Step(){
-    if (nmiOccurred){
-	this->cycles = NMI();
-	nmiOccurred = false;
+void Cpu::Step()
+{
+    if (nmiOccurred) {
+        this->cycles = NMI();
+        nmiOccurred = false;
     } else {
-	auto opCode = OpCode();
-	this->cycles = (this->*instructions[opCode])();
-	this->registers.PC += this->instructionSizes[opCode];
+        auto opCode = OpCode();
+        this->cycles = (this->*instructions[opCode])();
+        this->registers.PC += this->instructionSizes[opCode];
     }
 }
 
-inline u8& Cpu::OpCode(){
+inline u8 Cpu::OpCode()
+{
     return this->memory[this->registers.PC];
 }
 
-inline void Cpu::PushOnStack(u8 value){
-    this->memory[Memory::ADDR_STACK + this->registers.SP] = value;
+inline void Cpu::PushOnStack(u8 value)
+{
+    this->memory[Frankenstein::ADDR_STACK + this->registers.SP] = value;
     this->registers.SP -= 1;
 }
 
-inline u8 Cpu::PopFromStack(){
+inline u8 Cpu::PopFromStack()
+{
     this->registers.SP += 1;
-    return this->memory[Memory::ADDR_STACK + this->registers.SP];
+    return this->memory[Frankenstein::ADDR_STACK + this->registers.SP];
 }
 
-inline u8& Cpu::Operand(int number) {
+inline u8 Cpu::Operand(int number)
+{
     return this->memory[this->registers.PC + number];
 }
 
@@ -73,13 +82,15 @@ inline u8& Cpu::Operand(int number) {
 /// Binary Operations Definition
 ////////////////////////////////////////////////////////////////////////////////
 
-void Cpu::AND(const u8& value){
+void Cpu::AND(const u8 value)
+{
     this->registers.A &= value;
     Set<Flags::Z>(CheckZero(this->registers.A));
     Set<Flags::S>(CheckSign(this->registers.A));
 }
 
-void Cpu::ASL(u8& value){
+void Cpu::ASL(u8& value)
+{
     // 0 is shifted into bit 0 and the original bit 7 is shifted into the Carry.
     Set<Flags::C>(CheckBit<8>(value));
     value <<= 1;
@@ -87,20 +98,30 @@ void Cpu::ASL(u8& value){
     Set<Flags::S>(CheckSign(value));
 }
 
-void Cpu::BIT(const u8& value){
+void Cpu::ASL(const Memory value)
+{
+    u8 val = value;
+    ASL(val);
+    value = val;
+}
+
+void Cpu::BIT(const u8 value)
+{
     auto result = value & this->registers.A;
     Set<Flags::Z>(CheckZero(result));
     Set<Flags::V>(CheckBit<7>(value));
     Set<Flags::S>(CheckBit<8>(value));
 }
 
-void Cpu::EOR(u8& value){
+void Cpu::EOR(const u8 value)
+{
     this->registers.A ^= value;
     Set<Flags::Z>(CheckZero(this->registers.A));
     Set<Flags::S>(CheckSign(this->registers.A));
 }
 
-void Cpu::LSR(u8& value){
+void Cpu::LSR(u8& value)
+{
     // 0 is shifted into bit 7 and the original bit 0 is shifted into the Carry.
     Set<Flags::C>(CheckBit<1>(value));
     value >>= 1;
@@ -108,13 +129,22 @@ void Cpu::LSR(u8& value){
     Set<Flags::S>(CheckSign(value));
 }
 
-void Cpu::ORA(u8& value){
+void Cpu::LSR(const Memory value)
+{
+    u8 val = value;
+    LSR(val);
+    value = val;
+}
+
+void Cpu::ORA(const u8 value)
+{
     this->registers.A |= value;
     Set<Flags::Z>(CheckZero(this->registers.A));
     Set<Flags::S>(CheckSign(this->registers.A));
 }
 
-void Cpu::ROL(u8& value){
+void Cpu::ROL(u8& value)
+{
     bool carry = Get<Flags::C>();
     Set<Flags::C>(CheckBit<8>(value));
     value <<= 1;
@@ -123,7 +153,15 @@ void Cpu::ROL(u8& value){
     Set<Flags::S>(CheckSign(value));
 }
 
-void Cpu::ROR(u8& value){
+void Cpu::ROL(const Memory value)
+{
+    u8 val = value;
+    ROL(val);
+    value = val;
+}
+
+void Cpu::ROR(u8& value)
+{
     auto carry = Get<Flags::C>();
     Set<Flags::C>(CheckBit<1>(value));
     value >>= 1;
@@ -132,38 +170,63 @@ void Cpu::ROR(u8& value){
     Set<Flags::S>(CheckSign(value));
 }
 
+void Cpu::ROR(const Memory value)
+{
+    u8 val = value;
+    ROR(val);
+    value = val;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 /// Arithmetic Operations Definition
 ////////////////////////////////////////////////////////////////////////////////
 
-void Cpu::ADC(u8& value){
+void Cpu::ADC(const u8 value)
+{
     u16 result = value + this->registers.A + Get<Flags::C>();
     u8 truncResult = static_cast<u8>(result);
-    
+
     Set<Flags::Z>(CheckZero(truncResult));
     Set<Flags::S>(CheckSign(truncResult));
     Set<Flags::C>(CheckBit<9, u16>(result));
     Set<Flags::V>(CheckOverflow<>(this->registers.A, value, truncResult));
-    
+
     this->registers.A = truncResult;
 }
 
-void Cpu::DEC(u8& value){
+void Cpu::DEC(u8& value)
+{
     value -= 1;
     Set<Flags::Z>(CheckZero(value));
     Set<Flags::S>(CheckSign(value));
 }
 
-void Cpu::INC(u8& value){
+void Cpu::DEC(const Memory value)
+{
+    u8 val = value;
+    DEC(val);
+    value = val;
+}
+
+void Cpu::INC(u8& value)
+{
     value += 1;
     Set<Flags::Z>(CheckZero(value));
     Set<Flags::S>(CheckSign(value));
 }
 
-void Cpu::SBC(u8& value){
+void Cpu::INC(const Memory value)
+{
+    u8 val = value;
+    INC(val);
+    value = val;
+}
+
+void Cpu::SBC(const u8 value)
+{
     u16 result = this->registers.A - value - Get<Flags::C>();
     u8 truncResult = static_cast<u8>(result);
-    
+
     Set<Flags::Z>(CheckZero(truncResult));
     Set<Flags::S>(CheckSign(truncResult));
     Set<Flags::C>(CheckBit<9, u16>(result));
@@ -175,33 +238,39 @@ void Cpu::SBC(u8& value){
 /// Memory Operations Definition
 ////////////////////////////////////////////////////////////////////////////////
 
-void Cpu::LDA(u8& value){
+void Cpu::LDA(const u8 value)
+{
     this->registers.A = value;
     Set<Flags::Z>(CheckZero(this->registers.A));
     Set<Flags::S>(CheckSign(this->registers.A));
 }
 
-void Cpu::LDX(u8& value){
+void Cpu::LDX(const u8 value)
+{
     this->registers.X = value;
     Set<Flags::Z>(CheckZero(this->registers.X));
     Set<Flags::S>(CheckSign(this->registers.X));
 }
 
-void Cpu::LDY(u8& value){
+void Cpu::LDY(const u8 value)
+{
     this->registers.Y = value;
     Set<Flags::Z>(CheckZero(this->registers.Y));
     Set<Flags::S>(CheckSign(this->registers.Y));
 }
 
-void Cpu::STA(u8& value){
+void Cpu::STA(const Memory value)
+{
     value = this->registers.A;
 }
 
-void Cpu::STX(u8& value){
+void Cpu::STX(const Memory value)
+{
     value = this->registers.X;
 }
 
-void Cpu::STY(u8& value){
+void Cpu::STY(const Memory value)
+{
     value = this->registers.Y;
 }
 
@@ -210,80 +279,88 @@ void Cpu::STY(u8& value){
 ////////////////////////////////////////////////////////////////////////////////
 
 //Branch on plus
-u8 Cpu::BPL() {
+u8 Cpu::BPL()
+{
     if (!Get<Flags::S>()) {
-        auto pageCrossed = Memory::IsPageCrossed(this->registers.PC + 2, (this->registers.PC + 2 + Operand(1)) & 0xFF);
-	this->registers.PC = (this->registers.PC + Operand(1)) & 0xFF;
+        auto pageCrossed = NesMemory::IsPageCrossed(this->registers.PC + 2, (this->registers.PC + 2 + Operand(1)) & 0xFF);
+        this->registers.PC = (this->registers.PC + Operand(1)) & 0xFF;
         return 3 + pageCrossed;
     }
     return 2;
 }
 
 //Branch on minus
-u8 Cpu::BMI() {
+u8 Cpu::BMI()
+{
     if (Get<Flags::S>()) {
-    auto pageCrossed = Memory::IsPageCrossed(this->registers.PC + 2, (this->registers.PC + 2 + Operand(1)) & 0xFF);
-	this->registers.PC = (this->registers.PC + Operand(1)) & 0xFF;
+        auto pageCrossed = NesMemory::IsPageCrossed(this->registers.PC + 2, (this->registers.PC + 2 + Operand(1)) & 0xFF);
+        this->registers.PC = (this->registers.PC + Operand(1)) & 0xFF;
         return 3 + pageCrossed;
     }
     return 2;
 }
 
 //Branch on overflow clear
-u8 Cpu::BVC() {
+u8 Cpu::BVC()
+{
     if (!Get<Flags::V>()) {
-    auto pageCrossed = Memory::IsPageCrossed(this->registers.PC + 2, (this->registers.PC + 2 + Operand(1)) & 0xFF);
-	this->registers.PC = (this->registers.PC + Operand(1)) & 0xFF;
+        auto pageCrossed = NesMemory::IsPageCrossed(this->registers.PC + 2, (this->registers.PC + 2 + Operand(1)) & 0xFF);
+        this->registers.PC = (this->registers.PC + Operand(1)) & 0xFF;
         return 3 + pageCrossed;
     }
     return 2;
 }
 
 //Branch on overflow set
-u8 Cpu::BVS() {
+u8 Cpu::BVS()
+{
     if (Get<Flags::V>()) {
-    auto pageCrossed = Memory::IsPageCrossed(this->registers.PC + 2, (this->registers.PC + 2 + Operand(1)) & 0xFF);
-	this->registers.PC = (this->registers.PC + Operand(1)) & 0xFF;
+        auto pageCrossed = NesMemory::IsPageCrossed(this->registers.PC + 2, (this->registers.PC + 2 + Operand(1)) & 0xFF);
+        this->registers.PC = (this->registers.PC + Operand(1)) & 0xFF;
         return 3 + pageCrossed;
     }
     return 2;
 }
 
 //Branch on carry clear
-u8 Cpu::BCC() {
+u8 Cpu::BCC()
+{
     if (!Get<Flags::C>()) {
-    auto pageCrossed = Memory::IsPageCrossed(this->registers.PC + 2, (this->registers.PC + 2 + Operand(1)) & 0xFF);
-	this->registers.PC = (this->registers.PC + Operand(1)) & 0xFF;
+        auto pageCrossed = NesMemory::IsPageCrossed(this->registers.PC + 2, (this->registers.PC + 2 + Operand(1)) & 0xFF);
+        this->registers.PC = (this->registers.PC + Operand(1)) & 0xFF;
         return 3 + pageCrossed;
     }
     return 2;
 }
 
 //Branch on carry set
-u8 Cpu::BCS() {
+u8 Cpu::BCS()
+{
     if (Get<Flags::C>()) {
-    auto pageCrossed = Memory::IsPageCrossed(this->registers.PC + 2, (this->registers.PC + 2 + Operand(1)) & 0xFF);
-	this->registers.PC = (this->registers.PC + Operand(1)) & 0xFF;
+        auto pageCrossed = NesMemory::IsPageCrossed(this->registers.PC + 2, (this->registers.PC + 2 + Operand(1)) & 0xFF);
+        this->registers.PC = (this->registers.PC + Operand(1)) & 0xFF;
         return 3 + pageCrossed;
     }
     return 2;
 }
 
 //Branch on not equal
-u8 Cpu::BNE() {
+u8 Cpu::BNE()
+{
     if (!Get<Flags::Z>()) {
-    auto pageCrossed = Memory::IsPageCrossed(this->registers.PC + 2, (this->registers.PC + 2 + Operand(1)) & 0xFF);
-	this->registers.PC = (this->registers.PC + Operand(1)) & 0xFF;
+        auto pageCrossed = NesMemory::IsPageCrossed(this->registers.PC + 2, (this->registers.PC + 2 + Operand(1)) & 0xFF);
+        this->registers.PC = (this->registers.PC + Operand(1)) & 0xFF;
         return 3 + pageCrossed;
     }
     return 2;
 }
 
 //Branch on equal
-u8 Cpu::BEQ() {
+u8 Cpu::BEQ()
+{
     if (Get<Flags::Z>()) {
-    auto pageCrossed = Memory::IsPageCrossed(this->registers.PC + 2, (this->registers.PC + 2 + Operand(1)) & 0xFF);
-	this->registers.PC = (this->registers.PC + Operand(1)) & 0xFF;
+        auto pageCrossed = NesMemory::IsPageCrossed(this->registers.PC + 2, (this->registers.PC + 2 + Operand(1)) & 0xFF);
+        this->registers.PC = (this->registers.PC + Operand(1)) & 0xFF;
         return 3 + pageCrossed;
     }
     return 2;
@@ -296,7 +373,8 @@ u8 Cpu::BEQ() {
 /// IN[1] -> INC register 1
 ////////////////////////////////////////////////////////////////////////////////
 
-u8 Cpu::TAX() {
+u8 Cpu::TAX()
+{
     auto& value = this->registers.A;
     this->registers.X = value;
     Set<Flags::Z>(CheckZero(this->registers.X));
@@ -304,49 +382,56 @@ u8 Cpu::TAX() {
     return 2;
 }
 
-u8 Cpu::TXA() {
+u8 Cpu::TXA()
+{
     this->registers.A = this->registers.X;
     Set<Flags::Z>(CheckZero(this->registers.A));
     Set<Flags::S>(CheckSign(this->registers.A));
     return 2;
 }
 
-u8 Cpu::DEX() {
+u8 Cpu::DEX()
+{
     this->registers.X -= 1;
     Set<Flags::Z>(CheckZero(this->registers.X));
     Set<Flags::S>(CheckSign(this->registers.X));
     return 2;
 }
 
-u8 Cpu::INX() {
+u8 Cpu::INX()
+{
     this->registers.X += 1;
     Set<Flags::Z>(CheckZero(this->registers.X));
     Set<Flags::S>(CheckSign(this->registers.X));
     return 2;
 }
 
-u8 Cpu::TAY() {
+u8 Cpu::TAY()
+{
     this->registers.Y = this->registers.A;
     Set<Flags::Z>(CheckZero(this->registers.Y));
     Set<Flags::S>(CheckSign(this->registers.Y));
     return 2;
 }
 
-u8 Cpu::TYA() {
+u8 Cpu::TYA()
+{
     this->registers.A = this->registers.Y;
     Set<Flags::Z>(CheckZero(this->registers.A));
     Set<Flags::S>(CheckSign(this->registers.A));
     return 2;
 }
 
-u8 Cpu::DEY() {
+u8 Cpu::DEY()
+{
     this->registers.Y -= 1;
     Set<Flags::Z>(CheckZero(this->registers.Y));
     Set<Flags::S>(CheckSign(this->registers.Y));
     return 2;
 }
 
-u8 Cpu::INY() {
+u8 Cpu::INY()
+{
     this->registers.Y += 1;
     Set<Flags::Z>(CheckZero(this->registers.Y));
     Set<Flags::S>(CheckSign(this->registers.Y));
@@ -358,12 +443,14 @@ u8 Cpu::INY() {
 ////////////////////////////////////////////////////////////////////////////////
 
 // Transfert X to Stack ptr
-u8 Cpu::TXS() {
+u8 Cpu::TXS()
+{
     PushOnStack(this->registers.X);
     return 2;
 }
 
-u8 Cpu::TSX() {
+u8 Cpu::TSX()
+{
     auto value = PopFromStack();
     this->registers.X = value;
     Set<Flags::Z>(CheckZero(value));
@@ -372,13 +459,15 @@ u8 Cpu::TSX() {
 }
 
 // Push A
-u8 Cpu::PHA() {
+u8 Cpu::PHA()
+{
     PushOnStack(this->registers.A);
     return 3;
 }
 
 // Pop A
-u8 Cpu::PLA() {
+u8 Cpu::PLA()
+{
     auto value = PopFromStack();
     this->registers.A = value;
     Set<Flags::Z>(CheckZero(value));
@@ -387,13 +476,15 @@ u8 Cpu::PLA() {
 }
 
 // Push Processor Status
-u8 Cpu::PHP() {
+u8 Cpu::PHP()
+{
     PushOnStack(this->registers.P);
     return 3;
 }
 
 // Pull Processor Status
-u8 Cpu::PLP() {
+u8 Cpu::PLP()
+{
     this->registers.P = PopFromStack();
     return 4;
 }
@@ -402,52 +493,59 @@ u8 Cpu::PLP() {
 /// PC Operations Definition
 ////////////////////////////////////////////////////////////////////////////////
 
-void Cpu::Interrupt(){
+void Cpu::Interrupt()
+{
     this->registers.PC += 1;
-    PushOnStack((this->registers.PC >> 8) & 0xFF);     /* Push return address onto the stack. */
+    PushOnStack((this->registers.PC >> 8) & 0xFF); /* Push return address onto the stack. */
     PushOnStack(this->registers.PC & 0xFF);
-    Set<Flags::B>(true);                           /* Set BFlag before pushing */
+    Set<Flags::B>(true); /* Set BFlag before pushing */
     PushOnStack(this->registers.P);
     Set<Flags::I>(true);
 }
 
-u8 Cpu::NMI(){
+u8 Cpu::NMI()
+{
     Interrupt();
     this->registers.PC = (memory[0xFFFA] | memory[0xFFFB] << 8);
     return 7;
 }
 
-u8 Cpu::BRK(){
+u8 Cpu::BRK()
+{
     Interrupt();
     this->registers.PC = (memory[0xFFFE] | memory[0xFFFF] << 8);
     return 7;
 }
 
-void Cpu::JMP(u8& value){
+void Cpu::JMP(const u8 value)
+{
     this->registers.PC = value;
 }
 
-u8 Cpu::JSR() {
-    auto address = Memory::Absolute(Operand(1), Operand(2));
+u8 Cpu::JSR()
+{
+    auto address = NesMemory::Absolute(Operand(1), Operand(2));
     this->registers.PC += 2;
-    PushOnStack((this->registers.PC >> 8) & 0xFF);	/* Push return address onto the stack. */
+    PushOnStack((this->registers.PC >> 8) & 0xFF); /* Push return address onto the stack. */
     PushOnStack(this->registers.PC & 0xFF);
     this->registers.PC = address;
     return 6;
 }
 
-u8 Cpu::RTI() {
+u8 Cpu::RTI()
+{
     auto processorStatus = PopFromStack();
     this->registers.P = processorStatus;
     u16 address = PopFromStack();
-    address |= (PopFromStack() << 8);	/* Load return address from stack. */
+    address |= (PopFromStack() << 8); /* Load return address from stack. */
     this->registers.PC = address;
     return 6;
 }
 
-u8 Cpu::RTS() {
+u8 Cpu::RTS()
+{
     u16 address = PopFromStack();
-    address |= ((PopFromStack()) << 8);	/* Load return address from stack. */
+    address |= ((PopFromStack()) << 8); /* Load return address from stack. */
     this->registers.PC = address;
     return 6;
 }
@@ -456,58 +554,68 @@ u8 Cpu::RTS() {
 /// Flag Instructions
 ///////////////////////////////////////////////////////////////////////////////
 
-void Cpu::CMP(u8& value){
+void Cpu::CMP(const u8 value)
+{
     u16 result = this->registers.A - value;
     Set<Flags::C>(result < 0x100);
     Set<Flags::S>(CheckSign(result));
     Set<Flags::Z>(CheckZero(result));
 }
 
-void Cpu::CPX(u8& value){
+void Cpu::CPX(const u8 value)
+{
     u16 result = this->registers.X - value;
     Set<Flags::C>(result < 0x100);
     Set<Flags::S>(CheckSign(result));
     Set<Flags::Z>(CheckZero(result));
 }
 
-void Cpu::CPY(u8& value){
+void Cpu::CPY(const u8 value)
+{
     u16 result = this->registers.Y - value;
     Set<Flags::C>(result < 0x100);
     Set<Flags::S>(CheckSign(result));
     Set<Flags::Z>(CheckZero(result));
 }
 
-u8 Cpu::CLC() {
+u8 Cpu::CLC()
+{
     Set<Flags::C>(false);
     return 2;
 }
 
-u8 Cpu::SEC() {
+u8 Cpu::SEC()
+{
     Set<Flags::C>(true);
     return 2;
 }
 
-u8 Cpu::CLI() {
+u8 Cpu::CLI()
+{
     Set<Flags::I>(false);
     return 2;
 }
 
-u8 Cpu::SEI() {
+u8 Cpu::SEI()
+{
     Set<Flags::I>(true);
     return 2;
 }
 
-u8 Cpu::CLV() {
+u8 Cpu::CLV()
+{
     Set<Flags::V>(false);
     return 2;
 }
 
-u8 Cpu::CLD() {
+u8 Cpu::CLD()
+{
     Set<Flags::D>(false);
     return 2;
 }
 
-u8 Cpu::SED() {
+u8 Cpu::SED()
+{
     Set<Flags::D>(false);
     return 2;
 }
@@ -516,11 +624,13 @@ u8 Cpu::SED() {
 /// Other operations
 ////////////////////////////////////////////////////////////////////////////////
 
-u8 Cpu::NOP() {
+u8 Cpu::NOP()
+{
     return 2;
 }
 
-u8 Cpu::UNIMP() {
+u8 Cpu::UNIMP()
+{
     return 2;
 }
 
@@ -530,614 +640,731 @@ u8 Cpu::UNIMP() {
 
 /// Logical OR
 /// 2 bytes; 6 cycles
-u8 Cpu::ORA_IND_X() {
+u8 Cpu::ORA_IND_X()
+{
     ORA(memory.Get<Mode::PreIndexedIndirect>(Operand(1), this->registers.X));
     return 6;
 }
 
 /// 2 bytes; 3 cycles
-u8 Cpu::ORA_ZP() {
+u8 Cpu::ORA_ZP()
+{
     ORA(memory.Get<Mode::ZeroPage>(Operand(1)));
     return 3;
 }
 
-u8 Cpu::ASL_ZP() {
+u8 Cpu::ASL_ZP()
+{
     ASL(memory.Get<Mode::ZeroPage>(Operand(1)));
     return 5;
 }
 
-u8 Cpu::ORA_IMM() {
+u8 Cpu::ORA_IMM()
+{
     ORA(Operand(1));
     return 2;
 }
 
-u8 Cpu::ASL_ACC() {
+u8 Cpu::ASL_ACC()
+{
     ASL(this->registers.A);
     return 2;
 }
 
-u8 Cpu::ORA_ABS() {
+u8 Cpu::ORA_ABS()
+{
     ORA(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 4;
 }
 
-u8 Cpu::ASL_ABS() {
+u8 Cpu::ASL_ABS()
+{
     ASL(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 6;
 }
 
-u8 Cpu::ORA_IND_Y() {
+u8 Cpu::ORA_IND_Y()
+{
     ORA(memory.Get<Mode::PostIndexedIndirect>(Operand(1), this->registers.Y));
     auto address = memory.Indirect(Operand(1), 0);
-    return 5 + Memory::IsPageCrossed(address, address + this->registers.Y);
+    return 5 + NesMemory::IsPageCrossed(address, address + this->registers.Y);
 }
 
-u8 Cpu::ORA_ZP_X() {
+u8 Cpu::ORA_ZP_X()
+{
     ORA(memory.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
     return 4;
 }
 
-u8 Cpu::ASL_ZP_X() {
+u8 Cpu::ASL_ZP_X()
+{
     ASL(memory.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
     return 6;
 }
 
-u8 Cpu::ORA_ABS_Y() {
+u8 Cpu::ORA_ABS_Y()
+{
     ORA(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.Y));
-    auto address = Memory::FromValues(Operand(1), Operand(2));
-    return 4 + Memory::IsPageCrossed(address, address + this->registers.Y);
+    auto address = NesMemory::FromValues(Operand(1), Operand(2));
+    return 4 + NesMemory::IsPageCrossed(address, address + this->registers.Y);
 }
 
-u8 Cpu::ORA_ABS_X() {
+u8 Cpu::ORA_ABS_X()
+{
     ORA(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
-    auto address = Memory::FromValues(Operand(1), Operand(2));
-    return 4 + Memory::IsPageCrossed(address, address + this->registers.X);
+    auto address = NesMemory::FromValues(Operand(1), Operand(2));
+    return 4 + NesMemory::IsPageCrossed(address, address + this->registers.X);
 }
 
-u8 Cpu::ASL_ABS_X() {
+u8 Cpu::ASL_ABS_X()
+{
     ASL(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
     return 7;
 }
 
-u8 Cpu::AND_IND_X() {
+u8 Cpu::AND_IND_X()
+{
     AND(memory.Get<Mode::PreIndexedIndirect>(Operand(1), this->registers.X));
     return 6;
 }
 
-u8 Cpu::BIT_ZP() {
+u8 Cpu::BIT_ZP()
+{
     BIT(memory.Get<Mode::ZeroPage>(Operand(1)));
     return 3;
 }
 
-u8 Cpu::AND_ZP() {
+u8 Cpu::AND_ZP()
+{
     AND(memory.Get<Mode::ZeroPage>(Operand(1)));
     return 3;
 }
 
-u8 Cpu::ROL_ZP() {
+u8 Cpu::ROL_ZP()
+{
     ROL(memory.Get<Mode::ZeroPage>(Operand(1)));
     return 5;
 }
 
-u8 Cpu::AND_IMM() {
+u8 Cpu::AND_IMM()
+{
     AND(Operand(1));
     return 2;
 }
 
-u8 Cpu::ROL_ACC() {
+u8 Cpu::ROL_ACC()
+{
     ROL(this->registers.A);
     return 2;
 }
 
-u8 Cpu::BIT_ABS() {
+u8 Cpu::BIT_ABS()
+{
     BIT(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 4;
 }
 
-u8 Cpu::AND_ABS() {
+u8 Cpu::AND_ABS()
+{
     AND(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 4;
 }
 
-u8 Cpu::ROL_ABS() {
+u8 Cpu::ROL_ABS()
+{
     ROL(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 6;
 }
 
-u8 Cpu::AND_IND_Y() {
+u8 Cpu::AND_IND_Y()
+{
     AND(memory.Get<Mode::PostIndexedIndirect>(Operand(1), this->registers.Y));
     auto address = memory.Indirect(Operand(1), 0);
-    return 5 + Memory::IsPageCrossed(address, address + this->registers.Y);
+    return 5 + NesMemory::IsPageCrossed(address, address + this->registers.Y);
 }
 
-u8 Cpu::AND_ZP_X() {
+u8 Cpu::AND_ZP_X()
+{
     AND(memory.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
     return 4;
 }
 
-u8 Cpu::ROL_ZP_X() {
+u8 Cpu::ROL_ZP_X()
+{
     ROL(memory.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
     return 6;
 }
 
-u8 Cpu::AND_ABS_Y() {
+u8 Cpu::AND_ABS_Y()
+{
     AND(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.Y));
-    auto address = Memory::FromValues(Operand(1), Operand(2));
-    return 4 + Memory::IsPageCrossed(address, address + this->registers.Y);
+    auto address = NesMemory::FromValues(Operand(1), Operand(2));
+    return 4 + NesMemory::IsPageCrossed(address, address + this->registers.Y);
 }
 
-u8 Cpu::AND_ABS_X() {
+u8 Cpu::AND_ABS_X()
+{
     AND(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
-    auto address = Memory::FromValues(Operand(1), Operand(2));
-    return 4 + Memory::IsPageCrossed(address, address + this->registers.X);
+    auto address = NesMemory::FromValues(Operand(1), Operand(2));
+    return 4 + NesMemory::IsPageCrossed(address, address + this->registers.X);
 }
 
-u8 Cpu::ROL_ABS_X() {
+u8 Cpu::ROL_ABS_X()
+{
     ROL(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
     return 7;
 }
 
-u8 Cpu::EOR_IND_X() {
+u8 Cpu::EOR_IND_X()
+{
     EOR(memory.Get<Mode::PreIndexedIndirect>(Operand(1), this->registers.X));
     return 6;
 }
 
-u8 Cpu::EOR_ZP() {
+u8 Cpu::EOR_ZP()
+{
     EOR(memory.Get<Mode::ZeroPage>(Operand(1)));
     return 3;
 }
 
-u8 Cpu::LSR_ZP() {
+u8 Cpu::LSR_ZP()
+{
     LSR(memory.Get<Mode::ZeroPage>(Operand(1)));
     return 5;
 }
 
-u8 Cpu::EOR_IMM() {
+u8 Cpu::EOR_IMM()
+{
     EOR(Operand(1));
     return 2;
 }
 
-u8 Cpu::LSR_ACC() {
+u8 Cpu::LSR_ACC()
+{
     LSR(this->registers.A);
     return 2;
 }
 
-u8 Cpu::JMP_ABS() {
+u8 Cpu::JMP_ABS()
+{
     JMP(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 3;
 }
 
-u8 Cpu::EOR_ABS() {
+u8 Cpu::EOR_ABS()
+{
     EOR(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 4;
 }
 
-u8 Cpu::LSR_ABS() {
+u8 Cpu::LSR_ABS()
+{
     LSR(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 6;
 }
 
-u8 Cpu::EOR_IND_Y() {
+u8 Cpu::EOR_IND_Y()
+{
     EOR(memory.Get<Mode::PostIndexedIndirect>(Operand(1), this->registers.Y));
     auto address = memory.Indirect(Operand(1), 0);
-    return 5 + Memory::IsPageCrossed(address, address + this->registers.Y);
+    return 5 + NesMemory::IsPageCrossed(address, address + this->registers.Y);
 }
 
-u8 Cpu::EOR_ZP_X() {
+u8 Cpu::EOR_ZP_X()
+{
     EOR(memory.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
     return 4;
 }
 
-u8 Cpu::LSR_ZP_X() {
+u8 Cpu::LSR_ZP_X()
+{
     LSR(memory.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
     return 6;
 }
 
-u8 Cpu::EOR_ABS_Y() {
+u8 Cpu::EOR_ABS_Y()
+{
     EOR(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.Y));
-    auto address = Memory::FromValues(Operand(1), Operand(2));
-    return 4 + Memory::IsPageCrossed(address, address + this->registers.Y);
+    auto address = NesMemory::FromValues(Operand(1), Operand(2));
+    return 4 + NesMemory::IsPageCrossed(address, address + this->registers.Y);
 }
 
-u8 Cpu::EOR_ABS_X() {
+u8 Cpu::EOR_ABS_X()
+{
     EOR(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
-    auto address = Memory::FromValues(Operand(1), Operand(2));
-    return 4 + Memory::IsPageCrossed(address, address + this->registers.X);
+    auto address = NesMemory::FromValues(Operand(1), Operand(2));
+    return 4 + NesMemory::IsPageCrossed(address, address + this->registers.X);
 }
 
-u8 Cpu::LSR_ABS_X() {
+u8 Cpu::LSR_ABS_X()
+{
     LSR(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
     return 7;
 }
 
-u8 Cpu::ADC_IND_X() {
+u8 Cpu::ADC_IND_X()
+{
     ADC(memory.Get<Mode::PreIndexedIndirect>(Operand(1), this->registers.X));
     return 6;
 }
 
-u8 Cpu::ADC_ZP() {
+u8 Cpu::ADC_ZP()
+{
     ADC(memory.Get<Mode::ZeroPage>(Operand(1)));
     return 3;
 }
 
-u8 Cpu::ROR_ZP() {
+u8 Cpu::ROR_ZP()
+{
     ROR(memory.Get<Mode::ZeroPage>(Operand(1)));
     return 5;
 }
 
-u8 Cpu::ADC_IMM() {
+u8 Cpu::ADC_IMM()
+{
     ADC(Operand(1));
     return 2;
 }
 
-u8 Cpu::ROR_ACC() {
+u8 Cpu::ROR_ACC()
+{
     ROR(this->registers.A);
     return 2;
 }
 
-u8 Cpu::JMP_IND() {
-    if (Memory::IsPageCrossed(this->registers.PC + 1, this->registers.PC + 2))
+u8 Cpu::JMP_IND()
+{
+    if (NesMemory::IsPageCrossed(this->registers.PC + 1, this->registers.PC + 2))
         JMP(memory.Get<Mode::Indirect>(Operand(1), Operand(-0xFE))); //wrap around
     else
         JMP(memory.Get<Mode::Indirect>(Operand(1), Operand(2)));
     return 5;
 }
 
-u8 Cpu::ADC_ABS() {
+u8 Cpu::ADC_ABS()
+{
     ADC(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 4;
 }
 
-u8 Cpu::ROR_ABS() {
+u8 Cpu::ROR_ABS()
+{
     ROR(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 6;
 }
 
-u8 Cpu::ADC_IND_Y() {
+u8 Cpu::ADC_IND_Y()
+{
     ADC(memory.Get<Mode::PostIndexedIndirect>(Operand(1), this->registers.Y));
     auto address = memory.Indirect(Operand(1), 0);
-    return 5 + Memory::IsPageCrossed(address, address + this->registers.Y);
+    return 5 + NesMemory::IsPageCrossed(address, address + this->registers.Y);
 }
 
-u8 Cpu::ADC_ZP_X() {
+u8 Cpu::ADC_ZP_X()
+{
     ADC(memory.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
     return 4;
 }
 
-u8 Cpu::ROR_ZP_X() {
+u8 Cpu::ROR_ZP_X()
+{
     ROR(memory.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
     return 6;
 }
 
-u8 Cpu::ADC_ABS_Y() {
+u8 Cpu::ADC_ABS_Y()
+{
     ADC(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.Y));
-    auto address = Memory::FromValues(Operand(1), Operand(2));
-    return 4 + Memory::IsPageCrossed(address, address + this->registers.Y);
+    auto address = NesMemory::FromValues(Operand(1), Operand(2));
+    return 4 + NesMemory::IsPageCrossed(address, address + this->registers.Y);
 }
 
-u8 Cpu::ADC_ABS_X() {
+u8 Cpu::ADC_ABS_X()
+{
     ADC(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
-    auto address = Memory::FromValues(Operand(1), Operand(2));
-    return 4 + Memory::IsPageCrossed(address, address + this->registers.X);
+    auto address = NesMemory::FromValues(Operand(1), Operand(2));
+    return 4 + NesMemory::IsPageCrossed(address, address + this->registers.X);
 }
 
-u8 Cpu::ROR_ABS_X() {
+u8 Cpu::ROR_ABS_X()
+{
     ROR(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
     return 7;
 }
 
-u8 Cpu::STA_IND_X() {
+u8 Cpu::STA_IND_X()
+{
     STA(memory.Get<Mode::PreIndexedIndirect>(Operand(1), this->registers.X));
     return 6;
 }
 
-u8 Cpu::STY_ZP() {
+u8 Cpu::STY_ZP()
+{
     STY(memory.Get<Mode::ZeroPage>(Operand(1)));
     return 3;
 }
 
-u8 Cpu::STA_ZP() {
+u8 Cpu::STA_ZP()
+{
     STA(memory.Get<Mode::ZeroPage>(Operand(1)));
     return 3;
 }
 
-u8 Cpu::STX_ZP() {
+u8 Cpu::STX_ZP()
+{
     STX(memory.Get<Mode::ZeroPage>(Operand(1)));
     return 3;
 }
 
-u8 Cpu::STY_ABS() {
+u8 Cpu::STY_ABS()
+{
     STY(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 4;
 }
 
-u8 Cpu::STA_ABS() {
+u8 Cpu::STA_ABS()
+{
     STA(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 4;
 }
 
-u8 Cpu::STX_ABS() {
+u8 Cpu::STX_ABS()
+{
     STX(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 4;
 }
 
-u8 Cpu::STA_IND_Y() {
+u8 Cpu::STA_IND_Y()
+{
     STA(memory.Get<Mode::PostIndexedIndirect>(Operand(1), this->registers.Y));
     return 6;
 }
 
-u8 Cpu::STY_ZP_X() {
+u8 Cpu::STY_ZP_X()
+{
     STY(memory.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
     return 4;
 }
 
-u8 Cpu::STA_ZP_X() {
+u8 Cpu::STA_ZP_X()
+{
     STA(memory.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
     return 4;
 }
 
-u8 Cpu::STX_ZP_Y() {
+u8 Cpu::STX_ZP_Y()
+{
     STX(memory.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.Y));
     return 4;
 }
 
-u8 Cpu::STA_ABS_Y() {
+u8 Cpu::STA_ABS_Y()
+{
     STA(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.Y));
     return 5;
 }
 
-u8 Cpu::STA_ABS_X() {
+u8 Cpu::STA_ABS_X()
+{
     STA(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
     return 5;
 }
 
-u8 Cpu::LDY_IMM() {
+u8 Cpu::LDY_IMM()
+{
     LDY(Operand(1));
     return 2;
 }
 
-u8 Cpu::LDA_IND_X() {
+u8 Cpu::LDA_IND_X()
+{
     LDA(memory.Get<Mode::PreIndexedIndirect>(Operand(1), this->registers.X));
     return 6;
 }
 
-u8 Cpu::LDX_IMM() {
+u8 Cpu::LDX_IMM()
+{
     LDX(Operand(1));
     return 2;
 }
 
-u8 Cpu::LDY_ZP() {
+u8 Cpu::LDY_ZP()
+{
     LDY(memory.Get<Mode::ZeroPage>(Operand(1)));
     return 3;
 }
 
-u8 Cpu::LDA_ZP() {
+u8 Cpu::LDA_ZP()
+{
     LDA(memory.Get<Mode::ZeroPage>(Operand(1)));
     return 3;
 }
 
-u8 Cpu::LDX_ZP() {
+u8 Cpu::LDX_ZP()
+{
     LDX(memory.Get<Mode::ZeroPage>(Operand(1)));
     return 3;
 }
 
-u8 Cpu::LDA_IMM() {
+u8 Cpu::LDA_IMM()
+{
     LDA(Operand(1));
     return 2;
 }
 
-u8 Cpu::LDY_ABS() {
+u8 Cpu::LDY_ABS()
+{
     LDY(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 4;
 }
 
-u8 Cpu::LDA_ABS() {
+u8 Cpu::LDA_ABS()
+{
     LDA(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 4;
 }
 
-u8 Cpu::LDX_ABS() {
+u8 Cpu::LDX_ABS()
+{
     LDX(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 4;
 }
 
-u8 Cpu::LDA_IND_Y() {
+u8 Cpu::LDA_IND_Y()
+{
     LDA(memory.Get<Mode::PostIndexedIndirect>(Operand(1), this->registers.Y));
     auto address = memory.Indirect(Operand(1), 0);
-    return 5 + Memory::IsPageCrossed(address, address + this->registers.Y);
+    return 5 + NesMemory::IsPageCrossed(address, address + this->registers.Y);
 }
 
-u8 Cpu::LDY_ZP_X() {
+u8 Cpu::LDY_ZP_X()
+{
     LDY(memory.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
     return 4;
 }
 
-u8 Cpu::LDA_ZP_X() {
+u8 Cpu::LDA_ZP_X()
+{
     LDA(memory.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
     return 4;
 }
 
-u8 Cpu::LDX_ZP_Y() {
+u8 Cpu::LDX_ZP_Y()
+{
     LDX(memory.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.Y));
     return 4;
 }
 
-u8 Cpu::LDA_ABS_Y() {
+u8 Cpu::LDA_ABS_Y()
+{
     LDA(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.Y));
-    auto address = Memory::FromValues(Operand(1), Operand(2));
-    return 4 + Memory::IsPageCrossed(address, address + this->registers.Y);
+    auto address = NesMemory::FromValues(Operand(1), Operand(2));
+    return 4 + NesMemory::IsPageCrossed(address, address + this->registers.Y);
 }
 
-u8 Cpu::LDY_ABS_X() {
+u8 Cpu::LDY_ABS_X()
+{
     LDY(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
-    auto address = Memory::FromValues(Operand(1), Operand(2));
-    return 4 + Memory::IsPageCrossed(address, address + this->registers.X);
+    auto address = NesMemory::FromValues(Operand(1), Operand(2));
+    return 4 + NesMemory::IsPageCrossed(address, address + this->registers.X);
 }
 
-u8 Cpu::LDA_ABS_X() {
+u8 Cpu::LDA_ABS_X()
+{
     LDA(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
-    auto address = Memory::FromValues(Operand(1), Operand(2));
-    return 4 + Memory::IsPageCrossed(address, address + this->registers.X);
+    auto address = NesMemory::FromValues(Operand(1), Operand(2));
+    return 4 + NesMemory::IsPageCrossed(address, address + this->registers.X);
 }
 
-u8 Cpu::LDX_ABS_Y() {
+u8 Cpu::LDX_ABS_Y()
+{
     LDX(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.Y));
-    auto address = Memory::FromValues(Operand(1), Operand(2));
-    return 4 + Memory::IsPageCrossed(address, address + this->registers.Y);
+    auto address = NesMemory::FromValues(Operand(1), Operand(2));
+    return 4 + NesMemory::IsPageCrossed(address, address + this->registers.Y);
 }
 
-u8 Cpu::CPY_IMM() {
+u8 Cpu::CPY_IMM()
+{
     CPY(Operand(1));
     return 2;
 }
 
-u8 Cpu::CMP_IND_X() {
+u8 Cpu::CMP_IND_X()
+{
     CMP(memory.Get<Mode::PreIndexedIndirect>(Operand(1), this->registers.X));
     return 6;
 }
 
-u8 Cpu::CPY_ZP() {
+u8 Cpu::CPY_ZP()
+{
     CPY(memory.Get<Mode::ZeroPage>(Operand(1)));
     return 3;
 }
 
-u8 Cpu::CMP_ZP() {
+u8 Cpu::CMP_ZP()
+{
     CMP(memory.Get<Mode::ZeroPage>(Operand(1)));
     return 3;
 }
 
-u8 Cpu::DEC_ZP() {
+u8 Cpu::DEC_ZP()
+{
     DEC(memory.Get<Mode::ZeroPage>(Operand(1)));
     return 5;
 }
 
-u8 Cpu::CMP_IMM() {
+u8 Cpu::CMP_IMM()
+{
     CMP(Operand(1));
     return 2;
 }
 
-u8 Cpu::CPY_ABS() {
+u8 Cpu::CPY_ABS()
+{
     CPY(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 4;
 }
 
-u8 Cpu::CMP_ABS() {
+u8 Cpu::CMP_ABS()
+{
     CMP(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 4;
 }
 
-u8 Cpu::DEC_ABS() {
+u8 Cpu::DEC_ABS()
+{
     DEC(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 6;
 }
 
-u8 Cpu::CMP_IND_Y() {
+u8 Cpu::CMP_IND_Y()
+{
     CMP(memory.Get<Mode::PostIndexedIndirect>(Operand(1), this->registers.Y));
     auto address = memory.Indirect(Operand(1), 0);
-    return 5 + Memory::IsPageCrossed(address, address + this->registers.Y);
+    return 5 + NesMemory::IsPageCrossed(address, address + this->registers.Y);
 }
 
-u8 Cpu::CMP_ZP_X() {
+u8 Cpu::CMP_ZP_X()
+{
     CMP(memory.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
     return 4;
 }
 
-u8 Cpu::DEC_ZP_X() {
+u8 Cpu::DEC_ZP_X()
+{
     DEC(memory.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
     return 6;
 }
 
-u8 Cpu::CMP_ABS_Y() {
+u8 Cpu::CMP_ABS_Y()
+{
     CMP(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.Y));
-    auto address = Memory::FromValues(Operand(1), Operand(2));
-    return 4 + Memory::IsPageCrossed(address, address + this->registers.Y);
+    auto address = NesMemory::FromValues(Operand(1), Operand(2));
+    return 4 + NesMemory::IsPageCrossed(address, address + this->registers.Y);
 }
 
-u8 Cpu::CMP_ABS_X() {
+u8 Cpu::CMP_ABS_X()
+{
     CMP(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
-    auto address = Memory::FromValues(Operand(1), Operand(2));
-    return 4 + Memory::IsPageCrossed(address, address + this->registers.X);
+    auto address = NesMemory::FromValues(Operand(1), Operand(2));
+    return 4 + NesMemory::IsPageCrossed(address, address + this->registers.X);
 }
 
-u8 Cpu::DEC_ABS_X() {
+u8 Cpu::DEC_ABS_X()
+{
     DEC(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
     return 7;
 }
 
-u8 Cpu::CPX_IMM() {
+u8 Cpu::CPX_IMM()
+{
     CPX(Operand(1));
     return 2;
 }
 
-u8 Cpu::SBC_IND_X() {
+u8 Cpu::SBC_IND_X()
+{
     SBC(memory.Get<Mode::PreIndexedIndirect>(Operand(1), this->registers.X));
     return 6;
 }
 
-u8 Cpu::CPX_ZP() {
+u8 Cpu::CPX_ZP()
+{
     CPX(memory.Get<Mode::ZeroPage>(Operand(1)));
     return 3;
 }
 
-u8 Cpu::SBC_ZP() {
+u8 Cpu::SBC_ZP()
+{
     SBC(memory.Get<Mode::ZeroPage>(Operand(1)));
     return 3;
 }
 
-u8 Cpu::INC_ZP() {
+u8 Cpu::INC_ZP()
+{
     INC(memory.Get<Mode::ZeroPage>(Operand(1)));
     return 5;
 }
 
-u8 Cpu::SBC_IMM() {
+u8 Cpu::SBC_IMM()
+{
     SBC(Operand(1));
     return 2;
 }
 
-u8 Cpu::CPX_ABS() {
+u8 Cpu::CPX_ABS()
+{
     CPX(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 4;
 }
 
-u8 Cpu::SBC_ABS() {
+u8 Cpu::SBC_ABS()
+{
     SBC(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 4;
 }
 
-u8 Cpu::INC_ABS() {
+u8 Cpu::INC_ABS()
+{
     INC(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 6;
 }
 
-u8 Cpu::SBC_IND_Y() {
+u8 Cpu::SBC_IND_Y()
+{
     SBC(memory.Get<Mode::PostIndexedIndirect>(Operand(1), this->registers.Y));
     auto address = memory.Indirect(Operand(1), 0);
-    return 5 + Memory::IsPageCrossed(address, address + this->registers.Y);
+    return 5 + NesMemory::IsPageCrossed(address, address + this->registers.Y);
 }
 
-u8 Cpu::SBC_ZP_X() {
+u8 Cpu::SBC_ZP_X()
+{
     SBC(memory.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
     return 4;
 }
 
-u8 Cpu::INC_ZP_X() {
+u8 Cpu::INC_ZP_X()
+{
     INC(memory.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
     return 6;
 }
 
-u8 Cpu::SBC_ABS_Y() {
+u8 Cpu::SBC_ABS_Y()
+{
     SBC(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.Y));
-    auto address = Memory::FromValues(Operand(1), Operand(2));
-    return 4 + Memory::IsPageCrossed(address, address + this->registers.Y);
+    auto address = NesMemory::FromValues(Operand(1), Operand(2));
+    return 4 + NesMemory::IsPageCrossed(address, address + this->registers.Y);
 }
 
-u8 Cpu::SBC_ABS_X() {
+u8 Cpu::SBC_ABS_X()
+{
     SBC(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
-    auto address = Memory::FromValues(Operand(1), Operand(2));
-    return 4 + Memory::IsPageCrossed(address, address + this->registers.X);
+    auto address = NesMemory::FromValues(Operand(1), Operand(2));
+    return 4 + NesMemory::IsPageCrossed(address, address + this->registers.X);
 }
 
-u8 Cpu::INC_ABS_X() {
+u8 Cpu::INC_ABS_X()
+{
     INC(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
     return 7;
 }

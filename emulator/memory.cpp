@@ -1,112 +1,146 @@
 #include "memory.h"
+#include "dependencies.h"
 
-using namespace Frankenstein;
+namespace Frankenstein {
 
-u8& Memory::operator[] (const u16 addr) {
-    return raw[addr];
-}
-        
-u8& Memory::Get(const u16 addr) {
-    return this->operator [](addr);
+template <>
+const NesMemory::Ref NesMemory::operator[] (const u16 addr) {
+    return Ref(addr, this);
 }
 
-bool Memory::IsPageCrossed(u16 startAddress, u16 endAddress){
+template <>
+const u8 NesMemory::Read(const u16 address) {
+    return raw[address];
+}
+
+template<> 
+const u8 NesMemory::Write(const u16 address, const u8 val) {
+    raw[address] = val;
+    return val;
+}
+
+template <>
+void NesMemory::Copy(const u8* source, const u16 destination, const unsigned int size) {
+    memcpy(&raw[destination], source, size);
+}
+
+template <>
+bool NesMemory::IsPageCrossed(u16 startAddress, u16 endAddress){
     return (startAddress & 0xFF00) != (endAddress & 0xFF00);
 }
-        
-u16 Memory::FromValues(const u8 low) {
+
+template <>
+u16 NesMemory::FromValues(const u8 low) {
     u16 res = 0 | low;
     return res;
 }
 
-u16 Memory::FromValues(const u8 low, const u8 high) {
+template <>
+u16 NesMemory::FromValues(const u8 low, const u8 high) {
     u16 res = high;
     res <<= 8;
     res |= low;
     return res;
 }
 
-u16 Memory::ZeroPage(const u8 low) {
+template <>
+u16 NesMemory::ZeroPage(const u8 low) {
     return FromValues(low);
 }
 
-u16 Memory::Absolute(const u8 low, const u8 high) {
+template <>
+u16 NesMemory::Absolute(const u8 low, const u8 high) {
     return FromValues(low, high);
 }
 
-u16 Memory::Indexed(const u8 low, const u8 high, const u8 index) {
+template <>
+u16 NesMemory::Indexed(const u8 low, const u8 high, const u8 index) {
     return FromValues(low, high) + index;
 }
 
-u16 Memory::ZeroPageIndexed(const u8 low, const u8 index) {
+template <>
+u16 NesMemory::ZeroPageIndexed(const u8 low, const u8 index) {
     return FromValues(low + index);
 }
 
-u16 Memory::Indirect(const u8 low, const u8 high) {
+template <>
+u16 NesMemory::Indirect(const u8 low, const u8 high) {
     auto valLow = raw[FromValues(low, high)];
     auto valHigh = raw[FromValues((low+1)%0x100, high)];
     return FromValues(valLow, valHigh);
 }
 
-u16 Memory::PreIndexedIndirect(const u8 low, const u8 index) {
+template <>
+u16 NesMemory::PreIndexedIndirect(const u8 low, const u8 index) {
     return Indirect((low + index) % (0x100), 0);
 }
 
-u16 Memory::PostIndexedIndirect(const u8 low, const u8 index) {
+template <>
+u16 NesMemory::PostIndexedIndirect(const u8 low, const u8 index) {
     return Indirect(low, 0) + index;
 }
 
-namespace Frankenstein {
-    template <Memory::Addressing N>
-    u8& Memory::Get(const u8) {
-        static_assert(sizeof(N) >= 0, "failure to specialise template: please use a valid Addressing mode");
-        return 0xFF;
-    }
+template <>
+template <NesMemory::Addressing N>
+const NesMemory::Ref NesMemory::Get(const u8) {
+    static_assert(sizeof(N) >= 0, "failure to specialise template: please use a valid Addressing mode");
+    return this->operator[](0);
+}
 
-    template <Memory::Addressing N>
-    u8& Memory::Get(const u8, const u8) {
-        static_assert(sizeof(N) >= 0, "failure to specialise template: please use a valid Addressing mode");
-        return 0xFF;
-    }
+template <>
+template <NesMemory::Addressing N>
+const NesMemory::Ref NesMemory::Get(const u8, const u8) {
+    static_assert(sizeof(N) >= 0, "failure to specialise template: please use a valid Addressing mode");
+    return this->operator[](0);
+}
 
-    template <Memory::Addressing N>
-    u8& Memory::Get(const u8, const u8, const u8) {
-        static_assert(sizeof(N) >= 0, "failure to specialise template: please use a valid Addressing mode");
-        return 0xFF;
-    }
+template <>
+template <NesMemory::Addressing N>
+const NesMemory::Ref NesMemory::Get(const u8, const u8, const u8) {
+    static_assert(sizeof(N) >= 0, "failure to specialise template: please use a valid Addressing mode");
+    return this->operator[](0);
+}
 
-    template <>
-    u8& Memory::Get<Memory::Addressing::Absolute>(const u8 low, const u8 high) {
-        return raw[Absolute(low, high)];
-    }
+template <>
+template <>
+const NesMemory::Ref NesMemory::Get<NesMemory::Addressing::Absolute>(const u8 low, const u8 high) {
+    return this->operator[](Absolute(low, high));
+}
 
-    template <>
-    u8& Memory::Get<Memory::Addressing::ZeroPage>(const u8 low) {
-        return raw[ZeroPage(low)];
-    }
+template <>
+template <>
+const NesMemory::Ref NesMemory::Get<NesMemory::Addressing::ZeroPage>(const u8 low) {
+    return this->operator[](ZeroPage(low));
+}
 
-    template <>
-    u8& Memory::Get<Memory::Addressing::Indexed>(const u8 low, const u8 high, const u8 index) {
-        return raw[Indexed(low, high, index)];
-    }
+template <>
+template <>
+const NesMemory::Ref NesMemory::Get<NesMemory::Addressing::Indexed>(const u8 low, const u8 high, const u8 index) {
+    return this->operator[](Indexed(low, high, index));
+}
 
-    template <>
-    u8& Memory::Get<Memory::Addressing::ZeroPageIndexed>(const u8 low, const u8 index) {
-        return raw[ZeroPageIndexed(low, index)];
-    }
+template <>
+template <>
+const NesMemory::Ref NesMemory::Get<NesMemory::Addressing::ZeroPageIndexed>(const u8 low, const u8 index) {
+    return this->operator[](ZeroPageIndexed(low, index));
+}
 
-    template <>
-    u8& Memory::Get<Memory::Addressing::Indirect>(const u8 low, const u8 high) {
-        return raw[Indirect(low, high)];
-    }
+template <>
+template <>
+const NesMemory::Ref NesMemory::Get<NesMemory::Addressing::Indirect>(const u8 low, const u8 high) {
+    return this->operator[](Indirect(low, high));
+}
 
-    template <>
-    u8& Memory::Get<Memory::Addressing::PreIndexedIndirect>(const u8 low, const u8 index) {
-        return raw[PreIndexedIndirect(low, index)];
-    }
+template <>
+template <>
+const NesMemory::Ref NesMemory::Get<NesMemory::Addressing::PreIndexedIndirect>(const u8 low, const u8 index) {
+    return this->operator[](NesMemory::PreIndexedIndirect(low, index));
+}
 
-    template <>
-    u8& Memory::Get<Memory::Addressing::PostIndexedIndirect>(const u8 low, const u8 index) {
-        return raw[PostIndexedIndirect(low, index)];
-    }       
+template <>
+template <>
+const NesMemory::Ref NesMemory::Get<NesMemory::Addressing::PostIndexedIndirect>(const u8 low, const u8 index) {
+    return this->operator[](PostIndexedIndirect(low, index));
+}
+
 }

@@ -7,49 +7,49 @@ using namespace Frankenstein;
 ////////////////////////////////////////////////////////////////////////////////
 TEST_F(MemoryTest, Addressing_ZeroPage)
 {
-    auto addr = Memory::ZeroPage(0x00);
+    auto addr = NesMemory::ZeroPage(0x00);
     EXPECT_EQ((u16)0x0000, addr);
 
-    addr = Memory::ZeroPage(0x10);
+    addr = NesMemory::ZeroPage(0x10);
     EXPECT_EQ((u16)0x0010, addr);
 
-    addr = Memory::ZeroPage(0xFF);
+    addr = NesMemory::ZeroPage(0xFF);
     EXPECT_EQ((u16)0x00FF, addr);
 }
 
 TEST_F(MemoryTest, Addressing_ZeroPageIndexed)
 {
-    auto addr = Memory::ZeroPageIndexed(0x00, 0x01);
+    auto addr = NesMemory::ZeroPageIndexed(0x00, 0x01);
     EXPECT_EQ((u16)0x0001, addr);
 
-    addr = Memory::ZeroPageIndexed(0x0F, 0x01);
+    addr = NesMemory::ZeroPageIndexed(0x0F, 0x01);
     EXPECT_EQ((u16)0x0010, addr);
 
-    addr = Memory::ZeroPageIndexed(0x00, 0x01);
+    addr = NesMemory::ZeroPageIndexed(0x00, 0x01);
     EXPECT_EQ((u16)0x0001, addr);
 }
 
 TEST_F(MemoryTest, Addressing_Absolute)
 {
-    auto addr = Memory::Absolute(0x00, 0x01);
+    auto addr = NesMemory::Absolute(0x00, 0x01);
     EXPECT_EQ((u16)0x0100, addr);
 
-    addr = Memory::Absolute(0x0F, 0x01);
+    addr = NesMemory::Absolute(0x0F, 0x01);
     EXPECT_EQ((u16)0x010F, addr);
 
-    addr = Memory::Absolute(0xFF, 0xFF);
+    addr = NesMemory::Absolute(0xFF, 0xFF);
     EXPECT_EQ((u16)0xFFFF, addr);
 }
 
 TEST_F(MemoryTest, Addressing_Indexed)
 {
-    auto addr = Memory::Indexed(0x00, 0x01, 0x01);
+    auto addr = NesMemory::Indexed(0x00, 0x01, 0x01);
     EXPECT_EQ((u16)0x0101, addr);
 
-    addr = Memory::Indexed(0xFF, 0x01, 0x01);
+    addr = NesMemory::Indexed(0xFF, 0x01, 0x01);
     EXPECT_EQ((u16)0x0200, addr);
 
-    addr = Memory::Indexed(0xFF, 0xFF, 0x01);
+    addr = NesMemory::Indexed(0xFF, 0xFF, 0x01);
     EXPECT_EQ((u16)0x0000, addr);
 }
 

@@ -7,11 +7,11 @@
 #include "memory.h"
 
 namespace Frankenstein {
-    
+
 class Nes
 {
 public:
-    Memory ram;
+    NesMemory ram;
     Rom rom;
     Cpu cpu;
     Ppu ppu;

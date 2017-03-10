@@ -3,19 +3,20 @@
 
 using namespace Frankenstein;
 
-Ppu::Registers::Registers(Memory& ram) :
-controlRegister(ram[0x2000]),
-maskRegister(ram[0x2001]),
-processorStatus(ram[0x2002]),
-oamAddress(ram[0x2003]),
-oamData(ram[0x2004]),
-vramAddress1(ram[0x2005]),
-vramAddress2(ram[0x2006]),
-vramIO(ram[0x2007]),
-spriteDma(ram[0x4014]) {
+Ppu::Registers::Registers(NesMemory& ram) :
+    controlRegister(ram[0x2000]),
+    maskRegister(ram[0x2001]),
+    processorStatus(ram[0x2002]),
+    oamAddress(ram[0x2003]),
+    oamData(ram[0x2004]),
+    vramAddress1(ram[0x2005]),
+    vramAddress2(ram[0x2006]),
+    vramIO(ram[0x2007]),
+    spriteDma(ram[0x4014]) {
 }
 
-Ppu::Ppu(Memory& ram, Rom& rom, Cpu& cpu2) : cpu(cpu2), registers(ram) {
+Frankenstein::Ppu::Ppu(Frankenstein::NesMemory& ram, Frankenstein::Rom& rom, Frankenstein::Cpu& cpu) : cpu(cpu), registers(ram)
+{
     const iNesHeader* header = rom.GetHeader();
     int prgRomBanks = header->prgRomBanks;
     int vRomBanks = header->vRomBanks;
@@ -32,13 +33,13 @@ Ppu::Ppu(Memory& ram, Rom& rom, Cpu& cpu2) : cpu(cpu2), registers(ram) {
 
     front = new RGBColor*[256];
     back = new RGBColor*[256];
-    
+
     for (int i = 0; i < 240; ++i)
     {
-	front[i] = new RGBColor;
-	back[i] = new RGBColor;
+        front[i] = new RGBColor;
+        back[i] = new RGBColor;
     }
-    
+
     Reset();
 }
 
@@ -237,7 +238,7 @@ void Ppu::writeData(u8 value) {
 void Ppu::writeDMA(u8 value) {
     u16 address = u16(value) << 8;
     for (u16 i = 0; i < 256; i++) {
-        oamData[oamAddress] = cpu.memory.Get(address);
+        oamData[oamAddress] = cpu.memory[address];
         oamAddress++;
         address++;
     }

@@ -1,14 +1,16 @@
 #pragma once
 
-#include "util.h"
-#include "rom.h"
 #include "memory.h"
+#include "rom.h"
+#include "util.h"
 
 namespace Frankenstein {
 
 class Cpu {
-    public:
-    
+
+    using Memory = NesMemory::Ref;
+
+public:
     struct Registers {
         u16 PC;
         u8 SP;
@@ -19,20 +21,20 @@ class Cpu {
     };
 
     enum class Flags : int {
-        C = 1,      //Carry
-        Z,      //Zero
-        I,      //Interrupt
-        D,      //Decimal
-        B,      //Break
-        A,      //Always
-        V,      //Overflow
-        S       //Sign : 1 is negative
+        C = 1, //Carry
+        Z, //Zero
+        I, //Interrupt
+        D, //Decimal
+        B, //Break
+        A, //Always
+        V, //Overflow
+        S //Sign : 1 is negative
     };
 
     Registers registers;
-    Memory& memory;
+    NesMemory& memory;
 
-    const u8 instructionSizes[256] ={
+    const u8 instructionSizes[256] = {
         0, //BRK
         2, //ORA_IND_X
         1, //UNIMP
@@ -288,31 +290,37 @@ class Cpu {
         1, //UNIMP
         3, //SBC_ABS_X
         3, //INC_ABS_X
-        1  //UNIMP
+        1 //UNIMP
     };
 
-    void ADC(u8& value);
-    void AND(const u8& value);
+    void ADC(const u8 value);
+    void AND(const u8 value);
     void ASL(u8& value);
-    void BIT(const u8& value);
-    void CMP(u8& value);
-    void CPX(u8& value);
-    void CPY(u8& value);
+    void ASL(const Memory value);
+    void BIT(const u8 value);
+    void CMP(const u8 value);
+    void CPX(const u8 value);
+    void CPY(const u8 value);
     void DEC(u8& value);
-    void EOR(u8& value);
+    void DEC(const Memory value);
+    void EOR(const u8 value);
     void INC(u8& value);
-    void JMP(u8& value);
-    void LDA(u8& value);
-    void LDX(u8& value);
-    void LDY(u8& value);
+    void INC(const Memory value);
+    void JMP(const u8 value);
+    void LDA(const u8 value);
+    void LDX(const u8 value);
+    void LDY(const u8 value);
     void LSR(u8& value);
-    void ORA(u8& value);
+    void LSR(const Memory value);
+    void ORA(const u8 value);
     void ROL(u8& value);
+    void ROL(const Memory value);
     void ROR(u8& value);
-    void SBC(u8& value);
-    void STA(u8& value);
-    void STX(u8& value);
-    void STY(u8& value);
+    void ROR(const Memory value);
+    void SBC(const u8 value);
+    void STA(const Memory value);
+    void STX(const Memory value);
+    void STY(const Memory value);
 
     u8 BRK();
     u8 ORA_IND_X();
@@ -466,9 +474,9 @@ class Cpu {
     u8 SBC_ABS_X();
     u8 INC_ABS_X();
     u8 UNIMP();
-    
+
     u8 NMI();
-    
+
     void Interrupt();
 
     typedef u8 (Cpu::*func)(void);
@@ -527,7 +535,7 @@ class Cpu {
         &Cpu::UNIMP, &Cpu::UNIMP, &Cpu::UNIMP, &Cpu::SBC_ABS_X, &Cpu::INC_ABS_X,
         &Cpu::UNIMP
     };
-    
+
     void Reset();
 
     /**
@@ -539,12 +547,12 @@ class Cpu {
     /**
      * Fetch the opcode at memory[PC]
      */
-    inline u8& OpCode();
+    u8 OpCode();
 
     /**
      * Fetch the operand at memory[PC + number]
      */
-    inline u8& Operand(int number);
+    u8 Operand(int number);
 
     /**
      * Store the byte at stack[SP]
@@ -556,23 +564,25 @@ class Cpu {
      * Fetch the byte at stack[SP]
      * and increment the stack pointer
      */
-    inline u8 PopFromStack();    
+    inline u8 PopFromStack();
 
-    template<Cpu::Flags f>
-    void Set(bool value){
+    template <Cpu::Flags f>
+    void Set(bool value)
+    {
         AssignBit<static_cast<int>(f)>(this->registers.P, value);
     }
 
-    template<Cpu::Flags f>
-    bool Get(){
+    template <Cpu::Flags f>
+    bool Get()
+    {
         return CheckBit<static_cast<int>(f)>(this->registers.P);
     }
 
-    Cpu(Memory& ram);
-    Cpu(Memory& ram, Rom& rom);
-    
+    Cpu(NesMemory& ram);
+    Cpu(NesMemory& ram, Rom& rom);
+
     void LoadRom(Rom& rom);
-    
+
     u8 cycles;
     bool nmiOccurred;
 };
