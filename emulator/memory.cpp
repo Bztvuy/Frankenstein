@@ -12,16 +12,16 @@ const NesMemory::Ref NesMemory::operator[](const u16 addr)
 template <>
 const u8 NesMemory::Read(const u16 address)
 { 
-    // $0800-$0FFF, $1000-$17FF, $1800-$1FFF are mirrors of $0000-$07FF; Internal RAM
+    // $0000-$07FF; With mirroirs $0800-$0FFF, $1000-$17FF, $1800-$1FFF; Internal RAM
     if (address < 0x2000) {
         return raw[address & 0x07FF];
     }
-    //$2008-$3FFF are Mirrors of $2000-2007; NES PPU registers
+    // $2000-$2007; With mirroirs $2008-$3FFF; NES PPU registers
     else if (address < 0x4000) {
         return raw[address & 0x2007];
     }
     // $4000-$4017; NES APU and I/O registers
-    else if (address < 0x4017) {
+    else if (address < 0x4018) {
         if(address == 0x4016) {
             // return Controller1.read();
         }
