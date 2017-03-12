@@ -16,29 +16,35 @@ static constexpr u16 ADDR_SRAM = 0x6000;
 static constexpr u16 ADDR_PRG_ROM_LOWER_BANK = 0x8000;
 static constexpr u16 ADDR_PRG_ROM_UPPER_BANK = 0xC000;
 
-template<typename DataType = u8, typename AddressingType = u16, unsigned int Size = 0x10000>
+template <typename DataType, typename AddressingType, unsigned int Size>
 class Memory {
 private:
     DataType raw[Size];
 
-    const DataType Read(AddressingType address);
-    const DataType Write(AddressingType address, const DataType val);
+    const DataType Read(const AddressingType address);
+    void Write(const AddressingType address, const DataType val);
 
 public:
     // Memory proxy, allow transparent uses of Memory
     struct Ref {
         const AddressingType address;
-        Memory *const outer;
+        Memory* const outer;
 
     public:
-        explicit Ref(const AddressingType& addr,  Memory *const parent) : address(addr), outer(parent) {}
+        explicit Ref(const AddressingType& addr, Memory* const parent)
+            : address(addr)
+            , outer(parent)
+        {
+        }
 
-        const Ref& operator=(const DataType& rhs) const {
+        const Ref& operator=(const DataType& rhs) const
+        {
             outer->Write(address, rhs);
             return *this;
         }
 
-        operator const DataType() const {
+        operator const DataType() const
+        {
             return outer->Read(address);
         }
     };
@@ -54,6 +60,7 @@ public:
     };
 
     const Ref operator[](const AddressingType);
+
     void Copy(const DataType* source, const AddressingType destination, const unsigned int size);
 
     template <Memory::Addressing N>
@@ -156,4 +163,5 @@ public:
 };
 
 using NesMemory = Memory<u8, u16, 0x10000>;
+
 }
