@@ -12,12 +12,12 @@ namespace Frankenstein {
 class Nes
 {
 public:
+    Gamepad pad1;
+    Gamepad pad2;
     NesMemory ram;
     Rom rom;
     Cpu cpu;
     Ppu ppu;
-    Gamepad controller1;
-    Gamepad controller2;
 
     Nes();
     void Step();

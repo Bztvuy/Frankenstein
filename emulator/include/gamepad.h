@@ -3,17 +3,19 @@
 
 #include "util.h"
 
+namespace Frankenstein {
+
 class Gamepad{
 public:
-    u8& readButtons;
-    u8& writeButtons;
     u8 index;
     
-    Gamepad(u8& readAddress, u8& writeAddress);
+    Gamepad();
     
-    u8 Read();
-    void Write();
+    u8 Read(u8 read, u8 write);
+    void Write(u8 write);
 };
+
+}
 
 #endif /* GAMEPAD_H */
 

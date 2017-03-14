@@ -2,10 +2,7 @@
 
 using namespace Frankenstein;
 
-Nes::Nes() : ram(), rom(), cpu(ram, rom), ppu(ram, rom, cpu), controller1(ram->Get(0x4016), ram->Get(0x4016)), controller2(ram->Get(0x4017), ram->Get(0x4016)){
-    ram->SetGamepad1(controller1);
-    ram->SetGamepad2(controller2);
-}
+Nes::Nes() : pad1(), pad2(), ram(pad1, pad2), rom(), cpu(ram, rom), ppu(ram, rom, cpu){}
 
 void Nes::Step(){
     cpu.Step();

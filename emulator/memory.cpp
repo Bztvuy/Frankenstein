@@ -3,12 +3,8 @@
 
 namespace Frankenstein {
     
-void Memory::SetGamepad1(Gamepad gamepad){
-    this->controller1 = gamepad;
-}
-void Memory::SetGamepad2(Gamepad gamepad){
-    this->controller2 = gamepad;
-}
+template<>
+NesMemory::Memory(Gamepad& pad1, Gamepad& pad2) : controller1(pad1), controller2(pad2){}
 
 template <>
 const NesMemory::Ref NesMemory::operator[](const u16 addr)
@@ -30,10 +26,10 @@ const u8 NesMemory::Read(const u16 address)
     // $4000-$4017; NES APU and I/O registers
     else if (address < 0x4018) {
         if(address == 0x4016) {
-            return controller1.Read();
+            return controller1.Read(raw[address], raw[address]);
         }
         else if (address == 0x4017) {
-            return controller2.Read();
+            return controller2.Read(raw[address], raw[address-1]);
         }
     }
     // $4018-$401F; APU and I/O functionality that is normally disabled.
@@ -61,8 +57,8 @@ void NesMemory::Write(const u16 address, const u8 val)
     // $4000-$4017; NES APU and I/O registers
     else if (address < 0x4017) {
         if(address == 0x4016) {
-            controller1.Write();
-            controller2.Write();
+            controller1.Write(raw[address]);
+            controller2.Write(raw[address]);
         }
         else if (address == 0x4017) {
             // ignore?

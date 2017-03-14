@@ -21,8 +21,8 @@ template <typename DataType, typename AddressingType, unsigned int Size>
 class Memory {
 private:
     DataType raw[Size];
-    Gamepad controller1;
-    Gamepad controller2;
+    Gamepad& controller1;
+    Gamepad& controller2;
 
     const DataType Read(const AddressingType address);
     void Write(const AddressingType address, const DataType val);
@@ -62,8 +62,8 @@ public:
         PostIndexedIndirect,
     };
     
-    void SetGamepad1(Gamepad gamepad);
-    void SetGamepad2(Gamepad gamepad);
+    Memory();
+    Memory(Gamepad& pad1, Gamepad& pad2);
 
     const Ref operator[](const AddressingType);
 

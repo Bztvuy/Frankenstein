@@ -3,11 +3,14 @@
 #include <gtest/gtest.h>
 #include <memory.h>
 #include <cpu.h>
+#include <gamepad.h>
 
 struct MemoryTest : testing::Test {
+    Frankenstein::Gamepad pad1;
+    Frankenstein::Gamepad pad2;
     Frankenstein::NesMemory ram;
 
-    MemoryTest()
+    MemoryTest() : ram(pad1, pad2)
     {
     }
 

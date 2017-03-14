@@ -1,18 +1,22 @@
 #include "gamepad.h"
 
-Gamepad::Gamepad(u8& readAddress, u8& writeAddress) : readButtons(readAddress), writeButtons(writeAddress){
+namespace Frankenstein {
+
+Gamepad::Gamepad(){
     index = 1;
 }
 
-u8 Gamepad::Read(){
-    u8 value = index < 9 && CheckBit<>(readButtons, index);
+u8 Gamepad::Read(u8 read, u8 write){
+    u8 value = index < 9 && CheckBit<>(read, index);
     ++index;
-    if (CheckBit<1>(writeButtons)) 
+    if (CheckBit<1>(write)) 
         index = 1;
     return value;
 }
 
-void Gamepad::Write(){
-    if (CheckBit<1>(writeButtons)) 
+void Gamepad::Write(u8 write){
+    if (CheckBit<1>(write)) 
         index = 1;
+}
+
 }
