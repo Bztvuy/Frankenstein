@@ -2,6 +2,13 @@
 #include "memory.h"
 
 namespace Frankenstein {
+    
+void Memory::SetGamepad1(Gamepad gamepad){
+    this->controller1 = gamepad;
+}
+void Memory::SetGamepad2(Gamepad gamepad){
+    this->controller2 = gamepad;
+}
 
 template <>
 const NesMemory::Ref NesMemory::operator[](const u16 addr)
@@ -12,21 +19,21 @@ const NesMemory::Ref NesMemory::operator[](const u16 addr)
 template <>
 const u8 NesMemory::Read(const u16 address)
 { 
-    // $0000-$07FF; With mirroirs $0800-$0FFF, $1000-$17FF, $1800-$1FFF; Internal RAM
+    // $0000-$07FF; With mirrors $0800-$0FFF, $1000-$17FF, $1800-$1FFF; Internal RAM
     if (address < 0x2000) {
         return raw[address & 0x07FF];
     }
-    // $2000-$2007; With mirroirs $2008-$3FFF; NES PPU registers
+    // $2000-$2007; With mirrors $2008-$3FFF; NES PPU registers
     else if (address < 0x4000) {
         return raw[address & 0x2007];
     }
     // $4000-$4017; NES APU and I/O registers
     else if (address < 0x4018) {
         if(address == 0x4016) {
-            // return Controller1.read();
+            return controller1.Read();
         }
         else if (address == 0x4017) {
-            // return Controller2.read();
+            return controller2.Read();
         }
     }
     // $4018-$401F; APU and I/O functionality that is normally disabled.
@@ -54,8 +61,8 @@ void NesMemory::Write(const u16 address, const u8 val)
     // $4000-$4017; NES APU and I/O registers
     else if (address < 0x4017) {
         if(address == 0x4016) {
-            // Controller1.setReadingState();
-            // Controller2.setReadingState();
+            controller1.Write();
+            controller2.Write();
         }
         else if (address == 0x4017) {
             // ignore?
@@ -142,7 +149,7 @@ template <>
 template <NesMemory::Addressing N>
 const NesMemory::Ref NesMemory::Get(const u8)
 {
-    static_assert(sizeof(N) >= 0, "failure to specialise template: please use a valid Addressing mode");
+    static_assert(sizeof(N) >= 0, "failure to specialize template: please use a valid Addressing mode");
     return this->operator[](0);
 }
 
@@ -150,7 +157,7 @@ template <>
 template <NesMemory::Addressing N>
 const NesMemory::Ref NesMemory::Get(const u8, const u8)
 {
-    static_assert(sizeof(N) >= 0, "failure to specialise template: please use a valid Addressing mode");
+    static_assert(sizeof(N) >= 0, "failure to specialize template: please use a valid Addressing mode");
     return this->operator[](0);
 }
 
@@ -158,7 +165,7 @@ template <>
 template <NesMemory::Addressing N>
 const NesMemory::Ref NesMemory::Get(const u8, const u8, const u8)
 {
-    static_assert(sizeof(N) >= 0, "failure to specialise template: please use a valid Addressing mode");
+    static_assert(sizeof(N) >= 0, "failure to specialize template: please use a valid Addressing mode");
     return this->operator[](0);
 }
 

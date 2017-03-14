@@ -1,6 +1,7 @@
 #pragma once
 
 #include "util.h"
+#include "gamepad.h"
 
 namespace Frankenstein {
 
@@ -20,6 +21,8 @@ template <typename DataType, typename AddressingType, unsigned int Size>
 class Memory {
 private:
     DataType raw[Size];
+    Gamepad controller1;
+    Gamepad controller2;
 
     const DataType Read(const AddressingType address);
     void Write(const AddressingType address, const DataType val);
@@ -58,6 +61,9 @@ public:
         PreIndexedIndirect,
         PostIndexedIndirect,
     };
+    
+    void SetGamepad1(Gamepad gamepad);
+    void SetGamepad2(Gamepad gamepad);
 
     const Ref operator[](const AddressingType);
 

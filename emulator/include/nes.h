@@ -5,6 +5,7 @@
 #include "cpu.h"
 #include "ppu.h"
 #include "memory.h"
+#include "gamepad.h"
 
 namespace Frankenstein {
 
@@ -15,6 +16,8 @@ public:
     Rom rom;
     Cpu cpu;
     Ppu ppu;
+    Gamepad controller1;
+    Gamepad controller2;
 
     Nes();
     void Step();
