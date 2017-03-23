@@ -34,10 +34,10 @@ Frankenstein::Ppu::Ppu(Frankenstein::NesMemory& ram, Frankenstein::Rom& rom, Fra
     front = new RGBColor*[256];
     back = new RGBColor*[256];
 
-    for (int i = 0; i < 240; ++i)
+    for (int i = 0; i < 256; ++i)
     {
-        front[i] = new RGBColor;
-        back[i] = new RGBColor;
+        front[i] = new RGBColor[240];
+        back[i] = new RGBColor[240];
     }
 
     Reset();
