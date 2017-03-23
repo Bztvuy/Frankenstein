@@ -8,5 +8,4 @@ void Nes::Step(){
     cpu.Step();
     for(u16 i = 0; i < (cpu.cycles * 3); ++i)
         ppu.Step();
-    cpu.cycles = 0;
 }

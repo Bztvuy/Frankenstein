@@ -65,7 +65,7 @@ TShutdownMode CKernel::Run (void)
 	nes.Step();
 	if (nes.cpu.nmiOccurred){
 	    for (unsigned int i = 0; i < 256; ++i) {
-		for (unsigned int j = 0; i < 240; ++j) {
+		for (unsigned int j = 0; j < 240; ++j) {
 		    m_Screen.SetPixel(i, j, COLOR32(nes.ppu.front[i][j].red, nes.ppu.front[i][j].green, nes.ppu.front[i][j].blue, 0));
 		}
 	    }
