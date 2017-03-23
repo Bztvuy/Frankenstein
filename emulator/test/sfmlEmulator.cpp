@@ -11,9 +11,9 @@ int main()
     sf::Texture screen;
     sf::Image img;
     sf::Sprite tmp;
+    sf::Text text;
     screen.create(800, 600);
     img.create(800, 600);
-    
     Frankenstein::Nes nes;
     
     while (window.isOpen())
@@ -31,10 +31,11 @@ int main()
         if (nes.cpu.nmiOccurred){
 	    for (unsigned int i = 0; i < 256; ++i) {
 		for (unsigned int j = 0; j < 240; ++j) {
-		    img.setPixel(i, j, sf::Color(nes.ppu.front[i][j].red, nes.ppu.front[i][j].green, nes.ppu.front[i][j].blue, 0));
+                    sf::Color color(nes.ppu.front[i][j].red, nes.ppu.front[i][j].green, nes.ppu.front[i][j].blue);
+		    img.setPixel(i, j, color);
 		}
 	    }
-	}
+	}        
         
         window.clear(sf::Color::Black);
         screen.loadFromImage(img);
