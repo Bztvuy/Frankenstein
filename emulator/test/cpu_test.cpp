@@ -194,3 +194,18 @@ TEST_F(CPUTest, ADC_Overflow)
     EXPECT_TRUE(cpu.Get<Cpu::Flags::V>());
     EXPECT_FALSE(cpu.Get<Cpu::Flags::C>());
 }
+
+TEST_F(CPUTest, DEC_ABS)
+{
+    cpu.registers.A = 0xFF;
+    cpu.registers.PC = 0x8000;
+    cpu.memory[0x8001] = 10;
+    cpu.memory[0x8002] = 10;
+    cpu.memory[cpu.memory.Absolute(10, 10)] = 32;
+
+    cpu.DEC_ABS();
+    
+    EXPECT_EQ(31, cpu.memory[cpu.memory.Absolute(10, 10)]);
+    EXPECT_FALSE(cpu.Get<Cpu::Flags::Z>());
+    EXPECT_FALSE(cpu.Get<Cpu::Flags::S>());
+}

@@ -5,15 +5,14 @@
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode(800, 600), "My window");
-    window.setVerticalSyncEnabled(true);
+    sf::RenderWindow window(sf::VideoMode(1024, 960), "NES");
     window.setFramerateLimit(60);
     sf::Texture screen;
     sf::Image img;
     sf::Sprite tmp;
     sf::Text text;
-    screen.create(800, 600);
-    img.create(800, 600);
+    screen.create(1024, 960);
+    img.create(1024, 960);
     Frankenstein::Nes nes;
     
     while (window.isOpen())
@@ -26,18 +25,34 @@ int main()
             if (event.type == sf::Event::Closed)
                 window.close();
         }
+	
+	window.clear(sf::Color::Black);
         
         nes.Step();
         if (nes.cpu.nmiOccurred){
 	    for (unsigned int i = 0; i < 256; ++i) {
 		for (unsigned int j = 0; j < 240; ++j) {
-                    sf::Color color(nes.ppu.front[i][j].red, nes.ppu.front[i][j].green, nes.ppu.front[i][j].blue);
-		    img.setPixel(i, j, color);
+		    sf::Color color(nes.ppu.front[i][j].red, nes.ppu.front[i][j].green, nes.ppu.front[i][j].blue);
+		    img.setPixel(i * 4, j * 4, color);
+                    img.setPixel(i * 4 + 1, j * 4, color);
+                    img.setPixel(i * 4 + 2, j * 4, color);
+                    img.setPixel(i * 4 + 3, j * 4, color);
+                    img.setPixel(i * 4, j * 4 + 1, color);
+                    img.setPixel(i * 4 + 1, j * 4 + 1, color);
+                    img.setPixel(i * 4 + 2, j * 4 + 1, color);
+                    img.setPixel(i * 4 + 3, j * 4 + 1, color);
+                    img.setPixel(i * 4, j * 4 + 2, color);
+                    img.setPixel(i * 4 + 1, j * 4 + 2, color);
+                    img.setPixel(i * 4 + 2, j * 4 + 2, color);
+                    img.setPixel(i * 4 + 3, j * 4 + 2, color);
+                    img.setPixel(i * 4, j * 4 + 3, color);
+                    img.setPixel(i * 4 + 1, j * 4 + 3, color);
+                    img.setPixel(i * 4 + 2, j * 4 + 3, color);
+                    img.setPixel(i * 4 + 3, j * 4 + 3, color);
 		}
 	    }
 	}        
         
-        window.clear(sf::Color::Black);
         screen.loadFromImage(img);
         tmp.setTexture(screen, true);
         window.draw(tmp);

@@ -36,7 +36,7 @@ public:
 
 private:
     static const unsigned int length;
-    static const u8 raw[24592];
+    static const u8 raw[40976];
 };
 }
 #endif
