@@ -52,6 +52,7 @@ void Cpu::Step()
     } else {
         auto opCode = OpCode();
         this->cycles = (this->*instructions[opCode])();
+	this->previousPC = this->registers.PC;
         this->registers.PC += this->instructionSizes[opCode];
     }
 }
@@ -282,8 +283,8 @@ void Cpu::STY(const Memory value)
 u8 Cpu::BPL()
 {
     if (!Get<Flags::S>()) {
-        auto pageCrossed = NesMemory::IsPageCrossed(this->registers.PC + 2, (this->registers.PC + 2 + Operand(1)) & 0xFF);
-        this->registers.PC = (this->registers.PC + Operand(1)) & 0xFF;
+        auto pageCrossed = NesMemory::IsPageCrossed(this->registers.PC + 2, (this->registers.PC & 0xFF00) | ((this->registers.PC + 2 + Operand(1)) & 0xFF));
+        this->registers.PC = (this->registers.PC & 0xFF00) | ((this->registers.PC + Operand(1)) & 0xFF);
         return 3 + pageCrossed;
     }
     return 2;
@@ -293,8 +294,8 @@ u8 Cpu::BPL()
 u8 Cpu::BMI()
 {
     if (Get<Flags::S>()) {
-        auto pageCrossed = NesMemory::IsPageCrossed(this->registers.PC + 2, (this->registers.PC + 2 + Operand(1)) & 0xFF);
-        this->registers.PC = (this->registers.PC + Operand(1)) & 0xFF;
+        auto pageCrossed = NesMemory::IsPageCrossed(this->registers.PC + 2, (this->registers.PC & 0xFF00) | ((this->registers.PC + 2 + Operand(1)) & 0xFF));
+        this->registers.PC = (this->registers.PC & 0xFF00) | ((this->registers.PC + Operand(1)) & 0xFF);
         return 3 + pageCrossed;
     }
     return 2;
@@ -304,8 +305,8 @@ u8 Cpu::BMI()
 u8 Cpu::BVC()
 {
     if (!Get<Flags::V>()) {
-        auto pageCrossed = NesMemory::IsPageCrossed(this->registers.PC + 2, (this->registers.PC + 2 + Operand(1)) & 0xFF);
-        this->registers.PC = (this->registers.PC + Operand(1)) & 0xFF;
+        auto pageCrossed = NesMemory::IsPageCrossed(this->registers.PC + 2, (this->registers.PC & 0xFF00) | ((this->registers.PC + 2 + Operand(1)) & 0xFF));
+        this->registers.PC = (this->registers.PC & 0xFF00) | ((this->registers.PC + Operand(1)) & 0xFF);
         return 3 + pageCrossed;
     }
     return 2;
@@ -315,8 +316,8 @@ u8 Cpu::BVC()
 u8 Cpu::BVS()
 {
     if (Get<Flags::V>()) {
-        auto pageCrossed = NesMemory::IsPageCrossed(this->registers.PC + 2, (this->registers.PC + 2 + Operand(1)) & 0xFF);
-        this->registers.PC = (this->registers.PC + Operand(1)) & 0xFF;
+        auto pageCrossed = NesMemory::IsPageCrossed(this->registers.PC + 2, (this->registers.PC & 0xFF00) | ((this->registers.PC + 2 + Operand(1)) & 0xFF));
+        this->registers.PC = (this->registers.PC & 0xFF00) | ((this->registers.PC + Operand(1)) & 0xFF);
         return 3 + pageCrossed;
     }
     return 2;
@@ -326,8 +327,8 @@ u8 Cpu::BVS()
 u8 Cpu::BCC()
 {
     if (!Get<Flags::C>()) {
-        auto pageCrossed = NesMemory::IsPageCrossed(this->registers.PC + 2, (this->registers.PC + 2 + Operand(1)) & 0xFF);
-        this->registers.PC = (this->registers.PC + Operand(1)) & 0xFF;
+        auto pageCrossed = NesMemory::IsPageCrossed(this->registers.PC + 2, (this->registers.PC & 0xFF00) | ((this->registers.PC + 2 + Operand(1)) & 0xFF));
+        this->registers.PC = (this->registers.PC & 0xFF00) | ((this->registers.PC + Operand(1)) & 0xFF);
         return 3 + pageCrossed;
     }
     return 2;
@@ -337,8 +338,8 @@ u8 Cpu::BCC()
 u8 Cpu::BCS()
 {
     if (Get<Flags::C>()) {
-        auto pageCrossed = NesMemory::IsPageCrossed(this->registers.PC + 2, (this->registers.PC + 2 + Operand(1)) & 0xFF);
-        this->registers.PC = (this->registers.PC + Operand(1)) & 0xFF;
+        auto pageCrossed = NesMemory::IsPageCrossed(this->registers.PC + 2, (this->registers.PC & 0xFF00) | ((this->registers.PC + 2 + Operand(1)) & 0xFF));
+        this->registers.PC = (this->registers.PC & 0xFF00) | ((this->registers.PC + Operand(1)) & 0xFF);
         return 3 + pageCrossed;
     }
     return 2;
@@ -348,8 +349,8 @@ u8 Cpu::BCS()
 u8 Cpu::BNE()
 {
     if (!Get<Flags::Z>()) {
-        auto pageCrossed = NesMemory::IsPageCrossed(this->registers.PC + 2, (this->registers.PC + 2 + Operand(1)) & 0xFF);
-        this->registers.PC = (this->registers.PC + Operand(1)) & 0xFF;
+        auto pageCrossed = NesMemory::IsPageCrossed(this->registers.PC + 2, (this->registers.PC & 0xFF00) | ((this->registers.PC + 2 + Operand(1)) & 0xFF));
+        this->registers.PC = (this->registers.PC & 0xFF00) | ((this->registers.PC + Operand(1)) & 0xFF);
         return 3 + pageCrossed;
     }
     return 2;
@@ -359,8 +360,8 @@ u8 Cpu::BNE()
 u8 Cpu::BEQ()
 {
     if (Get<Flags::Z>()) {
-        auto pageCrossed = NesMemory::IsPageCrossed(this->registers.PC + 2, (this->registers.PC + 2 + Operand(1)) & 0xFF);
-        this->registers.PC = (this->registers.PC + Operand(1)) & 0xFF;
+        auto pageCrossed = NesMemory::IsPageCrossed(this->registers.PC + 2, (this->registers.PC & 0xFF00) | ((this->registers.PC + 2 + Operand(1)) & 0xFF));
+        this->registers.PC = (this->registers.PC & 0xFF00) | ((this->registers.PC + Operand(1)) & 0xFF);
         return 3 + pageCrossed;
     }
     return 2;
@@ -517,7 +518,7 @@ u8 Cpu::BRK()
     return 7;
 }
 
-void Cpu::JMP(const u8 value)
+void Cpu::JMP(const u16 value)
 {
     this->registers.PC = value;
 }
@@ -847,7 +848,7 @@ u8 Cpu::LSR_ACC()
 
 u8 Cpu::JMP_ABS()
 {
-    JMP(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
+    JMP(memory.Absolute(Operand(1), Operand(2)));
     return 3;
 }
 
@@ -935,9 +936,9 @@ u8 Cpu::ROR_ACC()
 u8 Cpu::JMP_IND()
 {
     if (NesMemory::IsPageCrossed(this->registers.PC + 1, this->registers.PC + 2))
-        JMP(memory.Get<Mode::Indirect>(Operand(1), Operand(-0xFE))); //wrap around
+        JMP(memory.Indirect(Operand(1), Operand(-0xFE))); //wrap around
     else
-        JMP(memory.Get<Mode::Indirect>(Operand(1), Operand(2)));
+        JMP(memory.Indirect(Operand(1), Operand(2)));
     return 5;
 }
 

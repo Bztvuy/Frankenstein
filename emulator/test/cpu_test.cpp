@@ -26,8 +26,8 @@ TEST_F(CPUTest, AND_ZeroAndOne)
     u8 value = 1;
     cpu.AND(value);
     EXPECT_EQ(0,     cpu.registers.A);
-    EXPECT_EQ(true,  cpu.Get<Cpu::Flags::Z>());
-    EXPECT_EQ(false, cpu.Get<Cpu::Flags::S>());
+    EXPECT_TRUE(cpu.Get<Cpu::Flags::Z>());
+    EXPECT_FALSE(cpu.Get<Cpu::Flags::S>());
 }
 
 TEST_F(CPUTest, AND_OneAndZero)
@@ -35,9 +35,9 @@ TEST_F(CPUTest, AND_OneAndZero)
     cpu.registers.A = 1;
     u8 value = 0;
     cpu.AND(value);
-    EXPECT_EQ(0,     cpu.registers.A);
-    EXPECT_EQ(true,  cpu.Get<Cpu::Flags::Z>());
-    EXPECT_EQ(false, cpu.Get<Cpu::Flags::S>());
+    EXPECT_EQ(0,cpu.registers.A);
+    EXPECT_TRUE(cpu.Get<Cpu::Flags::Z>());
+    EXPECT_FALSE(cpu.Get<Cpu::Flags::S>());
 }
 
 TEST_F(CPUTest, AND_OneAndOne)
@@ -45,9 +45,9 @@ TEST_F(CPUTest, AND_OneAndOne)
     cpu.registers.A = 1;
     u8 value = 1;
     cpu.AND(value);
-    EXPECT_EQ(1,     cpu.registers.A);
-    EXPECT_EQ(false, cpu.Get<Cpu::Flags::Z>());
-    EXPECT_EQ(false, cpu.Get<Cpu::Flags::S>());
+    EXPECT_EQ(1, cpu.registers.A);
+    EXPECT_FALSE(cpu.Get<Cpu::Flags::Z>());
+    EXPECT_FALSE(cpu.Get<Cpu::Flags::S>());
 }
 
 TEST_F(CPUTest, AND_NegativeResult)
@@ -55,9 +55,9 @@ TEST_F(CPUTest, AND_NegativeResult)
     cpu.registers.A = 0xFF;
     u8 value = 0xF0;
     cpu.AND(value);
-    EXPECT_EQ(value, cpu.registers.A);
-    EXPECT_EQ(false, cpu.Get<Cpu::Flags::Z>());
-    EXPECT_EQ(true,  cpu.Get<Cpu::Flags::S>());
+    EXPECT_EQ(value,cpu.registers.A);
+    EXPECT_FALSE(cpu.Get<Cpu::Flags::Z>());
+    EXPECT_TRUE(cpu.Get<Cpu::Flags::S>());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -69,9 +69,9 @@ TEST_F(CPUTest, ASL_WithCarry)
     u8 value = 0xFF;
     cpu.ASL(value);
     EXPECT_EQ(0xFE, value);
-    EXPECT_EQ(true,  cpu.Get<Cpu::Flags::C>());
-    EXPECT_EQ(false, cpu.Get<Cpu::Flags::Z>());
-    EXPECT_EQ(true,  cpu.Get<Cpu::Flags::S>());
+    EXPECT_TRUE(cpu.Get<Cpu::Flags::C>());
+    EXPECT_FALSE(cpu.Get<Cpu::Flags::Z>());
+    EXPECT_TRUE(cpu.Get<Cpu::Flags::S>());
 }
 
 TEST_F(CPUTest, ASL_WithoutCarry) 
@@ -79,9 +79,9 @@ TEST_F(CPUTest, ASL_WithoutCarry)
     u8 value = 0x0F;
     cpu.ASL(value);
     EXPECT_EQ(0x1E, value);
-    EXPECT_EQ(false, cpu.Get<Cpu::Flags::C>());
-    EXPECT_EQ(false, cpu.Get<Cpu::Flags::Z>());
-    EXPECT_EQ(false, cpu.Get<Cpu::Flags::S>());
+    EXPECT_FALSE(cpu.Get<Cpu::Flags::C>());
+    EXPECT_FALSE(cpu.Get<Cpu::Flags::Z>());
+    EXPECT_FALSE(cpu.Get<Cpu::Flags::S>());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -93,9 +93,9 @@ TEST_F(CPUTest, BIT_ZeroResultAndV)
     cpu.registers.A = 0x00;
     u8 value = 0x7F;
     cpu.BIT(value);
-    EXPECT_EQ(true,  cpu.Get<Cpu::Flags::Z>());
-    EXPECT_EQ(true,  cpu.Get<Cpu::Flags::V>());
-    EXPECT_EQ(false, cpu.Get<Cpu::Flags::S>());
+    EXPECT_TRUE(cpu.Get<Cpu::Flags::Z>());
+    EXPECT_TRUE(cpu.Get<Cpu::Flags::V>());
+    EXPECT_FALSE(cpu.Get<Cpu::Flags::S>());
 }
 
 TEST_F(CPUTest, BIT_NonZeroResultAndS)
@@ -103,9 +103,9 @@ TEST_F(CPUTest, BIT_NonZeroResultAndS)
     cpu.registers.A = 0xF0;
     u8 value = 0xB0;
     cpu.BIT(value);
-    EXPECT_EQ(false, cpu.Get<Cpu::Flags::Z>());
-    EXPECT_EQ(false,  cpu.Get<Cpu::Flags::V>());
-    EXPECT_EQ(true,  cpu.Get<Cpu::Flags::S>());
+    EXPECT_FALSE(cpu.Get<Cpu::Flags::Z>());
+    EXPECT_FALSE(cpu.Get<Cpu::Flags::V>());
+    EXPECT_TRUE(cpu.Get<Cpu::Flags::S>());
 }
 
 
@@ -119,10 +119,10 @@ TEST_F(CPUTest, ADC_ZeroAndZero)
     u8 value = 0;
     cpu.ADC(value);
     EXPECT_EQ(0,     cpu.registers.A);
-    EXPECT_EQ(true,  cpu.Get<Cpu::Flags::Z>());
-    EXPECT_EQ(false, cpu.Get<Cpu::Flags::S>());
-    EXPECT_EQ(false, cpu.Get<Cpu::Flags::V>());
-    EXPECT_EQ(false, cpu.Get<Cpu::Flags::C>());
+    EXPECT_TRUE(cpu.Get<Cpu::Flags::Z>());
+    EXPECT_FALSE(cpu.Get<Cpu::Flags::S>());
+    EXPECT_FALSE(cpu.Get<Cpu::Flags::V>());
+    EXPECT_FALSE(cpu.Get<Cpu::Flags::C>());
 }
 
 TEST_F(CPUTest, ADC_ZeroAndOne)
@@ -131,10 +131,10 @@ TEST_F(CPUTest, ADC_ZeroAndOne)
     u8 value = 1;
     cpu.ADC(value);
     EXPECT_EQ(1, cpu.registers.A);
-    EXPECT_EQ(false, cpu.Get<Cpu::Flags::Z>());
-    EXPECT_EQ(false, cpu.Get<Cpu::Flags::S>());
-    EXPECT_EQ(false, cpu.Get<Cpu::Flags::V>());
-    EXPECT_EQ(false, cpu.Get<Cpu::Flags::C>());
+    EXPECT_FALSE(cpu.Get<Cpu::Flags::Z>());
+    EXPECT_FALSE(cpu.Get<Cpu::Flags::S>());
+    EXPECT_FALSE(cpu.Get<Cpu::Flags::V>());
+    EXPECT_FALSE(cpu.Get<Cpu::Flags::C>());
 }
 
 TEST_F(CPUTest, ADC_WithCarry)
@@ -145,10 +145,10 @@ TEST_F(CPUTest, ADC_WithCarry)
     u8 value = 1;
     cpu.ADC(value);
 //     EXPECT_EQ(2, cpu.registers.A);
-    EXPECT_EQ(false, cpu.Get<Cpu::Flags::Z>());
-    EXPECT_EQ(false, cpu.Get<Cpu::Flags::S>());
-    EXPECT_EQ(false, cpu.Get<Cpu::Flags::V>());
-    EXPECT_EQ(false, cpu.Get<Cpu::Flags::C>());
+    EXPECT_FALSE(cpu.Get<Cpu::Flags::Z>());
+    EXPECT_FALSE(cpu.Get<Cpu::Flags::S>());
+    EXPECT_FALSE(cpu.Get<Cpu::Flags::V>());
+    EXPECT_FALSE(cpu.Get<Cpu::Flags::C>());
 }
 
 TEST_F(CPUTest, ADC_SetCarry)
@@ -158,10 +158,10 @@ TEST_F(CPUTest, ADC_SetCarry)
     u8 value = 1;
     cpu.ADC(value);
     EXPECT_EQ(0, cpu.registers.A);
-    EXPECT_EQ(true, cpu.Get<Cpu::Flags::Z>());
-    EXPECT_EQ(false, cpu.Get<Cpu::Flags::S>());
-    EXPECT_EQ(false, cpu.Get<Cpu::Flags::V>());
-    EXPECT_EQ(true, cpu.Get<Cpu::Flags::C>());
+    EXPECT_TRUE(cpu.Get<Cpu::Flags::Z>());
+    EXPECT_FALSE(cpu.Get<Cpu::Flags::S>());
+    EXPECT_FALSE(cpu.Get<Cpu::Flags::V>());
+    EXPECT_TRUE(cpu.Get<Cpu::Flags::C>());
 }
 
 TEST_F(CPUTest, ADC_Overflow)
@@ -170,27 +170,42 @@ TEST_F(CPUTest, ADC_Overflow)
     u8 value = 0xFF;                                        // -1
     cpu.ADC(value);
     EXPECT_EQ(0x7F,  cpu.registers.A);                      // 127
-    EXPECT_EQ(false, cpu.Get<Cpu::Flags::Z>());
-    EXPECT_EQ(false, cpu.Get<Cpu::Flags::S>());
-    EXPECT_EQ(true,  cpu.Get<Cpu::Flags::V>());
-    EXPECT_EQ(true,  cpu.Get<Cpu::Flags::C>());
+    EXPECT_FALSE(cpu.Get<Cpu::Flags::Z>());
+    EXPECT_FALSE(cpu.Get<Cpu::Flags::S>());
+    EXPECT_TRUE(cpu.Get<Cpu::Flags::V>());
+    EXPECT_TRUE(cpu.Get<Cpu::Flags::C>());
 
     cpu.registers.A = 0x7F;                                 // 127
     value = 0x01;                                           // 1
     cpu.ADC(value);                                         // + carry
     EXPECT_EQ(0x81,  cpu.registers.A);                      // -127
-    EXPECT_EQ(false, cpu.Get<Cpu::Flags::Z>());
-    EXPECT_EQ(true,  cpu.Get<Cpu::Flags::S>());
-    EXPECT_EQ(true,  cpu.Get<Cpu::Flags::V>());
-    EXPECT_EQ(false, cpu.Get<Cpu::Flags::C>());
+    EXPECT_FALSE(cpu.Get<Cpu::Flags::Z>());
+    EXPECT_TRUE(cpu.Get<Cpu::Flags::S>());
+    EXPECT_TRUE(cpu.Get<Cpu::Flags::V>());
+    EXPECT_FALSE(cpu.Get<Cpu::Flags::C>());
 
     cpu.Set<Cpu::Flags::C>(true);
     cpu.registers.A = 0x7E;                                 // 126
     value = 0x01;                                           // 1
     cpu.ADC(value);                                         // + carry
     EXPECT_EQ(0x80,  cpu.registers.A);                      // -128
-    EXPECT_EQ(false, cpu.Get<Cpu::Flags::Z>());
-    EXPECT_EQ(true,  cpu.Get<Cpu::Flags::S>());
-    EXPECT_EQ(true,  cpu.Get<Cpu::Flags::V>());
-    EXPECT_EQ(false, cpu.Get<Cpu::Flags::C>());
+    EXPECT_FALSE(cpu.Get<Cpu::Flags::Z>());
+    EXPECT_TRUE(cpu.Get<Cpu::Flags::S>());
+    EXPECT_TRUE(cpu.Get<Cpu::Flags::V>());
+    EXPECT_FALSE(cpu.Get<Cpu::Flags::C>());
+}
+
+TEST_F(CPUTest, DEC_ABS)
+{
+    cpu.registers.A = 0xFF;
+    cpu.registers.PC = 0x8000;
+    cpu.memory[0x8001] = 10;
+    cpu.memory[0x8002] = 10;
+    cpu.memory[cpu.memory.Absolute(10, 10)] = 32;
+
+    cpu.DEC_ABS();
+    
+    EXPECT_EQ(31, cpu.memory[cpu.memory.Absolute(10, 10)]);
+    EXPECT_FALSE(cpu.Get<Cpu::Flags::Z>());
+    EXPECT_FALSE(cpu.Get<Cpu::Flags::S>());
 }

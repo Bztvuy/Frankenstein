@@ -306,7 +306,7 @@ public:
     void EOR(const u8 value);
     void INC(u8& value);
     void INC(const Memory value);
-    void JMP(const u8 value);
+    void JMP(const u16 value);
     void LDA(const u8 value);
     void LDX(const u8 value);
     void LDY(const u8 value);
@@ -585,6 +585,7 @@ public:
 
     u8 cycles;
     bool nmiOccurred;
+    u16 previousPC;
 };
 
 }
