@@ -1,5 +1,7 @@
 #include "rom_file.h"
 
+#include <cstdio>
+
 using namespace Frankenstein;
 
 const u8 * FileRom::GetRaw() const {
@@ -28,13 +30,15 @@ void FileRom::load(std::string file) {
     this->filename = file;
 
     {
-        std::fstream ifs(file, std::ios::binary | std::ios::ate);
-        std::ifstream::pos_type pos = ifs.tellg();
+        FILE *f = fopen(file.c_str(), "rb");
+        fseek(f, 0, SEEK_END);
+        long fsize = ftell(f);
+        fseek(f, 0, SEEK_SET);  //same as rewind(f);
 
-        this->raw.resize(pos);
+        this->raw.resize(fsize);
 
-        ifs.seekg(0, std::ios::beg);
-        ifs.read((char*)this->raw.data(), pos);
+        fread(this->raw.data(), fsize, 1, f);
+        fclose(f);
     }
 
     this->header = MakeHeader();

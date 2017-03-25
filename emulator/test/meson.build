@@ -12,7 +12,6 @@ sfmlEmulator = executable('sfml_emulator', 'sfmlEmulator.cpp',
     dependencies: sfml,
     include_directories: [emulator_include],
     cpp_args: cpp_args,
-    extra_files: [],
     native: true)
 
 emuTests = executable('emulator_tests', 'cpu_test.cpp', 'memory_test.cpp',
