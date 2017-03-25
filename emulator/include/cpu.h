@@ -558,13 +558,13 @@ public:
      * Store the byte at stack[SP]
      * and decrement the stack pointer
      */
-    inline void PushOnStack(u8 value);
+    void PushOnStack(u8 value);
 
     /**
      * Fetch the byte at stack[SP]
      * and increment the stack pointer
      */
-    inline u8 PopFromStack();
+    u8 PopFromStack();
 
     template <Cpu::Flags f>
     void Set(bool value)
@@ -586,6 +586,8 @@ public:
     u8 cycles;
     bool nmiOccurred;
     u16 previousPC;
+    u8 currentOpcode;
+    u8 nextOpcode;
 };
 
 }

@@ -50,10 +50,11 @@ void Cpu::Step()
         this->cycles = NMI();
         nmiOccurred = false;
     } else {
-        auto opCode = OpCode();
-        this->cycles = (this->*instructions[opCode])();
+        this->currentOpcode = OpCode();
+        this->cycles = (this->*instructions[this->currentOpcode])();
 	this->previousPC = this->registers.PC;
-        this->registers.PC += this->instructionSizes[opCode];
+        this->registers.PC += this->instructionSizes[this->currentOpcode];
+	this->nextOpcode = OpCode();
     }
 }
 
@@ -62,16 +63,18 @@ inline u8 Cpu::OpCode()
     return this->memory[this->registers.PC];
 }
 
-inline void Cpu::PushOnStack(u8 value)
+void Cpu::PushOnStack(u8 value)
 {
     this->memory[Frankenstein::ADDR_STACK + this->registers.SP] = value;
     this->registers.SP -= 1;
 }
 
-inline u8 Cpu::PopFromStack()
+u8 Cpu::PopFromStack()
 {
     this->registers.SP += 1;
-    return this->memory[Frankenstein::ADDR_STACK + this->registers.SP];
+    u8 value = this->memory[Frankenstein::ADDR_STACK + this->registers.SP];
+    this->memory[Frankenstein::ADDR_STACK + this->registers.SP] = 0;
+    return value;
 }
 
 inline u8 Cpu::Operand(int number)
@@ -446,13 +449,13 @@ u8 Cpu::INY()
 // Transfert X to Stack ptr
 u8 Cpu::TXS()
 {
-    PushOnStack(this->registers.X);
+    this->registers.SP = this->registers.X;
     return 2;
 }
 
 u8 Cpu::TSX()
 {
-    auto value = PopFromStack();
+    auto value = this->registers.SP;
     this->registers.X = value;
     Set<Flags::Z>(CheckZero(value));
     Set<Flags::S>(CheckSign(value));
@@ -535,18 +538,19 @@ u8 Cpu::JSR()
 
 u8 Cpu::RTI()
 {
-    auto processorStatus = PopFromStack();
-    this->registers.P = processorStatus;
-    u16 address = PopFromStack();
-    address |= (PopFromStack() << 8); /* Load return address from stack. */
+    this->registers.P = PopFromStack();
+    u8 low = PopFromStack();
+    u8 high = PopFromStack();
+    u16 address = u16(low) | (u16(high) << 8);
     this->registers.PC = address;
     return 6;
 }
 
 u8 Cpu::RTS()
 {
-    u16 address = PopFromStack();
-    address |= ((PopFromStack()) << 8); /* Load return address from stack. */
+    u8 low = PopFromStack();
+    u8 high = PopFromStack();
+    u16 address = u16(low) | (u16(high) << 8);
     this->registers.PC = address;
     return 6;
 }

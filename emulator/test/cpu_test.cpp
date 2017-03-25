@@ -209,3 +209,15 @@ TEST_F(CPUTest, DEC_ABS)
     EXPECT_FALSE(cpu.Get<Cpu::Flags::Z>());
     EXPECT_FALSE(cpu.Get<Cpu::Flags::S>());
 }
+
+TEST_F(CPUTest, Stack_Ops)
+{
+    cpu.PushOnStack(0x10);
+    cpu.PushOnStack(0x20);
+
+    u8 first = cpu.PopFromStack();
+    u8 second = cpu.PopFromStack();
+    
+    EXPECT_EQ(0x20, first);
+    EXPECT_EQ(0x10, second);
+}
