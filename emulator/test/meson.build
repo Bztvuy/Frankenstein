@@ -7,7 +7,7 @@ gtest_dep = library('gtest', gtest_lib_src, gtest_main_src,
 sfml = [dependency('sfml-graphics', native: true),
         dependency('sfml-window', native: true)]
 
-sfmlEmulator = executable('sdl_emulator', 'sfmlEmulator.cpp',
+sfmlEmulator = executable('sfml_emulator', 'sfmlEmulator.cpp',
     link_with: [emulator_native],
     dependencies: sfml,
     include_directories: [emulator_include],

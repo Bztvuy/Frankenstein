@@ -6,7 +6,7 @@
 int main()
 {
     sf::RenderWindow window(sf::VideoMode(1024, 960), "NES");
-    window.setFramerateLimit(60);
+    window.setFramerateLimit(30);
     sf::Texture screen;
     sf::Image img;
     sf::Sprite tmp;
@@ -25,15 +25,15 @@ int main()
             if (event.type == sf::Event::Closed)
                 window.close();
         }
-	
-	window.clear(sf::Color::Black);
-        
+
+        window.clear(sf::Color::Black);
+
         nes.Step();
         if (nes.cpu.nmiOccurred){
-	    for (unsigned int i = 0; i < 256; ++i) {
-		for (unsigned int j = 0; j < 240; ++j) {
-		    sf::Color color(nes.ppu.front[i][j].red, nes.ppu.front[i][j].green, nes.ppu.front[i][j].blue);
-		    img.setPixel(i * 4, j * 4, color);
+            for (unsigned int i = 0; i < 256; ++i) {
+                for (unsigned int j = 0; j < 240; ++j) {
+                    sf::Color color(nes.ppu.front[i][j].red, nes.ppu.front[i][j].green, nes.ppu.front[i][j].blue);
+                    img.setPixel(i * 4, j * 4, color);
                     img.setPixel(i * 4 + 1, j * 4, color);
                     img.setPixel(i * 4 + 2, j * 4, color);
                     img.setPixel(i * 4 + 3, j * 4, color);
@@ -49,10 +49,10 @@ int main()
                     img.setPixel(i * 4 + 1, j * 4 + 3, color);
                     img.setPixel(i * 4 + 2, j * 4 + 3, color);
                     img.setPixel(i * 4 + 3, j * 4 + 3, color);
-		}
-	    }
-	}        
-        
+                }
+            }
+        }
+
         screen.loadFromImage(img);
         tmp.setTexture(screen, true);
         window.draw(tmp);
