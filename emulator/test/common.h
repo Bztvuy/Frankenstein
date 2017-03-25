@@ -31,15 +31,13 @@ struct CPUTest : MemoryTest {
     }
 };
 
-struct RomTest : testing::Test {
-    Frankenstein::Memory ram;
-    Frankenstein::Cpu cpu;
+struct RomTest : CPUTest {
 
-    MemoryTest() : ram(), cpu(ram)
-    {
+    RomTest() {
+
     }
 
-    virtual ~MemoryTest()
+    virtual ~RomTest()
     {
     }
 };

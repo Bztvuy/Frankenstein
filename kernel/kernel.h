@@ -40,7 +40,6 @@ public:
     TShutdownMode Run (void);
 
 private:
-<<<<<<< HEAD
     // do not change this order
     CMemorySystem   m_Memory;
     CActLED         m_ActLED;
@@ -56,23 +55,6 @@ private:
     // TODO: add more members here
     StaticRom embedded_rom;
     Nes nes;
-=======
-	// do not change this order
-	CMemorySystem		m_Memory;
-	CActLED			m_ActLED;
-	CKernelOptions		m_Options;
-	CDeviceNameService	m_DeviceNameService;
-	CScreenDevice		m_Screen;
-	CSerialDevice		m_Serial;
-	CExceptionHandler	m_ExceptionHandler;
-	CInterruptSystem	m_Interrupt;
-	CTimer			m_Timer;
-	CLogger			m_Logger;
-
-	// TODO: add more members here
-        StaticRom rom;
-	Nes nes;
->>>>>>> 72ec4108796e94e0a2c277c4d45982e3a393de20
 };
 
 #endif
