@@ -1,8 +1,4 @@
-//
-// rom.h
-//
-#ifndef _rom_h
-#define _rom_h
+#pragma once
 
 #include "util.h"
 
@@ -23,20 +19,21 @@ union iNesHeader {
     char raw[16];
 };
 
-class Rom {
+class IRom {
 public:
-    const iNesHeader* GetHeader() const;
-    const u8* GetRaw() const;
-    unsigned int GetLength() const;
+    //sizes related to rom file format (in bytes) :
+    static constexpr int HeaderSize = 16;
+    static constexpr int TrainerSize = 512;
+
     unsigned int GetTrainerOffset() const;
 
-    //sizes related to rom file format (in bytes) :
-    const unsigned int headerSize = 16;
-    const unsigned int trainerSize = 512;
+    virtual const iNesHeader GetHeader() const = 0;
+    virtual const u8* GetRaw() const = 0;
+    virtual unsigned int GetLength() const = 0;
+    virtual ~IRom(){}
 
-private:
-    static const unsigned int length;
-    static const u8 raw[40976];
+protected:
+    const iNesHeader MakeHeader() const;
 };
+
 }
-#endif

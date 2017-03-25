@@ -15,13 +15,13 @@ Ppu::Registers::Registers(NesMemory& ram) :
     spriteDma(ram[0x4014]) {
 }
 
-Frankenstein::Ppu::Ppu(Frankenstein::NesMemory& ram, Frankenstein::Rom& rom, Frankenstein::Cpu& cpu) : cpu(cpu), registers(ram)
+Ppu::Ppu(NesMemory& ram, const IRom& rom, Cpu& cpu) : cpu(cpu), registers(ram)
 {
-    const iNesHeader* header = rom.GetHeader();
-    int prgRomBanks = header->prgRomBanks;
-    int vRomBanks = header->vRomBanks;
+    const iNesHeader header = rom.GetHeader();
+    int prgRomBanks = header.prgRomBanks;
+    int vRomBanks = header.vRomBanks;
     int trainerOffset = rom.GetTrainerOffset();
-    int vRomBanksLocation = rom.headerSize + trainerOffset + prgRomBanks * PRGROM_BANK_SIZE;
+    int vRomBanksLocation = IRom::HeaderSize + trainerOffset + prgRomBanks * PRGROM_BANK_SIZE;
 
     switch (vRomBanks) {
         case 1:

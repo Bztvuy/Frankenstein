@@ -579,9 +579,9 @@ public:
     }
 
     Cpu(NesMemory& ram);
-    Cpu(NesMemory& ram, Rom& rom);
+    Cpu(NesMemory& ram, const IRom& rom);
 
-    void LoadRom(Rom& rom);
+    void LoadRom(const IRom& rom);
 
     u8 cycles;
     bool nmiOccurred;

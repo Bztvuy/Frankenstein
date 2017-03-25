@@ -93,7 +93,7 @@ public:
      * @param low the least significant byte of the address
      * @return the two bytes address
      */
-    static AddressingType FromValues(const u8 low);
+    static AddressingType FromValues(const DataType low);
 
     /**
      * Build an address using the most and the least significative bytes. Useful
@@ -103,14 +103,14 @@ public:
      * @param high the most significant byte of the address
      * @return the two bytes address
      */
-    static AddressingType FromValues(const u8 low, const u8 high);
+    static AddressingType FromValues(const DataType low, const DataType high);
 
     /**
      * Build the address [00][low].
      * @param low the least significant byte of the address
      * @return the builded address
      */
-    static AddressingType ZeroPage(const u8 low);
+    static AddressingType ZeroPage(const DataType low);
 
     /**
      * Build the address [high][low].
@@ -118,7 +118,7 @@ public:
      * @param high the most significant byte of the address
      * @return the builded address
      */
-    static AddressingType Absolute(const u8 low, const u8 high);
+    static AddressingType Absolute(const DataType low, const DataType high);
 
     /**
      * Compute the complete address [high][low] + index
@@ -127,7 +127,7 @@ public:
      * @param index  value to add to the constructed address
      * @return the computed address
      */
-    static AddressingType Indexed(const u8 low, const u8 high, const u8 index);
+    static AddressingType Indexed(const DataType low, const DataType high, const DataType index);
 
     /**
      * Compute the ZeroPage address [00][low] + index.
@@ -135,7 +135,7 @@ public:
      * @param index a value to add to the constructed address
      * @return the computed address
      */
-    static AddressingType ZeroPageIndexed(const u8 low, const u8 index);
+    static AddressingType ZeroPageIndexed(const DataType low, const DataType index);
 
     /**
      * Fetch an address at memory [high][low].
@@ -143,7 +143,7 @@ public:
      * @param  high the most significant byte
      * @return the stored address
      */
-    AddressingType Indirect(const u8 low, const u8 high);
+    AddressingType Indirect(const DataType low, const DataType high);
 
     /**
      * Fetch an address at memory [00][low + index]. If [low + index] overflow, only
@@ -153,7 +153,7 @@ public:
      * @param  index a value to add to low to get the actual address
      * @return the pre-indexed address
      */
-    AddressingType PreIndexedIndirect(const u8 low, const u8 index);
+    AddressingType PreIndexedIndirect(const DataType low, const DataType index);
 
     /**
      * Fetch an address at memory [00][low] then increase the address by index.
@@ -161,7 +161,7 @@ public:
      * @param  index an index to add to the loaded address. Usually a register [X|Y]
      * @return the post-indexed address
      */
-    AddressingType PostIndexedIndirect(const u8 low, const u8 index);
+    AddressingType PostIndexedIndirect(const DataType low, const DataType index);
 
     //u16 Implied();
     //u16 Accumulator();

@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 
 #include "nes.h"
+#include "rom_file.h"
 
 int main()
 {
@@ -13,7 +14,8 @@ int main()
     sf::Text text;
     screen.create(1024, 960);
     img.create(1024, 960);
-    Frankenstein::Nes nes;
+    Frankenstein::FileRom rom("");
+    Frankenstein::Nes nes(rom);
     
     while (window.isOpen())
     {
