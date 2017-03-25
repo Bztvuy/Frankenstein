@@ -21,7 +21,11 @@ Ppu::Ppu(NesMemory& ram, const IRom& rom, Cpu& cpu) : cpu(cpu), registers(ram)
     int prgRomBanks = header.prgRomBanks;
     int vRomBanks = header.vRomBanks;
     int trainerOffset = rom.GetTrainerOffset();
+<<<<<<< HEAD
     int vRomBanksLocation = IRom::HeaderSize + trainerOffset + prgRomBanks * PRGROM_BANK_SIZE;
+=======
+    int vRomBanksLocation = Rom::HeaderSize + trainerOffset + prgRomBanks * PRGROM_BANK_SIZE;
+>>>>>>> 72ec4108796e94e0a2c277c4d45982e3a393de20
 
     switch (vRomBanks) {
         case 1:

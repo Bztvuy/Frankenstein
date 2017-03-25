@@ -52,7 +52,7 @@ void Cpu::Step()
     } else {
         auto opCode = OpCode();
         this->cycles = (this->*instructions[opCode])();
-	this->previousPC = this->registers.PC;
+    this->previousPC = this->registers.PC;
         this->registers.PC += this->instructionSizes[opCode];
     }
 }

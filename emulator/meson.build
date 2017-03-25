@@ -1,8 +1,13 @@
 emulator_src = ['memory.cpp', 'rom.cpp', 'cpu.cpp', 'ppu.cpp', 'nes.cpp', 'gamepad.cpp']
 emulator_include = include_directories('include')
 
+<<<<<<< HEAD
 emulator_native = static_library('emulator_native', emulator_src, 'rom_file.cpp',
     include_directories: emulator_include,
+=======
+emulator_native = static_library('emulator_native', [emulator_src, 'file_rom.cpp'],
+	include_directories: emulator_include,
+>>>>>>> 72ec4108796e94e0a2c277c4d45982e3a393de20
         cpp_args: cpp_args,
     native: true)
 
