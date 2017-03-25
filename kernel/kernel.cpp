@@ -7,11 +7,12 @@
 static const char FromKernel[] = "kernel";
 
 CKernel::CKernel (void)
-:	m_Screen (m_Options.GetWidth (), m_Options.GetHeight ()),
-	m_Timer (&m_Interrupt),
-	m_Logger (m_Options.GetLogLevel (), &m_Timer),
-	// TODO: add more member initializers here
-	nes()
+:   m_Screen (m_Options.GetWidth (), m_Options.GetHeight ()),
+    m_Timer (&m_Interrupt),
+    m_Logger (m_Options.GetLogLevel (), &m_Timer),
+    // TODO: add more member initializers here
+    embedded_rom(),
+    nes(embedded_rom)
 {
 }
 
@@ -62,29 +63,29 @@ boolean CKernel::Initialize (void)
 TShutdownMode CKernel::Run (void)
 {
     while(true){
-	nes.Step();
-	if (nes.cpu.nmiOccurred){
-	    for (unsigned int i = 0; i < 256; ++i) {
-		for (unsigned int j = 0; j < 240; ++j) {
-		    m_Screen.SetPixel(i * 4, j * 4, COLOR32(nes.ppu.front[i][j].red, nes.ppu.front[i][j].green, nes.ppu.front[i][j].blue, 0));
-                    m_Screen.SetPixel(i * 4 + 1, j * 4, COLOR32(nes.ppu.front[i][j].red, nes.ppu.front[i][j].green, nes.ppu.front[i][j].blue, 0));
-                    m_Screen.SetPixel(i * 4 + 2, j * 4, COLOR32(nes.ppu.front[i][j].red, nes.ppu.front[i][j].green, nes.ppu.front[i][j].blue, 0));
-                    m_Screen.SetPixel(i * 4 + 3, j * 4, COLOR32(nes.ppu.front[i][j].red, nes.ppu.front[i][j].green, nes.ppu.front[i][j].blue, 0));
-                    m_Screen.SetPixel(i * 4, j * 4 + 1, COLOR32(nes.ppu.front[i][j].red, nes.ppu.front[i][j].green, nes.ppu.front[i][j].blue, 0));
-                    m_Screen.SetPixel(i * 4 + 1, j * 4 + 1, COLOR32(nes.ppu.front[i][j].red, nes.ppu.front[i][j].green, nes.ppu.front[i][j].blue, 0));
-                    m_Screen.SetPixel(i * 4 + 2, j * 4 + 1, COLOR32(nes.ppu.front[i][j].red, nes.ppu.front[i][j].green, nes.ppu.front[i][j].blue, 0));
-                    m_Screen.SetPixel(i * 4 + 3, j * 4 + 1, COLOR32(nes.ppu.front[i][j].red, nes.ppu.front[i][j].green, nes.ppu.front[i][j].blue, 0));
-                    m_Screen.SetPixel(i * 4, j * 4 + 2, COLOR32(nes.ppu.front[i][j].red, nes.ppu.front[i][j].green, nes.ppu.front[i][j].blue, 0));
-                    m_Screen.SetPixel(i * 4 + 1, j * 4 + 2, COLOR32(nes.ppu.front[i][j].red, nes.ppu.front[i][j].green, nes.ppu.front[i][j].blue, 0));
-                    m_Screen.SetPixel(i * 4 + 2, j * 4 + 2, COLOR32(nes.ppu.front[i][j].red, nes.ppu.front[i][j].green, nes.ppu.front[i][j].blue, 0));
-                    m_Screen.SetPixel(i * 4 + 3, j * 4 + 2, COLOR32(nes.ppu.front[i][j].red, nes.ppu.front[i][j].green, nes.ppu.front[i][j].blue, 0));
-                    m_Screen.SetPixel(i * 4, j * 4 + 3, COLOR32(nes.ppu.front[i][j].red, nes.ppu.front[i][j].green, nes.ppu.front[i][j].blue, 0));
-                    m_Screen.SetPixel(i * 4 + 1, j * 4 + 3, COLOR32(nes.ppu.front[i][j].red, nes.ppu.front[i][j].green, nes.ppu.front[i][j].blue, 0));
-                    m_Screen.SetPixel(i * 4 + 2, j * 4 + 3, COLOR32(nes.ppu.front[i][j].red, nes.ppu.front[i][j].green, nes.ppu.front[i][j].blue, 0));
-                    m_Screen.SetPixel(i * 4 + 3, j * 4 + 3, COLOR32(nes.ppu.front[i][j].red, nes.ppu.front[i][j].green, nes.ppu.front[i][j].blue, 0));
-		}
-	    }
-	}
+        nes.Step();
+        if (nes.cpu.nmiOccurred){
+            for (unsigned int i = 0; i < 256; ++i) {
+                for (unsigned int j = 0; j < 240; ++j) {
+                    m_Screen.SetPixel(i * 4, j * 4, COLOR32(nes.ppu.front[i][j].red, nes.ppu.front[i][j].green, nes.ppu.front[i][j].blue, 0));
+                            m_Screen.SetPixel(i * 4 + 1, j * 4, COLOR32(nes.ppu.front[i][j].red, nes.ppu.front[i][j].green, nes.ppu.front[i][j].blue, 0));
+                            m_Screen.SetPixel(i * 4 + 2, j * 4, COLOR32(nes.ppu.front[i][j].red, nes.ppu.front[i][j].green, nes.ppu.front[i][j].blue, 0));
+                            m_Screen.SetPixel(i * 4 + 3, j * 4, COLOR32(nes.ppu.front[i][j].red, nes.ppu.front[i][j].green, nes.ppu.front[i][j].blue, 0));
+                            m_Screen.SetPixel(i * 4, j * 4 + 1, COLOR32(nes.ppu.front[i][j].red, nes.ppu.front[i][j].green, nes.ppu.front[i][j].blue, 0));
+                            m_Screen.SetPixel(i * 4 + 1, j * 4 + 1, COLOR32(nes.ppu.front[i][j].red, nes.ppu.front[i][j].green, nes.ppu.front[i][j].blue, 0));
+                            m_Screen.SetPixel(i * 4 + 2, j * 4 + 1, COLOR32(nes.ppu.front[i][j].red, nes.ppu.front[i][j].green, nes.ppu.front[i][j].blue, 0));
+                            m_Screen.SetPixel(i * 4 + 3, j * 4 + 1, COLOR32(nes.ppu.front[i][j].red, nes.ppu.front[i][j].green, nes.ppu.front[i][j].blue, 0));
+                            m_Screen.SetPixel(i * 4, j * 4 + 2, COLOR32(nes.ppu.front[i][j].red, nes.ppu.front[i][j].green, nes.ppu.front[i][j].blue, 0));
+                            m_Screen.SetPixel(i * 4 + 1, j * 4 + 2, COLOR32(nes.ppu.front[i][j].red, nes.ppu.front[i][j].green, nes.ppu.front[i][j].blue, 0));
+                            m_Screen.SetPixel(i * 4 + 2, j * 4 + 2, COLOR32(nes.ppu.front[i][j].red, nes.ppu.front[i][j].green, nes.ppu.front[i][j].blue, 0));
+                            m_Screen.SetPixel(i * 4 + 3, j * 4 + 2, COLOR32(nes.ppu.front[i][j].red, nes.ppu.front[i][j].green, nes.ppu.front[i][j].blue, 0));
+                            m_Screen.SetPixel(i * 4, j * 4 + 3, COLOR32(nes.ppu.front[i][j].red, nes.ppu.front[i][j].green, nes.ppu.front[i][j].blue, 0));
+                            m_Screen.SetPixel(i * 4 + 1, j * 4 + 3, COLOR32(nes.ppu.front[i][j].red, nes.ppu.front[i][j].green, nes.ppu.front[i][j].blue, 0));
+                            m_Screen.SetPixel(i * 4 + 2, j * 4 + 3, COLOR32(nes.ppu.front[i][j].red, nes.ppu.front[i][j].green, nes.ppu.front[i][j].blue, 0));
+                            m_Screen.SetPixel(i * 4 + 3, j * 4 + 3, COLOR32(nes.ppu.front[i][j].red, nes.ppu.front[i][j].green, nes.ppu.front[i][j].blue, 0));
+                }
+            }
+        }
     }
     return ShutdownHalt;
 }

@@ -12,6 +12,7 @@ public:
         u8 first;
         u8 second;
     };
+
     enum ControlFlags {
         LowerNameTable,         //Name table address, changes between the four name tables at 0x2000 (0), 0x2400 (1), 0x2800 (2) and 0x2C00 (3).
         UpperNameTable,
@@ -267,7 +268,7 @@ public:
     // $2007 PPUDATA
     u8 bufferedData;  // for buffered reads
 
-    Ppu(NesMemory& ram, Rom& rom, Cpu& cpu);
+    Ppu(NesMemory& ram, const IRom& rom, Cpu& cpu);
 
     template<typename Ppu::ControlFlags f>
     void Set(bool value){

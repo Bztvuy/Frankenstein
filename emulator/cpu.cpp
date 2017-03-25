@@ -9,19 +9,19 @@ Cpu::Cpu(NesMemory& ram)
     this->Reset();
 }
 
-Cpu::Cpu(NesMemory& ram, Rom& rom)
+Cpu::Cpu(NesMemory& ram, const IRom& rom)
     : memory(ram)
 {
     this->LoadRom(rom);
     this->Reset();
 }
 
-void Cpu::LoadRom(Rom& rom)
+void Cpu::LoadRom(const IRom& rom)
 {
-    const iNesHeader* header = rom.GetHeader();
-    int prgRomBanks = header->prgRomBanks;
+    const iNesHeader header = rom.GetHeader();
+    int prgRomBanks = header.prgRomBanks;
     int trainerOffset = rom.GetTrainerOffset();
-    int prgRomBanksLocation = rom.headerSize + trainerOffset;
+    int prgRomBanksLocation = IRom::HeaderSize + trainerOffset;
 
     switch (prgRomBanks) {
     case 1:
@@ -52,9 +52,9 @@ void Cpu::Step()
     } else {
         this->currentOpcode = OpCode();
         this->cycles = (this->*instructions[this->currentOpcode])();
-	this->previousPC = this->registers.PC;
+        this->previousPC = this->registers.PC;
         this->registers.PC += this->instructionSizes[this->currentOpcode];
-	this->nextOpcode = OpCode();
+        this->nextOpcode = OpCode();
     }
 }
 

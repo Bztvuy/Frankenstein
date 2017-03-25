@@ -2,18 +2,22 @@
 #include <SFML/Graphics.hpp>
 
 #include "nes.h"
+#include "rom_file.h"
 
-int main()
+int main(int argc, char* argv[])
 {
-    sf::RenderWindow window(sf::VideoMode(1024, 960), "NES");
+    sf::RenderWindow window(sf::VideoMode(512, 480), "NES");
     window.setFramerateLimit(30);
     sf::Texture screen;
     sf::Image img;
     sf::Sprite tmp;
     sf::Text text;
-    screen.create(1024, 960);
-    img.create(1024, 960);
-    Frankenstein::Nes nes;
+    screen.create(256, 240);
+    img.create(256, 240);
+
+    std::string file(argv[1]);
+    Frankenstein::FileRom rom(file);
+    Frankenstein::Nes nes(rom);
     
     while (window.isOpen())
     {
@@ -33,31 +37,16 @@ int main()
             for (unsigned int i = 0; i < 256; ++i) {
                 for (unsigned int j = 0; j < 240; ++j) {
                     sf::Color color(nes.ppu.front[i][j].red, nes.ppu.front[i][j].green, nes.ppu.front[i][j].blue);
-                    img.setPixel(i * 4, j * 4, color);
-                    img.setPixel(i * 4 + 1, j * 4, color);
-                    img.setPixel(i * 4 + 2, j * 4, color);
-                    img.setPixel(i * 4 + 3, j * 4, color);
-                    img.setPixel(i * 4, j * 4 + 1, color);
-                    img.setPixel(i * 4 + 1, j * 4 + 1, color);
-                    img.setPixel(i * 4 + 2, j * 4 + 1, color);
-                    img.setPixel(i * 4 + 3, j * 4 + 1, color);
-                    img.setPixel(i * 4, j * 4 + 2, color);
-                    img.setPixel(i * 4 + 1, j * 4 + 2, color);
-                    img.setPixel(i * 4 + 2, j * 4 + 2, color);
-                    img.setPixel(i * 4 + 3, j * 4 + 2, color);
-                    img.setPixel(i * 4, j * 4 + 3, color);
-                    img.setPixel(i * 4 + 1, j * 4 + 3, color);
-                    img.setPixel(i * 4 + 2, j * 4 + 3, color);
-                    img.setPixel(i * 4 + 3, j * 4 + 3, color);
+                    img.setPixel(i, j, color);
                 }
             }
+            screen.loadFromImage(img);
+            tmp.setTexture(screen, true);
+            window.draw(tmp);
         }
 
-        screen.loadFromImage(img);
-        tmp.setTexture(screen, true);
-        window.draw(tmp);
         window.display();
     }
-    
+
     return 0;
 }

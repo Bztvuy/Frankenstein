@@ -2,23 +2,15 @@
 
 using namespace Frankenstein;
 
-const iNesHeader* Rom::GetHeader() const{
-    iNesHeader* header = new iNesHeader;
+const iNesHeader IRom::MakeHeader() const {
+    iNesHeader header;
+    u8 const *const raw = this->GetRaw();
     for (unsigned int i = 0; i < sizeof(iNesHeader); ++i){
-        header->raw[i] = this->GetRaw()[i];
+        header.raw[i] = raw[i];
     }
     return header;
 }
 
-const u8* Rom::GetRaw() const{
-    return raw;
+unsigned int IRom::GetTrainerOffset() const {
+    return CheckBit<3>(this->GetHeader().controlByte1) * IRom::TrainerSize;
 }
-
-unsigned int Rom::GetLength() const{
-    return length;
-}
-
-unsigned int Rom::GetTrainerOffset() const{
-	return CheckBit<3>(this->GetHeader()->controlByte1) * trainerSize;
-}
-// ...

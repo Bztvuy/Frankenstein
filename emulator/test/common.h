@@ -30,3 +30,14 @@ struct CPUTest : MemoryTest {
     {
     }
 };
+
+struct RomTest : CPUTest {
+
+    RomTest() {
+
+    }
+
+    virtual ~RomTest()
+    {
+    }
+};

@@ -15,11 +15,11 @@ public:
     Gamepad pad1;
     Gamepad pad2;
     NesMemory ram;
-    Rom rom;
+    const IRom &rom;
     Cpu cpu;
     Ppu ppu;
 
-    Nes();
+    Nes(IRom &rom);
     void Step();
 };
 

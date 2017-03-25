@@ -14,7 +14,7 @@ sfmlEmulator = executable('sfml_emulator', 'sfmlEmulator.cpp',
     cpp_args: cpp_args,
     native: true)
 
-emuTests = executable('emulator_tests', 'cpu_test.cpp', 'memory_test.cpp',
+emuTests = executable('emulator_tests', 'cpu_test.cpp', 'memory_test.cpp', 'rom_test.cpp',
     link_with: [emulator_native, gtest_dep],
     include_directories: [emulator_include, gtest_inc],
     cpp_args: cpp_args,
