@@ -173,6 +173,9 @@ public:
         {"INC_ABS_X", &Cpu::INC_ABS_X, 3}, {"UNIMP",     &Cpu::UNIMP,     1},
     };
 
+    //
+    // The instructions operations, either on a value or a memory cell
+    //
     void ADC(const u8 value);
     void AND(const u8 value);
     void ASL(u8& value);
@@ -201,6 +204,10 @@ public:
     void STA(const Memory value);
     void STX(const Memory value);
     void STY(const Memory value);
+
+    //
+    // The instructions functions using the memory mode
+    //
 
     u8 BRK();
     u8 ORA_IND_X();
@@ -362,7 +369,7 @@ public:
     void Reset();
 
     /**
-     * Executes the next instruction at memory[PC]
+     * Executes the next instruction at memory[PC] if no interrupt occured.
      * Increments the PC accordingly
      */
     void Step();
@@ -370,12 +377,18 @@ public:
     /**
      * Fetch the opcode at memory[PC]
      */
-    u8 OpCode();
+    inline const u8 OpCode() const 
+    {
+        return this->memory[this->registers.PC];
+    }
 
     /**
      * Fetch the operand at memory[PC + number]
      */
-    u8 Operand(int number);
+    inline const u8 Operand(int number) const 
+    {
+        return this->memory[this->registers.PC + number];
+    }
 
     /**
      * Store the byte at stack[SP]

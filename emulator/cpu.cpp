@@ -50,7 +50,8 @@ void Cpu::Step()
     if (nmiOccurred) {
         this->cycles = NMI();
         nmiOccurred = false;
-    } else {
+    }
+    else {
         this->currentOpcode = OpCode();
         this->previousPC = this->registers.PC;
         auto instruction = this->instructions[this->currentOpcode];
@@ -58,11 +59,6 @@ void Cpu::Step()
         this->registers.PC += instruction.size;
         this->nextOpcode = OpCode();
     }
-}
-
-inline u8 Cpu::OpCode()
-{
-    return this->memory[this->registers.PC];
 }
 
 void Cpu::PushOnStack(u8 value)
@@ -77,11 +73,6 @@ u8 Cpu::PopFromStack()
     u8 value = this->memory[Frankenstein::ADDR_STACK + this->registers.SP];
     this->memory[Frankenstein::ADDR_STACK + this->registers.SP] = 0;
     return value;
-}
-
-inline u8 Cpu::Operand(int number)
-{
-    return this->memory[this->registers.PC + number];
 }
 
 ////////////////////////////////////////////////////////////////////////////////
