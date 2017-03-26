@@ -35,6 +35,7 @@ void Cpu::LoadRom(const IRom& rom)
     default: //TODO: implement multiple PRG-ROM banks
         break;
     }
+    this->Reset();
 }
 
 void Cpu::Reset()
@@ -51,9 +52,10 @@ void Cpu::Step()
         nmiOccurred = false;
     } else {
         this->currentOpcode = OpCode();
-        this->cycles = (this->*instructions[this->currentOpcode])();
         this->previousPC = this->registers.PC;
-        this->registers.PC += this->instructionSizes[this->currentOpcode];
+        auto instruction = this->instructions[this->currentOpcode];
+        this->cycles = (this->*(instruction.fct))();
+        this->registers.PC += instruction.size;
         this->nextOpcode = OpCode();
     }
 }
