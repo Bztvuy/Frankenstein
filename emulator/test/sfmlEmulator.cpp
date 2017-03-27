@@ -26,7 +26,7 @@ int main(int argc, char* argv[])
     Frankenstein::Nes nes(rom);
     
     std::ofstream out("debug.txt", std::ios::out | std::ios::binary);
-    out << "EX.TIME|PC  |CZIDBAVS|A |X |Y |Instruction| Hex data" << std::endl;
+    out << "EX.TIME|PC  |SVABDIZC|A |X |Y |Instruction| Hex data" << std::endl;
 
     while (window.isOpen())
     {
