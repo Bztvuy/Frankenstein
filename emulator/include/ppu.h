@@ -152,6 +152,7 @@ public:
     u8 paletteData[32];
     u8 nameTableData[2048];
     u8 oamData[256];
+    u8 chrData[0x2000];
 
     // PPU registers
     u16 v;      // current vram address (15 bit)

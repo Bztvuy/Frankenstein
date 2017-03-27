@@ -13,6 +13,15 @@ Ppu::Ppu(Nes& pNes) : nes(pNes){
         front[i] = new RGBColor[240];
         back[i] = new RGBColor[240];
     }
+    
+    const iNesHeader header = nes.rom.GetHeader();
+    int prgRomBanks = header.prgRomBanks;
+    int trainerOffset = nes.rom.GetTrainerOffset();
+    int vRomBanksLocation = IRom::HeaderSize + trainerOffset + prgRomBanks * PRGROM_BANK_SIZE;
+    
+    for (int i = 0; i < 0x2000; ++i){
+	chrData[i] = nes.rom.GetRaw()[vRomBanksLocation + i];
+    }
 
     Reset();
 }
@@ -29,8 +38,7 @@ void Ppu::Reset() {
 u8 Ppu::Read(u16 address) {
 	u16 temp = address % 0x4000;
 	if (temp < 0x2000){
-	    //TODO:
-	    //return mem.console.Mapper.Read(address);
+	    return chrData[temp];
 	} else if (temp < 0x3F00) {
 	    u8 mode = CheckBit<1>(nes.rom.GetHeader().controlByte1);
 	    return nameTableData[MirrorAddress(mode, temp)%2048];
@@ -43,8 +51,7 @@ u8 Ppu::Read(u16 address) {
 void Ppu::Write(u16 address, u8 value) {
 	u16 temp = address % 0x4000;
 	if (temp < 0x2000) {
-	    //TODO:
-	    //mem.console.Mapper.Write(address, value)
+	    chrData[temp] = value;
 	} else if (temp < 0x3F00) {
 	    u8 mode = CheckBit<1>(nes.rom.GetHeader().controlByte1);
 	    nameTableData[MirrorAddress(mode, temp)%2048] = value;
