@@ -1,16 +1,14 @@
 #pragma once
 
 #include <gtest/gtest.h>
-#include <memory.h>
-#include <cpu.h>
-#include <gamepad.h>
+#include <nes.h>
+#include <rom_static.h>
 
 struct MemoryTest : testing::Test {
-    Frankenstein::Gamepad pad1;
-    Frankenstein::Gamepad pad2;
-    Frankenstein::NesMemory ram;
+    Frankenstein::StaticRom rom;
+    Frankenstein::Nes nes;
 
-    MemoryTest() : ram(pad1, pad2)
+    MemoryTest() : rom(), nes(rom)
     {
     }
 
@@ -20,9 +18,10 @@ struct MemoryTest : testing::Test {
 };
 
 struct CPUTest : MemoryTest {
-    Frankenstein::Cpu cpu;
+    Frankenstein::StaticRom rom;
+    Frankenstein::Nes nes = Frankenstein::Nes(rom);
 
-    CPUTest() : cpu ( ram )
+    CPUTest() : rom(), nes(rom)
     {
     }
 

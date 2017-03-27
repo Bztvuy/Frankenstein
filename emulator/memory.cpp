@@ -1,10 +1,10 @@
 #include "dependencies.h"
-#include "memory.h"
+#include "nes.h"
 
 namespace Frankenstein {
     
 template<>
-NesMemory::Memory(Gamepad& pad1, Gamepad& pad2) : controller1(pad1), controller2(pad2){}
+NesMemory::Memory(Nes& pNes) : nes(pNes) {}
 
 template <>
 const NesMemory::Ref NesMemory::operator[](const u16 addr)
@@ -21,15 +21,19 @@ const u8 NesMemory::Read(const u16 address)
     }
     // $2000-$2007; With mirrors $2008-$3FFF; NES PPU registers
     else if (address < 0x4000) {
-        return raw[address & 0x2007];
+        return nes.ppu.readRegister(address & 0x2007);
+    }
+    // $4014; PPU DMA
+    else if (address == 0x4014){
+	nes.ppu.readRegister(address);
     }
     // $4000-$4017; NES APU and I/O registers
     else if (address < 0x4018) {
         if(address == 0x4016) {
-            return controller1.Read(raw[address], raw[address]);
+            return nes.pad1.Read(raw[address], raw[address]);
         }
         else if (address == 0x4017) {
-            return controller2.Read(raw[address], raw[address-1]);
+            return nes.pad2.Read(raw[address], raw[address-1]);
         }
     }
     // $4018-$401F; APU and I/O functionality that is normally disabled.
@@ -52,13 +56,17 @@ void NesMemory::Write(const u16 address, const u8 val)
     }
     //$2008-$3FFF are Mirrors of $2000-2007; NES PPU registers
     else if (address < 0x4000) {
-        raw[address & 0x2007] = val;
+        nes.ppu.writeRegister(address & 0x2007, val);
+    }
+    // $4014; PPU DMA
+    else if (address == 0x4014){
+	nes.ppu.writeRegister(address, val);
     }
     // $4000-$4017; NES APU and I/O registers
     else if (address < 0x4017) {
         if(address == 0x4016) {
-            controller1.Write(raw[address]);
-            controller2.Write(raw[address]);
+            nes.pad1.Write(raw[address]);
+            nes.pad2.Write(raw[address]);
         }
         else if (address == 0x4017) {
             // ignore?

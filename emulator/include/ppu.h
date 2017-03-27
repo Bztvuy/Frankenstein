@@ -1,10 +1,9 @@
-#ifndef PPU_H
-#define PPU_H
+#pragma once
 
 #include "rom.h"
-#include "cpu.h"
 
 namespace Frankenstein {
+class Nes;
 class Ppu
 {
 public:
@@ -83,20 +82,6 @@ public:
             u8 mirrors3[0xC000];
         };
         u8 raw[0x10000];
-    };
-
-    struct Registers {
-        const NesMemory::Ref controlRegister;    //0x2000
-        const NesMemory::Ref maskRegister;       //0x2001
-        const NesMemory::Ref processorStatus;    //0x2002
-        const NesMemory::Ref oamAddress;         //0x2003
-        const NesMemory::Ref oamData;            //0x2004
-        const NesMemory::Ref vramAddress1;       //0x2005
-        const NesMemory::Ref vramAddress2;       //0x2006
-        const NesMemory::Ref vramIO;             //0x2007
-        const NesMemory::Ref spriteDma;          //0x4014
-
-        Registers(NesMemory& cpu);
     };
     
     union Sprite {
@@ -191,9 +176,8 @@ public:
             {0x11,0x11,0x11},
             {0x11,0x11,0x11}
     };
-    Cpu& cpu;
+    Nes& nes;
     
-    Registers registers;
     MemoryMap memory;
 
     RGBColor** front;
@@ -268,37 +252,8 @@ public:
     // $2007 PPUDATA
     u8 bufferedData;  // for buffered reads
 
-    Ppu(NesMemory& ram, const IRom& rom, Cpu& cpu);
-
-    template<typename Ppu::ControlFlags f>
-    void Set(bool value){
-        AssignBit<static_cast<int>(f)>(this->registers.controlRegister, value);
-    }
-
-    template<typename Ppu::ControlFlags f>
-    bool Get(){
-        return CheckBit<static_cast<int>(f)>(this->registers.controlRegister);
-    }
-    
-    template<typename Ppu::MaskFlags f>
-    void Set(bool value){
-        AssignBit<static_cast<int>(f)>(this->registers.maskRegister, value);
-    }
-
-    template<typename Ppu::MaskFlags f>
-    bool Get(){
-        return CheckBit<static_cast<int>(f)>(this->registers.maskRegister);
-    }
-    
-    template<typename Ppu::StatusFlags f>
-    void Set(bool value){
-        AssignBit<static_cast<int>(f)>(this->registers.processorStatus, value);
-    }
-
-    template<typename Ppu::StatusFlags f>
-    bool Get(){
-        return CheckBit<static_cast<int>(f)>(this->registers.processorStatus);
-    }
+    Ppu(Nes& pNes);
+    Ppu(const IRom& rom, Nes& pNes);
 
     void Reset();
     u8 readPalette(u16 address);
@@ -338,4 +293,4 @@ public:
     void Step();
 };
 }
-#endif // PPU_Hd
+

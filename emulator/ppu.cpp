@@ -1,21 +1,12 @@
 #include "ppu.h"
 #include "dependencies.h"
+#include "nes.h"
 
 using namespace Frankenstein;
 
-Ppu::Registers::Registers(NesMemory& ram) :
-    controlRegister(ram[0x2000]),
-    maskRegister(ram[0x2001]),
-    processorStatus(ram[0x2002]),
-    oamAddress(ram[0x2003]),
-    oamData(ram[0x2004]),
-    vramAddress1(ram[0x2005]),
-    vramAddress2(ram[0x2006]),
-    vramIO(ram[0x2007]),
-    spriteDma(ram[0x4014]) {
-}
+Ppu::Ppu(Nes& pNes) : nes(pNes){}
 
-Ppu::Ppu(NesMemory& ram, const IRom& rom, Cpu& cpu) : cpu(cpu), registers(ram)
+Ppu::Ppu(const IRom& rom, Nes& pNes) : nes(pNes)
 {
     const iNesHeader header = rom.GetHeader();
     int prgRomBanks = header.prgRomBanks;
@@ -47,9 +38,9 @@ void Ppu::Reset() {
     Cycle = 340;
     ScanLine = 240;
     Frame = 0;
-    registers.controlRegister = 0;
-    registers.maskRegister = 0;
-    registers.oamAddress = 0;
+    writeControl(0);
+    writeMask(0);
+    writeOAMAddress(0);
 }
 
 u8 Ppu::readPalette(u16 address) {
@@ -238,7 +229,7 @@ void Ppu::writeData(u8 value) {
 void Ppu::writeDMA(u8 value) {
     u16 address = u16(value) << 8;
     for (u16 i = 0; i < 256; i++) {
-        oamData[oamAddress] = cpu.memory[address];
+        oamData[oamAddress] = nes.ram[address];
         oamAddress++;
         address++;
     }
@@ -249,9 +240,9 @@ void Ppu::writeDMA(u8 value) {
      * it pauses the CPU for an additional 513 cycles, otherwise 514 cycles. 
      * We can use this aspect to partially compensate for NMI's variable delay.
      */
-    cpu.cycles += 513;
-    if (cpu.cycles%2 == 1) {
-         cpu.cycles++;
+    nes.cpu.cycles += 513;
+    if (nes.cpu.cycles%2 == 1) {
+         nes.cpu.cycles++;
     }
 }
 
@@ -524,7 +515,7 @@ void Ppu::tick() {
     if (nmiDelay > 0) {
         nmiDelay--;
         if (nmiDelay == 0 && nmiOutput && nmiOccurred) {
-            cpu.nmiOccurred = true;
+            nes.cpu.nmiOccurred = true;
         }
     }
 

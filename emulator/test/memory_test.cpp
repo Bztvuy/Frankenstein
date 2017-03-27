@@ -55,53 +55,53 @@ TEST_F(MemoryTest, Addressing_Indexed)
 
 TEST_F(MemoryTest, Addressing_Indirect)
 {
-    ram[0x0000] = 0x10;
-    ram[0x0001] = 0x01;
-    ram[0x0002] = 0x02;
-    ram[0x00FF] = 0xFF;
+    nes.ram[0x0000] = 0x10;
+    nes.ram[0x0001] = 0x01;
+    nes.ram[0x0002] = 0x02;
+    nes.ram[0x00FF] = 0xFF;
 
-    auto addr = ram.Indirect(0x01, 0x00);
+    auto addr = nes.ram.Indirect(0x01, 0x00);
     EXPECT_EQ((u16)0x0201, addr);
 
-    addr = ram.Indirect(0xFF, 0x00);
+    addr = nes.ram.Indirect(0xFF, 0x00);
     EXPECT_EQ((u16)0x10FF, addr);
 }
 
 TEST_F(MemoryTest, Addressing_PostIndexedIndirect)
 {
-    ram[0x0000] = 0x01;
-    ram[0x0001] = 0x02;
-    ram[0x00FF] = 0xFF;
+    nes.ram[0x0000] = 0x01;
+    nes.ram[0x0001] = 0x02;
+    nes.ram[0x00FF] = 0xFF;
 
-    auto addr = ram.PostIndexedIndirect(0x00, 0x00);
+    auto addr = nes.ram.PostIndexedIndirect(0x00, 0x00);
     EXPECT_EQ((u16)0x0201, addr);
 
-    addr = ram.PostIndexedIndirect(0x00, 0x01);
+    addr = nes.ram.PostIndexedIndirect(0x00, 0x01);
     EXPECT_EQ((u16)0x0202, addr);
 
-    addr = ram.PostIndexedIndirect(0xFF, 0x00);
+    addr = nes.ram.PostIndexedIndirect(0xFF, 0x00);
     EXPECT_EQ((u16)0x01FF, addr);
 
-    addr = ram.PostIndexedIndirect(0xFF, 0x01);
+    addr = nes.ram.PostIndexedIndirect(0xFF, 0x01);
     EXPECT_EQ((u16)0x0200, addr);
 }
 
 TEST_F(MemoryTest, Addressing_PreIndexedIndirect)
 {
-    ram[0x0000] = 0x01;
-    ram[0x0001] = 0x02;
-    ram[0x0002] = 0x03;
-    ram[0x00FF] = 0xFF;
+    nes.ram[0x0000] = 0x01;
+    nes.ram[0x0001] = 0x02;
+    nes.ram[0x0002] = 0x03;
+    nes.ram[0x00FF] = 0xFF;
 
-    auto addr = ram.PreIndexedIndirect(0x00, 0x00);
+    auto addr = nes.ram.PreIndexedIndirect(0x00, 0x00);
     EXPECT_EQ((u16)0x0201, addr);
 
-    addr = ram.PreIndexedIndirect(0x00, 0x01);
+    addr = nes.ram.PreIndexedIndirect(0x00, 0x01);
     EXPECT_EQ((u16)0x0302, addr);
 
-    addr = ram.PreIndexedIndirect(0xFF, 0x00);
+    addr = nes.ram.PreIndexedIndirect(0xFF, 0x00);
     EXPECT_EQ((u16)0x01FF, addr);
 
-    addr = ram.PreIndexedIndirect(0xFF, 0x01);
+    addr = nes.ram.PreIndexedIndirect(0xFF, 0x01);
     EXPECT_EQ((u16)0x0201, addr);
 }

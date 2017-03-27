@@ -1,5 +1,4 @@
-#ifndef NES_H
-#define NES_H
+#pragma once
 
 #include "rom.h"
 #include "cpu.h"
@@ -24,5 +23,3 @@ public:
 };
 
 }
-
-#endif // CPU_H

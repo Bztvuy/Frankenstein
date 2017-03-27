@@ -1,5 +1,4 @@
-#ifndef GAMEPAD_H
-#define GAMEPAD_H
+#pragma once
 
 #include "util.h"
 
@@ -17,5 +16,4 @@ public:
 
 }
 
-#endif /* GAMEPAD_H */
 
