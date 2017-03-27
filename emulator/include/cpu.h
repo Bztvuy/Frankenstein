@@ -5,7 +5,7 @@
 #include "util.h"
 
 namespace Frankenstein {
-    
+
 class Nes;
 class Cpu {
 

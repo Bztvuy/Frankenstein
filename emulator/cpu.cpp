@@ -231,7 +231,7 @@ void Cpu::INC(const Memory value)
 
 void Cpu::SBC(const u8 value)
 {
-    u16 result = this->registers.A - value - Get<Flags::C>();
+    u16 result = this->registers.A - value - (1 - Get<Flags::C>());
     u8 truncResult = static_cast<u8>(result);
 
     Set<Flags::Z>(CheckZero(truncResult));
@@ -485,14 +485,20 @@ u8 Cpu::PLA()
 // Push Processor Status
 u8 Cpu::PHP()
 {
-    PushOnStack(this->registers.P);
+    u8 copy = this->registers.P;
+    SetBit<5>(copy);
+    SetBit<6>(copy);
+    PushOnStack(copy);
     return 3;
 }
 
 // Pull Processor Status
 u8 Cpu::PLP()
 {
-    this->registers.P = PopFromStack();
+    u8 temp = PopFromStack();
+    ClearBit<5>(temp);
+    ClearBit<6>(temp);
+    this->registers.P = temp;
     return 4;
 }
 

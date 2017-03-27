@@ -14,6 +14,12 @@ sfmlEmulator = executable('sfml_emulator', 'sfmlEmulator.cpp',
     cpp_args: cpp_args,
     native: true)
 
+termEmulator = executable('term_emulator', 'termEmulator.cpp',
+    link_with: [emulator_native],
+    include_directories: [emulator_include],
+    cpp_args: cpp_args,
+    native: true)
+
 emuTests = executable('emulator_tests', 'cpu_test.cpp', 'memory_test.cpp',
     link_with: [emulator_native, gtest_dep],
     include_directories: [emulator_include, gtest_inc],
