@@ -39,8 +39,6 @@ int main(int argc, char* argv[])
                 window.close();
         }
 
-        window.clear(sf::Color::Black);
-
         std::stringstream instString;
         auto op = nes.cpu.OpCode();
         auto instr = nes.cpu.instructions[op];
@@ -78,6 +76,8 @@ int main(int argc, char* argv[])
             }
             screen.loadFromImage(img);
             tmp.setTexture(screen, true);
+
+            window.clear(sf::Color::Black);
             window.draw(tmp);
         }
 
