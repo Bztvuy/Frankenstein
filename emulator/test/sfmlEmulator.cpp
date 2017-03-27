@@ -13,13 +13,13 @@
 
 int main(int argc, char* argv[])
 {
-    sf::RenderWindow window(sf::VideoMode(512, 480), "Frankenstein NES Emulator");
+    sf::RenderWindow window(sf::VideoMode(1024, 960), "Frankenstein NES Emulator");
     sf::Texture screen;
     sf::Image img;
     sf::Sprite tmp;
     sf::Text text;
-    screen.create(256, 240);
-    img.create(256, 240);
+    screen.create(1024, 960);
+    img.create(1024, 960, sf::Color::Black);
 
     std::string file(argv[1]);
     Frankenstein::FileRom rom(file);
@@ -68,14 +68,30 @@ int main(int argc, char* argv[])
         out << instString.str();
         out << std::endl;
         if (nes.cpu.nmiOccurred){
+            img.create(1024, 960, sf::Color::Black);
             for (unsigned int i = 0; i < 256; ++i) {
                 for (unsigned int j = 0; j < 240; ++j) {
                     sf::Color color(nes.ppu.front[i][j].red, nes.ppu.front[i][j].green, nes.ppu.front[i][j].blue);
-                    img.setPixel(i, j, color);
+                    img.setPixel(i * 4 + 0, j * 4 + 0, color);
+                    img.setPixel(i * 4 + 1, j * 4 + 0, color);
+                    img.setPixel(i * 4 + 2, j * 4 + 0, color);
+                    img.setPixel(i * 4 + 3, j * 4 + 0, color);
+                    img.setPixel(i * 4 + 0, j * 4 + 1, color);
+                    img.setPixel(i * 4 + 1, j * 4 + 1, color);
+                    img.setPixel(i * 4 + 2, j * 4 + 1, color);
+                    img.setPixel(i * 4 + 3, j * 4 + 1, color);
+                    img.setPixel(i * 4 + 0, j * 4 + 2, color);
+                    img.setPixel(i * 4 + 1, j * 4 + 2, color);
+                    img.setPixel(i * 4 + 2, j * 4 + 2, color);
+                    img.setPixel(i * 4 + 3, j * 4 + 2, color);
+                    img.setPixel(i * 4 + 0, j * 4 + 3, color);
+                    img.setPixel(i * 4 + 1, j * 4 + 3, color);
+                    img.setPixel(i * 4 + 2, j * 4 + 3, color);
+                    img.setPixel(i * 4 + 3, j * 4 + 3, color);
                 }
             }
             screen.loadFromImage(img);
-            tmp.setTexture(screen, true);
+            tmp.setTexture(screen, false);
 
             window.clear(sf::Color::Black);
             window.draw(tmp);
