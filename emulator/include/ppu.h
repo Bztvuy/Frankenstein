@@ -41,7 +41,7 @@ public:
         VBlank = 7                  //Indicates whether V-Blank is occurring.
     };
 
-    enum class SpriteFlags {
+    enum SpriteFlags {
         LowerColor,             //Most significant two bits of the color. 
         UpperColor,
         Priority = 5,           //Indicates whether this sprite has priority over the background. 
@@ -49,59 +49,22 @@ public:
         FlipVertical = 7        //Indicates whether to flip the sprite vertically.
     };
     
-    union Tile {
-        struct {
-            u8 low[8];
-            u8 high[8];
-        };
-        u8 raw[16];
-    };
-    
-    union MemoryMap {
-        struct {
-            union {
-                u8 patternTable0[0x1000];
-                Tile tiles0[256];
-            };
-            union {
-                u8 patternTable1[0x1000];
-                Tile tiles1[256];
-            };
-            u8 nameTable0[0x03C0];
-            u8 attributeTable0[0x0040];
-            u8 nameTable1[0x03C0];
-            u8 attributeTable1[0x0040];
-            u8 nameTable2[0x03C0];
-            u8 attributeTable2[0x0040];
-            u8 nameTable3[0x03C0];
-            u8 attributeTable3[0x0040];
-            u8 mirrors1[0x0F00];
-            u8 imagePalette[0x0010];
-            u8 spritePalette[0x0010];
-            u8 mirrors2[0x00E0];
-            u8 mirrors3[0xC000];
-        };
-        u8 raw[0x10000];
-    };
-    
-    union Sprite {
-        struct {
-            u8 Y;
-            u8 index;
-            u8 attributes;
-            u8 X;
-        };
-        u8 raw[4];
-        
-        template<typename Ppu::SpriteFlags f>
-        void Set(bool value){
-            AssignBit<static_cast<int>(f)>(this->attributes, value);
-        }
+    // Mirroring Modes
 
-        template<typename Ppu::SpriteFlags f>
-        bool Get(){
-            return CheckBit<static_cast<int>(f)>(this->attributes);
-        }
+    enum MirrorMode {
+	    MirrorHorizontal = 0,
+	    MirrorVertical   = 1,
+	    MirrorSingle0    = 2,
+	    MirrorSingle1    = 3,
+	    MirrorFour       = 4
+    };
+
+    const u16 MirrorLookup[5][4] {
+	    {0, 0, 1, 1},
+	    {0, 1, 0, 1},
+	    {0, 0, 0, 0},
+	    {1, 1, 1, 1},
+	    {0, 1, 2, 3},
     };
 
     struct RGBColor{
@@ -177,14 +140,9 @@ public:
             {0x11,0x11,0x11}
     };
     Nes& nes;
-    
-    MemoryMap memory;
 
     RGBColor** front;
     RGBColor** back;
-
-    Sprite primaryOAM[64];
-    Sprite secondaryOAM[8];
     
     u32 Cycle;      // 0-340
     u32 ScanLine;   // 0-261, 0-239=visible, 240=post, 241-260=vblank, 261=pre
@@ -253,9 +211,11 @@ public:
     u8 bufferedData;  // for buffered reads
 
     Ppu(Nes& pNes);
-    Ppu(const IRom& rom, Nes& pNes);
 
     void Reset();
+    u8 Read(u16 address);
+    void Write(u16 address, u8 value);
+    u16 MirrorAddress(u8 mode, u16 address);
     u8 readPalette(u16 address);
     void writePalette(u16 address, u8 value);
     u8 readRegister(u16 address);

@@ -4,24 +4,7 @@
 
 using namespace Frankenstein;
 
-Ppu::Ppu(Nes& pNes) : nes(pNes){}
-
-Ppu::Ppu(const IRom& rom, Nes& pNes) : nes(pNes)
-{
-    const iNesHeader header = rom.GetHeader();
-    int prgRomBanks = header.prgRomBanks;
-    int vRomBanks = header.vRomBanks;
-    int trainerOffset = rom.GetTrainerOffset();
-    int vRomBanksLocation = IRom::HeaderSize + trainerOffset + prgRomBanks * PRGROM_BANK_SIZE;
-
-    switch (vRomBanks) {
-        case 1:
-            memcpy(this->memory.patternTable0, rom.GetRaw() + vRomBanksLocation, VROM_BANK_SIZE);
-            break;
-        default: //TODO: implement multiple V-ROM banks
-            break;
-    }
-
+Ppu::Ppu(Nes& pNes) : nes(pNes){
     front = new RGBColor*[256];
     back = new RGBColor*[256];
 
@@ -41,6 +24,40 @@ void Ppu::Reset() {
     writeControl(0);
     writeMask(0);
     writeOAMAddress(0);
+}
+
+u8 Ppu::Read(u16 address) {
+	u16 temp = address % 0x4000;
+	if (temp < 0x2000){
+	    //TODO:
+	    //return mem.console.Mapper.Read(address);
+	} else if (temp < 0x3F00) {
+	    u8 mode = CheckBit<1>(nes.rom.GetHeader().controlByte1);
+	    return nameTableData[MirrorAddress(mode, temp)%2048];
+	} else if (temp < 0x4000) {
+	    return readPalette(temp % 32);
+	}
+	return 0;
+}
+
+void Ppu::Write(u16 address, u8 value) {
+	u16 temp = address % 0x4000;
+	if (temp < 0x2000) {
+	    //TODO:
+	    //mem.console.Mapper.Write(address, value)
+	} else if (temp < 0x3F00) {
+	    u8 mode = CheckBit<1>(nes.rom.GetHeader().controlByte1);
+	    nameTableData[MirrorAddress(mode, temp)%2048] = value;
+	} else if (temp < 0x4000) {
+	    writePalette(temp%32, value);
+	}
+}
+
+u16 Ppu::MirrorAddress(u8 mode, u16 address) {
+	u16 temp = (address - 0x2000) % 0x1000;
+	u16 table = temp / 0x0400;
+	u16 offset = temp % 0x0400;
+	return 0x2000 + MirrorLookup[mode][table]*0x0400 + offset;
 }
 
 u8 Ppu::readPalette(u16 address) {
@@ -74,20 +91,28 @@ void Ppu::writeRegister(u16 address, u8 value) {
     switch (address) {
         case 0x2000:
             writeControl(value);
+	    break;
         case 0x2001:
             writeMask(value);
+	    break;
         case 0x2003:
             writeOAMAddress(value);
+	    break;
         case 0x2004:
             writeOAMData(value);
+	    break;
         case 0x2005:
             writeScroll(value);
+	    break;
         case 0x2006:
             writeAddress(value);
+	    break;
         case 0x2007:
             writeData(value);
+	    break;
         case 0x4014:
             writeDMA(value);
+	    break;
     }
 }
 
@@ -195,14 +220,14 @@ void Ppu::writeAddress(u8 value) {
 // $2007: PPUDATA (read)
 
 u8 Ppu::readData() {
-    u8 value = this->memory.raw[v];
+    u8 value = Read(v);
     // emulate buffered reads
     if (v % 0x4000 < 0x3F00) {
         u8 buffered = bufferedData;
         bufferedData = value;
         value = buffered;
     } else {
-        bufferedData = this->memory.raw[v - 0x1000];
+        bufferedData = Read(v - 0x1000);
     }
     // increment address
     if (flagIncrement == 0) {
@@ -216,7 +241,7 @@ u8 Ppu::readData() {
 // $2007: PPUDATA (write)
 
 void Ppu::writeData(u8 value) {
-    this->memory.raw[v] = value;
+    Write(v, value);
     if (flagIncrement == 0) {
         v += 1;
     } else {
@@ -327,13 +352,13 @@ void Ppu::clearVerticalBlank() {
 
 void Ppu::fetchNameTableByte() {
     u16 address = 0x2000 | (v & 0x0FFF);
-    nameTableByte = this->memory.raw[address];
+    nameTableByte = Read(address);
 }
 
 void Ppu::fetchAttributeTableByte() {
     u16 address = 0x23C0 | (v & 0x0C00) | ((v >> 4) & 0x38) | ((v >> 2) & 0x07);
     u16 shift = ((v >> 4) & 4) | (v & 2);
-    attributeTableByte = ((this->memory.raw[address] >> shift) & 3) << 2;
+    attributeTableByte = ((Read(address) >> shift) & 3) << 2;
 }
 
 void Ppu::fetchLowTileByte() {
@@ -341,7 +366,7 @@ void Ppu::fetchLowTileByte() {
     u8 table = flagBackgroundTable;
     u8 tile = nameTableByte;
     u16 address = 0x1000 * u16(table) + u16(tile)*16 + fineY;
-    lowTileByte = this->memory.raw[address];
+    lowTileByte = Read(address);
 }
 
 void Ppu::fetchHighTileByte() {
@@ -349,7 +374,7 @@ void Ppu::fetchHighTileByte() {
     u8 table = flagBackgroundTable;
     u8 tile = nameTableByte;
     u16 address = 0x1000 * u16(table) + u16(tile)*16 + fineY;
-    highTileByte = this->memory.raw[address + 8];
+    highTileByte = Read(address + 8);
 }
 
 void Ppu::storeTileData() {
@@ -456,8 +481,8 @@ u32 Ppu::fetchSpritePattern(u8 i, u32 row) {
         address = 0x1000 * u16(table) + u16(tile)*16 + u16(row);
     }
     u8 a = (attributes & 3) << 2;
-    lowTileByte = this->memory.raw[address];
-    highTileByte = this->memory.raw[address + 8];
+    lowTileByte = Read(address);
+    highTileByte = Read(address + 8);
     u32 data = 0;
     for (u8 i = 0; i < 8; i++) {
         u8 p1, p2;
@@ -564,14 +589,19 @@ void Ppu::Step() {
             switch (Cycle % 8) {
                 case 1:
                     fetchNameTableByte();
+		    break;
                 case 3:
                     fetchAttributeTableByte();
+		    break;
                 case 5:
                     fetchLowTileByte();
+		    break;
                 case 7:
                     fetchHighTileByte();
+		    break;
                 case 0:
                     storeTileData();
+		    break;
             }
         }
         if (preLine && Cycle >= 280 && Cycle <= 304) {
