@@ -13,12 +13,12 @@ Ppu::Ppu(Nes& pNes) : nes(pNes){
         front[i] = new RGBColor[240];
         back[i] = new RGBColor[240];
     }
-    
+
     const iNesHeader header = nes.rom.GetHeader();
     int prgRomBanks = header.prgRomBanks;
     int trainerOffset = nes.rom.GetTrainerOffset();
     int vRomBanksLocation = IRom::HeaderSize + trainerOffset + prgRomBanks * PRGROM_BANK_SIZE;
-    
+
     for (int i = 0; i < 0x2000; ++i){
 	chrData[i] = nes.rom.GetRaw()[vRomBanksLocation + i];
     }
@@ -157,10 +157,10 @@ u8 Ppu::readStatus() {
     u8 result = reg & 0x1F;
     result |= flagSpriteOverflow << 5;
     result |= flagSpriteZeroHit << 6;
-    if (nmiOccurred) {
+    if (nes.cpu.nmiOccurred) {
         result |= 1 << 7;
     }
-    nmiOccurred = false;
+    nes.cpu.nmiOccurred = false;
     nmiChange();
     // w:                   = 0
     w = 0;
@@ -335,7 +335,7 @@ void Ppu::copyY() {
 }
 
 void Ppu::nmiChange() {
-    bool nmi = nmiOutput && nmiOccurred;
+    bool nmi = nmiOutput && nes.cpu.nmiOccurred;
     if (nmi && !nmiPrevious) {
         // TODO: this fixes some games but the delay shouldn't have to be so
         // long, so the timings are off somewhere
@@ -348,12 +348,12 @@ void Ppu::setVerticalBlank() {
     auto temp = front;
     front = back;
     back = temp;
-    nmiOccurred = true;
+    nes.cpu.nmiOccurred = true;
     nmiChange();
 }
 
 void Ppu::clearVerticalBlank() {
-    nmiOccurred = false;
+    nes.cpu.nmiOccurred = false;
     nmiChange();
 }
 
@@ -546,7 +546,7 @@ void Ppu::evaluateSprites() {
 void Ppu::tick() {
     if (nmiDelay > 0) {
         nmiDelay--;
-        if (nmiDelay == 0 && nmiOutput && nmiOccurred) {
+        if (nmiDelay == 0 && nmiOutput && nes.cpu.nmiOccurred) {
             nes.cpu.nmiOccurred = true;
         }
     }
@@ -596,19 +596,19 @@ void Ppu::Step() {
             switch (Cycle % 8) {
                 case 1:
                     fetchNameTableByte();
-		    break;
+            break;
                 case 3:
                     fetchAttributeTableByte();
-		    break;
+            break;
                 case 5:
                     fetchLowTileByte();
-		    break;
+            break;
                 case 7:
                     fetchHighTileByte();
-		    break;
+            break;
                 case 0:
                     storeTileData();
-		    break;
+            break;
             }
         }
         if (preLine && Cycle >= 280 && Cycle <= 304) {

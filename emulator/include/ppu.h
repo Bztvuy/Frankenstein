@@ -42,7 +42,7 @@ public:
     };
 
     enum SpriteFlags {
-        LowerColor,             //Most significant two bits of the color. 
+        LowerColor,             //Most significant two bits of the color.
         UpperColor,
         Priority = 5,           //Indicates whether this sprite has priority over the background. 
         FlipHorizontal = 6,     //Indicates whether to flip the sprite horizontally. 
@@ -164,7 +164,6 @@ public:
     u8 reg;
 
     // NMI flags
-    bool nmiOccurred;
     bool nmiOutput;
     bool nmiPrevious;
     u8 nmiDelay;
