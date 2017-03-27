@@ -12,6 +12,11 @@ Ppu::Ppu(Nes& pNes) : nes(pNes){
     {
         front[i] = new RGBColor[240];
         back[i] = new RGBColor[240];
+
+        for(int j = 0; j < 240; j++) {
+            front[i][j] = {0, 0, 0};
+            back[i][j] = {0, 0, 0};
+        }
     }
 
     const iNesHeader header = nes.rom.GetHeader();
@@ -20,7 +25,7 @@ Ppu::Ppu(Nes& pNes) : nes(pNes){
     int vRomBanksLocation = IRom::HeaderSize + trainerOffset + prgRomBanks * PRGROM_BANK_SIZE;
 
     for (int i = 0; i < 0x2000; ++i){
-	chrData[i] = nes.rom.GetRaw()[vRomBanksLocation + i];
+        chrData[i] = nes.rom.GetRaw()[vRomBanksLocation + i];
     }
 
     Reset();
@@ -36,35 +41,35 @@ void Ppu::Reset() {
 }
 
 u8 Ppu::Read(u16 address) {
-	u16 temp = address % 0x4000;
-	if (temp < 0x2000){
-	    return chrData[temp];
-	} else if (temp < 0x3F00) {
-	    u8 mode = CheckBit<1>(nes.rom.GetHeader().controlByte1);
-	    return nameTableData[MirrorAddress(mode, temp)%2048];
-	} else if (temp < 0x4000) {
-	    return readPalette(temp % 32);
-	}
-	return 0;
+    u16 temp = address % 0x4000;
+    if (temp < 0x2000){
+        return chrData[temp];
+    } else if (temp < 0x3F00) {
+        u8 mode = CheckBit<1>(nes.rom.GetHeader().controlByte1);
+        return nameTableData[MirrorAddress(mode, temp)%2048];
+    } else if (temp < 0x4000) {
+        return readPalette(temp % 32);
+    }
+    return 0;
 }
 
 void Ppu::Write(u16 address, u8 value) {
-	u16 temp = address % 0x4000;
-	if (temp < 0x2000) {
-	    chrData[temp] = value;
-	} else if (temp < 0x3F00) {
-	    u8 mode = CheckBit<1>(nes.rom.GetHeader().controlByte1);
-	    nameTableData[MirrorAddress(mode, temp)%2048] = value;
-	} else if (temp < 0x4000) {
-	    writePalette(temp%32, value);
-	}
+    u16 temp = address % 0x4000;
+    if (temp < 0x2000) {
+        chrData[temp] = value;
+    } else if (temp < 0x3F00) {
+        u8 mode = CheckBit<1>(nes.rom.GetHeader().controlByte1);
+        nameTableData[MirrorAddress(mode, temp)%2048] = value;
+    } else if (temp < 0x4000) {
+        writePalette(temp%32, value);
+    }
 }
 
 u16 Ppu::MirrorAddress(u8 mode, u16 address) {
-	u16 temp = (address - 0x2000) % 0x1000;
-	u16 table = temp / 0x0400;
-	u16 offset = temp % 0x0400;
-	return 0x2000 + MirrorLookup[mode][table]*0x0400 + offset;
+    u16 temp = (address - 0x2000) % 0x1000;
+    u16 table = temp / 0x0400;
+    u16 offset = temp % 0x0400;
+    return 0x2000 + MirrorLookup[mode][table]*0x0400 + offset;
 }
 
 u8 Ppu::readPalette(u16 address) {
@@ -98,28 +103,28 @@ void Ppu::writeRegister(u16 address, u8 value) {
     switch (address) {
         case 0x2000:
             writeControl(value);
-	    break;
+        break;
         case 0x2001:
             writeMask(value);
-	    break;
+        break;
         case 0x2003:
             writeOAMAddress(value);
-	    break;
+        break;
         case 0x2004:
             writeOAMData(value);
-	    break;
+        break;
         case 0x2005:
             writeScroll(value);
-	    break;
+        break;
         case 0x2006:
             writeAddress(value);
-	    break;
+        break;
         case 0x2007:
             writeData(value);
-	    break;
+        break;
         case 0x4014:
             writeDMA(value);
-	    break;
+        break;
     }
 }
 
