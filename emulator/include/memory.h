@@ -1,9 +1,9 @@
 #pragma once
 
 #include "util.h"
-#include "gamepad.h"
 
 namespace Frankenstein {
+class Nes;
 
 static constexpr u16 ADDR_ZERO_PAGE = 0x0000;
 static constexpr u16 ADDR_STACK = 0x0100;
@@ -21,8 +21,7 @@ template <typename DataType, typename AddressingType, unsigned int Size>
 class Memory {
 private:
     DataType raw[Size];
-    Gamepad& controller1;
-    Gamepad& controller2;
+    Nes& nes;
 
     const DataType Read(const AddressingType address);
     void Write(const AddressingType address, const DataType val);
@@ -62,8 +61,7 @@ public:
         PostIndexedIndirect,
     };
     
-    Memory();
-    Memory(Gamepad& pad1, Gamepad& pad2);
+    Memory(Nes& nes);
 
     const Ref operator[](const AddressingType);
 

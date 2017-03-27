@@ -1,18 +1,12 @@
 #include "cpu.h"
+#include "nes.h"
 
 using namespace Frankenstein;
 using Mode = Frankenstein::NesMemory::Addressing;
 
-Cpu::Cpu(NesMemory& ram)
-    : memory(ram)
+Cpu::Cpu(Nes& pNes) : nes(pNes)
 {
-    this->Reset();
-}
-
-Cpu::Cpu(NesMemory& ram, const IRom& rom)
-    : memory(ram)
-{
-    this->LoadRom(rom);
+    this->LoadRom(nes.rom);
     this->Reset();
 }
 
@@ -25,12 +19,12 @@ void Cpu::LoadRom(const IRom& rom)
 
     switch (prgRomBanks) {
     case 1:
-        memory.Copy(rom.GetRaw() + prgRomBanksLocation, Frankenstein::ADDR_PRG_ROM_LOWER_BANK, PRGROM_BANK_SIZE);
-        memory.Copy(rom.GetRaw() + prgRomBanksLocation, Frankenstein::ADDR_PRG_ROM_UPPER_BANK, PRGROM_BANK_SIZE);
+        nes.ram.Copy(rom.GetRaw() + prgRomBanksLocation, Frankenstein::ADDR_PRG_ROM_LOWER_BANK, PRGROM_BANK_SIZE);
+        nes.ram.Copy(rom.GetRaw() + prgRomBanksLocation, Frankenstein::ADDR_PRG_ROM_UPPER_BANK, PRGROM_BANK_SIZE);
         break;
     case 2:
-        memory.Copy(rom.GetRaw() + prgRomBanksLocation, Frankenstein::ADDR_PRG_ROM_LOWER_BANK, PRGROM_BANK_SIZE);
-        memory.Copy(rom.GetRaw() + prgRomBanksLocation + PRGROM_BANK_SIZE, Frankenstein::ADDR_PRG_ROM_UPPER_BANK, PRGROM_BANK_SIZE);
+        nes.ram.Copy(rom.GetRaw() + prgRomBanksLocation, Frankenstein::ADDR_PRG_ROM_LOWER_BANK, PRGROM_BANK_SIZE);
+        nes.ram.Copy(rom.GetRaw() + prgRomBanksLocation + PRGROM_BANK_SIZE, Frankenstein::ADDR_PRG_ROM_UPPER_BANK, PRGROM_BANK_SIZE);
         break;
     default: //TODO: implement multiple PRG-ROM banks
         break;
@@ -40,7 +34,7 @@ void Cpu::LoadRom(const IRom& rom)
 
 void Cpu::Reset()
 {
-    this->registers.PC = (memory[0xFFFC] | memory[0xFFFD] << 8);
+    this->registers.PC = (nes.ram[0xFFFC] | nes.ram[0xFFFD] << 8);
     this->registers.P = 0b00100100;
     this->registers.SP = 0xFD;
 }
@@ -63,16 +57,32 @@ void Cpu::Step()
 
 void Cpu::PushOnStack(u8 value)
 {
-    this->memory[Frankenstein::ADDR_STACK + this->registers.SP] = value;
+    this->nes.ram[Frankenstein::ADDR_STACK + this->registers.SP] = value;
     this->registers.SP -= 1;
 }
 
 u8 Cpu::PopFromStack()
 {
     this->registers.SP += 1;
-    u8 value = this->memory[Frankenstein::ADDR_STACK + this->registers.SP];
-    this->memory[Frankenstein::ADDR_STACK + this->registers.SP] = 0;
+    u8 value = this->nes.ram[Frankenstein::ADDR_STACK + this->registers.SP];
+    this->nes.ram[Frankenstein::ADDR_STACK + this->registers.SP] = 0;
     return value;
+}
+
+/**
+* Fetch the opcode at memory[PC]
+*/
+u8 Cpu::OpCode()
+{
+   return nes.ram[this->registers.PC];
+}
+
+/**
+* Fetch the operand at memory[PC + number]
+*/
+u8 Cpu::Operand(int number)
+{
+   return nes.ram[this->registers.PC + number];
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -503,14 +513,14 @@ void Cpu::Interrupt()
 u8 Cpu::NMI()
 {
     Interrupt();
-    this->registers.PC = (memory[0xFFFA] | memory[0xFFFB] << 8);
+    this->registers.PC = (nes.ram[0xFFFA] | nes.ram[0xFFFB] << 8);
     return 7;
 }
 
 u8 Cpu::BRK()
 {
     Interrupt();
-    this->registers.PC = (memory[0xFFFE] | memory[0xFFFF] << 8);
+    this->registers.PC = (nes.ram[0xFFFE] | nes.ram[0xFFFF] << 8);
     return 7;
 }
 
@@ -640,20 +650,20 @@ u8 Cpu::UNIMP()
 /// 2 bytes; 6 cycles
 u8 Cpu::ORA_IND_X()
 {
-    ORA(memory.Get<Mode::PreIndexedIndirect>(Operand(1), this->registers.X));
+    ORA(nes.ram.Get<Mode::PreIndexedIndirect>(Operand(1), this->registers.X));
     return 6;
 }
 
 /// 2 bytes; 3 cycles
 u8 Cpu::ORA_ZP()
 {
-    ORA(memory.Get<Mode::ZeroPage>(Operand(1)));
+    ORA(nes.ram.Get<Mode::ZeroPage>(Operand(1)));
     return 3;
 }
 
 u8 Cpu::ASL_ZP()
 {
-    ASL(memory.Get<Mode::ZeroPage>(Operand(1)));
+    ASL(nes.ram.Get<Mode::ZeroPage>(Operand(1)));
     return 5;
 }
 
@@ -671,76 +681,76 @@ u8 Cpu::ASL_ACC()
 
 u8 Cpu::ORA_ABS()
 {
-    ORA(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
+    ORA(nes.ram.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 4;
 }
 
 u8 Cpu::ASL_ABS()
 {
-    ASL(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
+    ASL(nes.ram.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 6;
 }
 
 u8 Cpu::ORA_IND_Y()
 {
-    ORA(memory.Get<Mode::PostIndexedIndirect>(Operand(1), this->registers.Y));
-    auto address = memory.Indirect(Operand(1), 0);
+    ORA(nes.ram.Get<Mode::PostIndexedIndirect>(Operand(1), this->registers.Y));
+    auto address = nes.ram.Indirect(Operand(1), 0);
     return 5 + NesMemory::IsPageCrossed(address, address + this->registers.Y);
 }
 
 u8 Cpu::ORA_ZP_X()
 {
-    ORA(memory.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
+    ORA(nes.ram.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
     return 4;
 }
 
 u8 Cpu::ASL_ZP_X()
 {
-    ASL(memory.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
+    ASL(nes.ram.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
     return 6;
 }
 
 u8 Cpu::ORA_ABS_Y()
 {
-    ORA(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.Y));
+    ORA(nes.ram.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.Y));
     auto address = NesMemory::FromValues(Operand(1), Operand(2));
     return 4 + NesMemory::IsPageCrossed(address, address + this->registers.Y);
 }
 
 u8 Cpu::ORA_ABS_X()
 {
-    ORA(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
+    ORA(nes.ram.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
     auto address = NesMemory::FromValues(Operand(1), Operand(2));
     return 4 + NesMemory::IsPageCrossed(address, address + this->registers.X);
 }
 
 u8 Cpu::ASL_ABS_X()
 {
-    ASL(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
+    ASL(nes.ram.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
     return 7;
 }
 
 u8 Cpu::AND_IND_X()
 {
-    AND(memory.Get<Mode::PreIndexedIndirect>(Operand(1), this->registers.X));
+    AND(nes.ram.Get<Mode::PreIndexedIndirect>(Operand(1), this->registers.X));
     return 6;
 }
 
 u8 Cpu::BIT_ZP()
 {
-    BIT(memory.Get<Mode::ZeroPage>(Operand(1)));
+    BIT(nes.ram.Get<Mode::ZeroPage>(Operand(1)));
     return 3;
 }
 
 u8 Cpu::AND_ZP()
 {
-    AND(memory.Get<Mode::ZeroPage>(Operand(1)));
+    AND(nes.ram.Get<Mode::ZeroPage>(Operand(1)));
     return 3;
 }
 
 u8 Cpu::ROL_ZP()
 {
-    ROL(memory.Get<Mode::ZeroPage>(Operand(1)));
+    ROL(nes.ram.Get<Mode::ZeroPage>(Operand(1)));
     return 5;
 }
 
@@ -758,76 +768,76 @@ u8 Cpu::ROL_ACC()
 
 u8 Cpu::BIT_ABS()
 {
-    BIT(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
+    BIT(nes.ram.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 4;
 }
 
 u8 Cpu::AND_ABS()
 {
-    AND(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
+    AND(nes.ram.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 4;
 }
 
 u8 Cpu::ROL_ABS()
 {
-    ROL(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
+    ROL(nes.ram.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 6;
 }
 
 u8 Cpu::AND_IND_Y()
 {
-    AND(memory.Get<Mode::PostIndexedIndirect>(Operand(1), this->registers.Y));
-    auto address = memory.Indirect(Operand(1), 0);
+    AND(nes.ram.Get<Mode::PostIndexedIndirect>(Operand(1), this->registers.Y));
+    auto address = nes.ram.Indirect(Operand(1), 0);
     return 5 + NesMemory::IsPageCrossed(address, address + this->registers.Y);
 }
 
 u8 Cpu::AND_ZP_X()
 {
-    AND(memory.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
+    AND(nes.ram.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
     return 4;
 }
 
 u8 Cpu::ROL_ZP_X()
 {
-    ROL(memory.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
+    ROL(nes.ram.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
     return 6;
 }
 
 u8 Cpu::AND_ABS_Y()
 {
-    AND(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.Y));
+    AND(nes.ram.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.Y));
     auto address = NesMemory::FromValues(Operand(1), Operand(2));
     return 4 + NesMemory::IsPageCrossed(address, address + this->registers.Y);
 }
 
 u8 Cpu::AND_ABS_X()
 {
-    AND(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
+    AND(nes.ram.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
     auto address = NesMemory::FromValues(Operand(1), Operand(2));
     return 4 + NesMemory::IsPageCrossed(address, address + this->registers.X);
 }
 
 u8 Cpu::ROL_ABS_X()
 {
-    ROL(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
+    ROL(nes.ram.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
     return 7;
 }
 
 u8 Cpu::EOR_IND_X()
 {
-    EOR(memory.Get<Mode::PreIndexedIndirect>(Operand(1), this->registers.X));
+    EOR(nes.ram.Get<Mode::PreIndexedIndirect>(Operand(1), this->registers.X));
     return 6;
 }
 
 u8 Cpu::EOR_ZP()
 {
-    EOR(memory.Get<Mode::ZeroPage>(Operand(1)));
+    EOR(nes.ram.Get<Mode::ZeroPage>(Operand(1)));
     return 3;
 }
 
 u8 Cpu::LSR_ZP()
 {
-    LSR(memory.Get<Mode::ZeroPage>(Operand(1)));
+    LSR(nes.ram.Get<Mode::ZeroPage>(Operand(1)));
     return 5;
 }
 
@@ -845,76 +855,76 @@ u8 Cpu::LSR_ACC()
 
 u8 Cpu::JMP_ABS()
 {
-    JMP(memory.Absolute(Operand(1), Operand(2)));
+    JMP(nes.ram.Absolute(Operand(1), Operand(2)));
     return 3;
 }
 
 u8 Cpu::EOR_ABS()
 {
-    EOR(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
+    EOR(nes.ram.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 4;
 }
 
 u8 Cpu::LSR_ABS()
 {
-    LSR(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
+    LSR(nes.ram.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 6;
 }
 
 u8 Cpu::EOR_IND_Y()
 {
-    EOR(memory.Get<Mode::PostIndexedIndirect>(Operand(1), this->registers.Y));
-    auto address = memory.Indirect(Operand(1), 0);
+    EOR(nes.ram.Get<Mode::PostIndexedIndirect>(Operand(1), this->registers.Y));
+    auto address = nes.ram.Indirect(Operand(1), 0);
     return 5 + NesMemory::IsPageCrossed(address, address + this->registers.Y);
 }
 
 u8 Cpu::EOR_ZP_X()
 {
-    EOR(memory.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
+    EOR(nes.ram.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
     return 4;
 }
 
 u8 Cpu::LSR_ZP_X()
 {
-    LSR(memory.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
+    LSR(nes.ram.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
     return 6;
 }
 
 u8 Cpu::EOR_ABS_Y()
 {
-    EOR(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.Y));
+    EOR(nes.ram.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.Y));
     auto address = NesMemory::FromValues(Operand(1), Operand(2));
     return 4 + NesMemory::IsPageCrossed(address, address + this->registers.Y);
 }
 
 u8 Cpu::EOR_ABS_X()
 {
-    EOR(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
+    EOR(nes.ram.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
     auto address = NesMemory::FromValues(Operand(1), Operand(2));
     return 4 + NesMemory::IsPageCrossed(address, address + this->registers.X);
 }
 
 u8 Cpu::LSR_ABS_X()
 {
-    LSR(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
+    LSR(nes.ram.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
     return 7;
 }
 
 u8 Cpu::ADC_IND_X()
 {
-    ADC(memory.Get<Mode::PreIndexedIndirect>(Operand(1), this->registers.X));
+    ADC(nes.ram.Get<Mode::PreIndexedIndirect>(Operand(1), this->registers.X));
     return 6;
 }
 
 u8 Cpu::ADC_ZP()
 {
-    ADC(memory.Get<Mode::ZeroPage>(Operand(1)));
+    ADC(nes.ram.Get<Mode::ZeroPage>(Operand(1)));
     return 3;
 }
 
 u8 Cpu::ROR_ZP()
 {
-    ROR(memory.Get<Mode::ZeroPage>(Operand(1)));
+    ROR(nes.ram.Get<Mode::ZeroPage>(Operand(1)));
     return 5;
 }
 
@@ -933,138 +943,138 @@ u8 Cpu::ROR_ACC()
 u8 Cpu::JMP_IND()
 {
     if (NesMemory::IsPageCrossed(this->registers.PC + 1, this->registers.PC + 2))
-        JMP(memory.Indirect(Operand(1), Operand(-0xFE))); //wrap around
+        JMP(nes.ram.Indirect(Operand(1), Operand(-0xFE))); //wrap around
     else
-        JMP(memory.Indirect(Operand(1), Operand(2)));
+        JMP(nes.ram.Indirect(Operand(1), Operand(2)));
     return 5;
 }
 
 u8 Cpu::ADC_ABS()
 {
-    ADC(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
+    ADC(nes.ram.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 4;
 }
 
 u8 Cpu::ROR_ABS()
 {
-    ROR(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
+    ROR(nes.ram.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 6;
 }
 
 u8 Cpu::ADC_IND_Y()
 {
-    ADC(memory.Get<Mode::PostIndexedIndirect>(Operand(1), this->registers.Y));
-    auto address = memory.Indirect(Operand(1), 0);
+    ADC(nes.ram.Get<Mode::PostIndexedIndirect>(Operand(1), this->registers.Y));
+    auto address = nes.ram.Indirect(Operand(1), 0);
     return 5 + NesMemory::IsPageCrossed(address, address + this->registers.Y);
 }
 
 u8 Cpu::ADC_ZP_X()
 {
-    ADC(memory.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
+    ADC(nes.ram.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
     return 4;
 }
 
 u8 Cpu::ROR_ZP_X()
 {
-    ROR(memory.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
+    ROR(nes.ram.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
     return 6;
 }
 
 u8 Cpu::ADC_ABS_Y()
 {
-    ADC(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.Y));
+    ADC(nes.ram.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.Y));
     auto address = NesMemory::FromValues(Operand(1), Operand(2));
     return 4 + NesMemory::IsPageCrossed(address, address + this->registers.Y);
 }
 
 u8 Cpu::ADC_ABS_X()
 {
-    ADC(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
+    ADC(nes.ram.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
     auto address = NesMemory::FromValues(Operand(1), Operand(2));
     return 4 + NesMemory::IsPageCrossed(address, address + this->registers.X);
 }
 
 u8 Cpu::ROR_ABS_X()
 {
-    ROR(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
+    ROR(nes.ram.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
     return 7;
 }
 
 u8 Cpu::STA_IND_X()
 {
-    STA(memory.Get<Mode::PreIndexedIndirect>(Operand(1), this->registers.X));
+    STA(nes.ram.Get<Mode::PreIndexedIndirect>(Operand(1), this->registers.X));
     return 6;
 }
 
 u8 Cpu::STY_ZP()
 {
-    STY(memory.Get<Mode::ZeroPage>(Operand(1)));
+    STY(nes.ram.Get<Mode::ZeroPage>(Operand(1)));
     return 3;
 }
 
 u8 Cpu::STA_ZP()
 {
-    STA(memory.Get<Mode::ZeroPage>(Operand(1)));
+    STA(nes.ram.Get<Mode::ZeroPage>(Operand(1)));
     return 3;
 }
 
 u8 Cpu::STX_ZP()
 {
-    STX(memory.Get<Mode::ZeroPage>(Operand(1)));
+    STX(nes.ram.Get<Mode::ZeroPage>(Operand(1)));
     return 3;
 }
 
 u8 Cpu::STY_ABS()
 {
-    STY(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
+    STY(nes.ram.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 4;
 }
 
 u8 Cpu::STA_ABS()
 {
-    STA(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
+    STA(nes.ram.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 4;
 }
 
 u8 Cpu::STX_ABS()
 {
-    STX(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
+    STX(nes.ram.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 4;
 }
 
 u8 Cpu::STA_IND_Y()
 {
-    STA(memory.Get<Mode::PostIndexedIndirect>(Operand(1), this->registers.Y));
+    STA(nes.ram.Get<Mode::PostIndexedIndirect>(Operand(1), this->registers.Y));
     return 6;
 }
 
 u8 Cpu::STY_ZP_X()
 {
-    STY(memory.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
+    STY(nes.ram.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
     return 4;
 }
 
 u8 Cpu::STA_ZP_X()
 {
-    STA(memory.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
+    STA(nes.ram.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
     return 4;
 }
 
 u8 Cpu::STX_ZP_Y()
 {
-    STX(memory.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.Y));
+    STX(nes.ram.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.Y));
     return 4;
 }
 
 u8 Cpu::STA_ABS_Y()
 {
-    STA(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.Y));
+    STA(nes.ram.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.Y));
     return 5;
 }
 
 u8 Cpu::STA_ABS_X()
 {
-    STA(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
+    STA(nes.ram.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
     return 5;
 }
 
@@ -1076,7 +1086,7 @@ u8 Cpu::LDY_IMM()
 
 u8 Cpu::LDA_IND_X()
 {
-    LDA(memory.Get<Mode::PreIndexedIndirect>(Operand(1), this->registers.X));
+    LDA(nes.ram.Get<Mode::PreIndexedIndirect>(Operand(1), this->registers.X));
     return 6;
 }
 
@@ -1088,19 +1098,19 @@ u8 Cpu::LDX_IMM()
 
 u8 Cpu::LDY_ZP()
 {
-    LDY(memory.Get<Mode::ZeroPage>(Operand(1)));
+    LDY(nes.ram.Get<Mode::ZeroPage>(Operand(1)));
     return 3;
 }
 
 u8 Cpu::LDA_ZP()
 {
-    LDA(memory.Get<Mode::ZeroPage>(Operand(1)));
+    LDA(nes.ram.Get<Mode::ZeroPage>(Operand(1)));
     return 3;
 }
 
 u8 Cpu::LDX_ZP()
 {
-    LDX(memory.Get<Mode::ZeroPage>(Operand(1)));
+    LDX(nes.ram.Get<Mode::ZeroPage>(Operand(1)));
     return 3;
 }
 
@@ -1112,71 +1122,71 @@ u8 Cpu::LDA_IMM()
 
 u8 Cpu::LDY_ABS()
 {
-    LDY(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
+    LDY(nes.ram.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 4;
 }
 
 u8 Cpu::LDA_ABS()
 {
-    LDA(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
+    LDA(nes.ram.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 4;
 }
 
 u8 Cpu::LDX_ABS()
 {
-    LDX(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
+    LDX(nes.ram.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 4;
 }
 
 u8 Cpu::LDA_IND_Y()
 {
-    LDA(memory.Get<Mode::PostIndexedIndirect>(Operand(1), this->registers.Y));
-    auto address = memory.Indirect(Operand(1), 0);
+    LDA(nes.ram.Get<Mode::PostIndexedIndirect>(Operand(1), this->registers.Y));
+    auto address = nes.ram.Indirect(Operand(1), 0);
     return 5 + NesMemory::IsPageCrossed(address, address + this->registers.Y);
 }
 
 u8 Cpu::LDY_ZP_X()
 {
-    LDY(memory.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
+    LDY(nes.ram.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
     return 4;
 }
 
 u8 Cpu::LDA_ZP_X()
 {
-    LDA(memory.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
+    LDA(nes.ram.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
     return 4;
 }
 
 u8 Cpu::LDX_ZP_Y()
 {
-    LDX(memory.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.Y));
+    LDX(nes.ram.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.Y));
     return 4;
 }
 
 u8 Cpu::LDA_ABS_Y()
 {
-    LDA(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.Y));
+    LDA(nes.ram.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.Y));
     auto address = NesMemory::FromValues(Operand(1), Operand(2));
     return 4 + NesMemory::IsPageCrossed(address, address + this->registers.Y);
 }
 
 u8 Cpu::LDY_ABS_X()
 {
-    LDY(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
+    LDY(nes.ram.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
     auto address = NesMemory::FromValues(Operand(1), Operand(2));
     return 4 + NesMemory::IsPageCrossed(address, address + this->registers.X);
 }
 
 u8 Cpu::LDA_ABS_X()
 {
-    LDA(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
+    LDA(nes.ram.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
     auto address = NesMemory::FromValues(Operand(1), Operand(2));
     return 4 + NesMemory::IsPageCrossed(address, address + this->registers.X);
 }
 
 u8 Cpu::LDX_ABS_Y()
 {
-    LDX(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.Y));
+    LDX(nes.ram.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.Y));
     auto address = NesMemory::FromValues(Operand(1), Operand(2));
     return 4 + NesMemory::IsPageCrossed(address, address + this->registers.Y);
 }
@@ -1189,25 +1199,25 @@ u8 Cpu::CPY_IMM()
 
 u8 Cpu::CMP_IND_X()
 {
-    CMP(memory.Get<Mode::PreIndexedIndirect>(Operand(1), this->registers.X));
+    CMP(nes.ram.Get<Mode::PreIndexedIndirect>(Operand(1), this->registers.X));
     return 6;
 }
 
 u8 Cpu::CPY_ZP()
 {
-    CPY(memory.Get<Mode::ZeroPage>(Operand(1)));
+    CPY(nes.ram.Get<Mode::ZeroPage>(Operand(1)));
     return 3;
 }
 
 u8 Cpu::CMP_ZP()
 {
-    CMP(memory.Get<Mode::ZeroPage>(Operand(1)));
+    CMP(nes.ram.Get<Mode::ZeroPage>(Operand(1)));
     return 3;
 }
 
 u8 Cpu::DEC_ZP()
 {
-    DEC(memory.Get<Mode::ZeroPage>(Operand(1)));
+    DEC(nes.ram.Get<Mode::ZeroPage>(Operand(1)));
     return 5;
 }
 
@@ -1219,58 +1229,58 @@ u8 Cpu::CMP_IMM()
 
 u8 Cpu::CPY_ABS()
 {
-    CPY(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
+    CPY(nes.ram.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 4;
 }
 
 u8 Cpu::CMP_ABS()
 {
-    CMP(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
+    CMP(nes.ram.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 4;
 }
 
 u8 Cpu::DEC_ABS()
 {
-    DEC(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
+    DEC(nes.ram.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 6;
 }
 
 u8 Cpu::CMP_IND_Y()
 {
-    CMP(memory.Get<Mode::PostIndexedIndirect>(Operand(1), this->registers.Y));
-    auto address = memory.Indirect(Operand(1), 0);
+    CMP(nes.ram.Get<Mode::PostIndexedIndirect>(Operand(1), this->registers.Y));
+    auto address = nes.ram.Indirect(Operand(1), 0);
     return 5 + NesMemory::IsPageCrossed(address, address + this->registers.Y);
 }
 
 u8 Cpu::CMP_ZP_X()
 {
-    CMP(memory.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
+    CMP(nes.ram.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
     return 4;
 }
 
 u8 Cpu::DEC_ZP_X()
 {
-    DEC(memory.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
+    DEC(nes.ram.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
     return 6;
 }
 
 u8 Cpu::CMP_ABS_Y()
 {
-    CMP(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.Y));
+    CMP(nes.ram.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.Y));
     auto address = NesMemory::FromValues(Operand(1), Operand(2));
     return 4 + NesMemory::IsPageCrossed(address, address + this->registers.Y);
 }
 
 u8 Cpu::CMP_ABS_X()
 {
-    CMP(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
+    CMP(nes.ram.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
     auto address = NesMemory::FromValues(Operand(1), Operand(2));
     return 4 + NesMemory::IsPageCrossed(address, address + this->registers.X);
 }
 
 u8 Cpu::DEC_ABS_X()
 {
-    DEC(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
+    DEC(nes.ram.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
     return 7;
 }
 
@@ -1282,25 +1292,25 @@ u8 Cpu::CPX_IMM()
 
 u8 Cpu::SBC_IND_X()
 {
-    SBC(memory.Get<Mode::PreIndexedIndirect>(Operand(1), this->registers.X));
+    SBC(nes.ram.Get<Mode::PreIndexedIndirect>(Operand(1), this->registers.X));
     return 6;
 }
 
 u8 Cpu::CPX_ZP()
 {
-    CPX(memory.Get<Mode::ZeroPage>(Operand(1)));
+    CPX(nes.ram.Get<Mode::ZeroPage>(Operand(1)));
     return 3;
 }
 
 u8 Cpu::SBC_ZP()
 {
-    SBC(memory.Get<Mode::ZeroPage>(Operand(1)));
+    SBC(nes.ram.Get<Mode::ZeroPage>(Operand(1)));
     return 3;
 }
 
 u8 Cpu::INC_ZP()
 {
-    INC(memory.Get<Mode::ZeroPage>(Operand(1)));
+    INC(nes.ram.Get<Mode::ZeroPage>(Operand(1)));
     return 5;
 }
 
@@ -1312,57 +1322,57 @@ u8 Cpu::SBC_IMM()
 
 u8 Cpu::CPX_ABS()
 {
-    CPX(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
+    CPX(nes.ram.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 4;
 }
 
 u8 Cpu::SBC_ABS()
 {
-    SBC(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
+    SBC(nes.ram.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 4;
 }
 
 u8 Cpu::INC_ABS()
 {
-    INC(memory.Get<Mode::Absolute>(Operand(1), Operand(2)));
+    INC(nes.ram.Get<Mode::Absolute>(Operand(1), Operand(2)));
     return 6;
 }
 
 u8 Cpu::SBC_IND_Y()
 {
-    SBC(memory.Get<Mode::PostIndexedIndirect>(Operand(1), this->registers.Y));
-    auto address = memory.Indirect(Operand(1), 0);
+    SBC(nes.ram.Get<Mode::PostIndexedIndirect>(Operand(1), this->registers.Y));
+    auto address = nes.ram.Indirect(Operand(1), 0);
     return 5 + NesMemory::IsPageCrossed(address, address + this->registers.Y);
 }
 
 u8 Cpu::SBC_ZP_X()
 {
-    SBC(memory.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
+    SBC(nes.ram.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
     return 4;
 }
 
 u8 Cpu::INC_ZP_X()
 {
-    INC(memory.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
+    INC(nes.ram.Get<Mode::ZeroPageIndexed>(Operand(1), this->registers.X));
     return 6;
 }
 
 u8 Cpu::SBC_ABS_Y()
 {
-    SBC(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.Y));
+    SBC(nes.ram.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.Y));
     auto address = NesMemory::FromValues(Operand(1), Operand(2));
     return 4 + NesMemory::IsPageCrossed(address, address + this->registers.Y);
 }
 
 u8 Cpu::SBC_ABS_X()
 {
-    SBC(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
+    SBC(nes.ram.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
     auto address = NesMemory::FromValues(Operand(1), Operand(2));
     return 4 + NesMemory::IsPageCrossed(address, address + this->registers.X);
 }
 
 u8 Cpu::INC_ABS_X()
 {
-    INC(memory.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
+    INC(nes.ram.Get<Mode::Indexed>(Operand(1), Operand(2), this->registers.X));
     return 7;
 }

@@ -5,7 +5,8 @@
 #include "util.h"
 
 namespace Frankenstein {
-
+    
+class Nes;
 class Cpu {
 
     using Memory = NesMemory::Ref;
@@ -32,7 +33,6 @@ public:
     };
 
     Registers registers;
-    NesMemory& memory;
 
     typedef u8 (Cpu::*Instruction)(void);
 
@@ -375,20 +375,14 @@ public:
     void Step();
 
     /**
-     * Fetch the opcode at memory[PC]
-     */
-    inline const u8 OpCode() const
-    {
-        return this->memory[this->registers.PC];
-    }
+    * Fetch the opcode at memory[PC]
+    */
+    u8 OpCode();
 
     /**
-     * Fetch the operand at memory[PC + number]
-     */
-    inline const u8 Operand(int number) const
-    {
-        return this->memory[this->registers.PC + number];
-    }
+    * Fetch the operand at memory[PC + number]
+    */
+    u8 Operand(int number);
 
     /**
      * Store the byte at stack[SP]
@@ -414,8 +408,7 @@ public:
         return CheckBit<static_cast<int>(f)>(this->registers.P);
     }
 
-    Cpu(NesMemory& ram);
-    Cpu(NesMemory& ram, const IRom& rom);
+    Cpu(Nes& pNes);
 
     void LoadRom(const IRom& rom);
 
@@ -425,6 +418,9 @@ public:
     u8 currentOpcode;
     u8 nextOpcode;
 
+    Nes& nes;
 };
 
 }
+
+
