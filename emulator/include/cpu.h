@@ -143,8 +143,8 @@ public:
         {"UNIMP",     &Cpu::UNIMP,     1}, {"UNIMP",     &Cpu::UNIMP,     1},
         {"CPY_ZP",    &Cpu::CPY_ZP,    2}, {"CMP_ZP",    &Cpu::CMP_ZP,    2},
         {"DEC_ZP",    &Cpu::DEC_ZP,    2}, {"UNIMP",     &Cpu::UNIMP,     1},
-        {"INY",       &Cpu::UNIMP,     1}, {"CMP_IMM",   &Cpu::UNIMP,     2},
-        {"DEX",       &Cpu::UNIMP,     1}, {"UNIMP",     &Cpu::UNIMP,     1},
+        {"INY",       &Cpu::INY,       1}, {"CMP_IMM",   &Cpu::CMP_IMM,   2},
+        {"DEX",       &Cpu::DEX,       1}, {"UNIMP",     &Cpu::UNIMP,     1},
         {"CPY_ABS",   &Cpu::CPY_ABS,   3}, {"CMP_ABS",   &Cpu::CMP_ABS,   3},
         {"DEC_ABS",   &Cpu::DEC_ABS,   3}, {"UNIMP",     &Cpu::UNIMP,     1},
         {"BNE",       &Cpu::BNE,       2}, {"CMP_IND_Y", &Cpu::CMP_IND_Y, 2},
@@ -377,7 +377,7 @@ public:
     /**
      * Fetch the opcode at memory[PC]
      */
-    inline const u8 OpCode() const 
+    inline const u8 OpCode() const
     {
         return this->memory[this->registers.PC];
     }
@@ -385,7 +385,7 @@ public:
     /**
      * Fetch the operand at memory[PC + number]
      */
-    inline const u8 Operand(int number) const 
+    inline const u8 Operand(int number) const
     {
         return this->memory[this->registers.PC + number];
     }
