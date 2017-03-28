@@ -36,7 +36,7 @@ void Cpu::Reset()
 {
     this->registers.PC = (nes.ram[0xFFFC] | nes.ram[0xFFFD] << 8);
     this->registers.P = 0b00100100;
-    this->registers.SP = 0xFD;
+    this->registers.SP = 0xFF;
 }
 
 void Cpu::Step()
@@ -65,7 +65,6 @@ u8 Cpu::PopFromStack()
 {
     this->registers.SP += 1;
     u8 value = this->nes.ram[Frankenstein::ADDR_STACK + this->registers.SP];
-    this->nes.ram[Frankenstein::ADDR_STACK + this->registers.SP] = 0;
     return value;
 }
 
@@ -466,10 +465,9 @@ u8 Cpu::TXS()
 
 u8 Cpu::TSX()
 {
-    auto value = this->registers.SP;
-    this->registers.X = value;
-    Set<Flags::Z>(CheckZero(value));
-    Set<Flags::S>(CheckSign(value));
+    this->registers.X = this->registers.SP;
+    Set<Flags::Z>(CheckZero(this->registers.X));
+    Set<Flags::S>(CheckSign(this->registers.X));
     return 2;
 }
 
@@ -638,7 +636,7 @@ u8 Cpu::CLD()
 
 u8 Cpu::SED()
 {
-    Set<Flags::D>(false);
+    Set<Flags::D>(true);
     return 2;
 }
 
