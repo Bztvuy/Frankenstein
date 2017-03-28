@@ -164,6 +164,7 @@ public:
     u8 reg;
 
     // NMI flags
+    bool nmiOccurred;
     bool nmiOutput;
     bool nmiPrevious;
     u8 nmiDelay;

@@ -162,10 +162,10 @@ u8 Ppu::readStatus() {
     u8 result = reg & 0x1F;
     result |= flagSpriteOverflow << 5;
     result |= flagSpriteZeroHit << 6;
-    if (nes.cpu.nmiOccurred) {
+    if (nmiOccurred) {
         result |= 1 << 7;
     }
-    nes.cpu.nmiOccurred = false;
+    nmiOccurred = false;
     nmiChange();
     // w:                   = 0
     w = 0;
@@ -340,7 +340,7 @@ void Ppu::copyY() {
 }
 
 void Ppu::nmiChange() {
-    bool nmi = nmiOutput && nes.cpu.nmiOccurred;
+    bool nmi = nmiOutput && nmiOccurred;
     if (nmi && !nmiPrevious) {
         // TODO: this fixes some games but the delay shouldn't have to be so
         // long, so the timings are off somewhere
@@ -353,12 +353,12 @@ void Ppu::setVerticalBlank() {
     auto temp = front;
     front = back;
     back = temp;
-    nes.cpu.nmiOccurred = true;
+    nmiOccurred = true;
     nmiChange();
 }
 
 void Ppu::clearVerticalBlank() {
-    nes.cpu.nmiOccurred = false;
+    nmiOccurred = false;
     nmiChange();
 }
 
@@ -551,7 +551,7 @@ void Ppu::evaluateSprites() {
 void Ppu::tick() {
     if (nmiDelay > 0) {
         nmiDelay--;
-        if (nmiDelay == 0 && nmiOutput && nes.cpu.nmiOccurred) {
+        if (nmiDelay == 0 && nmiOutput && nmiOccurred) {
             nes.cpu.nmiOccurred = true;
         }
     }
