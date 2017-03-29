@@ -195,7 +195,7 @@ void Cpu::ADC(const u8 value)
     Set<Flags::Z>(CheckZero(truncResult));
     Set<Flags::S>(CheckSign(truncResult));
     Set<Flags::C>(CheckBit<9, u16>(result));
-    Set<Flags::V>(CheckOverflow<>(this->registers.A, value, truncResult));
+    Set<Flags::V>(CheckOverflow<>(this->registers.A, value, truncResult, true));
 
     this->registers.A = truncResult;
 }
@@ -235,9 +235,9 @@ void Cpu::SBC(const u8 value)
 
     Set<Flags::Z>(CheckZero(truncResult));
     Set<Flags::S>(CheckSign(truncResult));
-    Set<Flags::C>(CheckBit<9, u16>(result));
-    Set<Flags::V>(CheckOverflow<>(this->registers.A, value, truncResult));
-    this->registers.A = (result & 0xFF);
+    Set<Flags::C>(s16(result) >= 0);
+    Set<Flags::V>(CheckOverflow<>(this->registers.A, value, truncResult, false));
+    this->registers.A = truncResult;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -516,8 +516,7 @@ void Cpu::Interrupt()
 {
     PushOnStack((this->registers.PC >> 8) & 0xFF); /* Push return address onto the stack. */
     PushOnStack(this->registers.PC & 0xFF);
-    Set<Flags::B>(true); /* Set BFlag before pushing */
-    PushOnStack(this->registers.P);
+    PHP();
     Set<Flags::I>(true);
 }
 
@@ -530,7 +529,7 @@ u8 Cpu::NMI()
 
 u8 Cpu::BRK()
 {
-    this->registers.PC += 1;
+    this->registers.PC += 2;
     Interrupt();
     this->registers.PC = (nes.ram[0xFFFE] | nes.ram[0xFFFF] << 8);
     return 7;
@@ -553,7 +552,7 @@ u8 Cpu::JSR()
 
 u8 Cpu::RTI()
 {
-    this->registers.P = PopFromStack();
+    this->registers.P = (PopFromStack() & 0xEF) | 0x20;
     u8 low = PopFromStack();
     u8 high = PopFromStack();
     u16 address = u16(low) | (u16(high) << 8);
@@ -577,7 +576,7 @@ u8 Cpu::RTS()
 void Cpu::CMP(const u8 value)
 {
     u16 result = this->registers.A - value;
-    Set<Flags::C>(result < 0x100);
+    Set<Flags::C>(this->registers.A >= value);
     Set<Flags::S>(CheckSign(result));
     Set<Flags::Z>(CheckZero(result));
 }
@@ -585,7 +584,7 @@ void Cpu::CMP(const u8 value)
 void Cpu::CPX(const u8 value)
 {
     u16 result = this->registers.X - value;
-    Set<Flags::C>(result < 0x100);
+    Set<Flags::C>(this->registers.X >= value);
     Set<Flags::S>(CheckSign(result));
     Set<Flags::Z>(CheckZero(result));
 }
@@ -593,7 +592,7 @@ void Cpu::CPX(const u8 value)
 void Cpu::CPY(const u8 value)
 {
     u16 result = this->registers.Y - value;
-    Set<Flags::C>(result < 0x100);
+    Set<Flags::C>(this->registers.Y >= value);
     Set<Flags::S>(CheckSign(result));
     Set<Flags::Z>(CheckZero(result));
 }

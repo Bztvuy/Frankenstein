@@ -67,8 +67,13 @@ inline void AssignBit(T& src, bool value) {
 }
 
 template <typename T = u8>
-inline bool CheckOverflow(T src, T value, T result) {
-    return ((src ^ value) & 0x80) && ((src ^ result) & 0x80);
+inline bool CheckOverflow(T src, T value, T result, bool adc) {
+    if (adc){
+	return !((src ^ value) & 0x80) && ((src ^ result) & 0x80);
+    } else {
+	return ((src ^ value) & 0x80) && ((src ^ result) & 0x80);
+    }
+    
 }
 
 template <typename T = u8>

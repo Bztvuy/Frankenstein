@@ -107,7 +107,7 @@ public:
 	{"AND_ABS_X", &Cpu::AND_ABS_X, 3},	//0x3D
 	{"ROL_ABS_X", &Cpu::ROL_ABS_X, 3},	//0x3E
 	{"UNIMP",     &Cpu::UNIMP,     1},	//0x3F
-	{"RTI",       &Cpu::RTI,       1},	//0x40
+	{"RTI",       &Cpu::RTI,       0},	//0x40
 	{"EOR_IND_X", &Cpu::EOR_IND_X, 2},	//0x41
 	{"UNIMP",     &Cpu::UNIMP,     1},	//0x42
 	{"UNIMP",     &Cpu::UNIMP,     1},	//0x43
