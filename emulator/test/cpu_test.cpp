@@ -195,6 +195,64 @@ TEST_F(CPUTest, ADC_Overflow)
     EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::C>());
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// SBC Tests
+///////////////////////////////////////////////////////////////////////////////
+
+TEST_F(CPUTest, SBC_ZeroAndZero)
+{
+    nes.cpu.Set<Cpu::Flags::C>(true);
+    nes.cpu.registers.A = 0;
+    u8 value = 0;
+    nes.cpu.SBC(value);
+    EXPECT_EQ(0,     nes.cpu.registers.A);
+    EXPECT_TRUE(nes.cpu.Get<Cpu::Flags::Z>());
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::S>());
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::V>());
+    EXPECT_TRUE(nes.cpu.Get<Cpu::Flags::C>());
+}
+
+TEST_F(CPUTest, SBC_ZeroAndOne)
+{
+    nes.cpu.Set<Cpu::Flags::C>(true);
+    nes.cpu.registers.A = 0;
+    u8 value = 1;
+    nes.cpu.SBC(value);
+    EXPECT_EQ(0xFF, nes.cpu.registers.A);
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::Z>());
+    EXPECT_TRUE(nes.cpu.Get<Cpu::Flags::S>());
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::V>());
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::C>());
+}
+
+TEST_F(CPUTest, SBC_WithCarry)
+{
+    nes.cpu.Set<Cpu::Flags::C>(true);
+    nes.cpu.registers.A = 1;
+
+    u8 value = 0;
+    nes.cpu.SBC(value);
+     EXPECT_EQ(1, nes.cpu.registers.A);
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::Z>());
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::S>());
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::V>());
+    EXPECT_TRUE(nes.cpu.Get<Cpu::Flags::C>());
+}
+
+TEST_F(CPUTest, SBC_Overflow)
+{
+    nes.cpu.Set<Cpu::Flags::C>(true);
+    nes.cpu.registers.A = 0x80;
+
+    u8 value = 1;
+    nes.cpu.SBC(value);
+     EXPECT_EQ(0x7F, nes.cpu.registers.A);
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::Z>());
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::S>());
+    EXPECT_TRUE(nes.cpu.Get<Cpu::Flags::V>());
+    EXPECT_TRUE(nes.cpu.Get<Cpu::Flags::C>());
+}
+
 TEST_F(CPUTest, DEC_ABS)
 {
     nes.cpu.registers.A = 0xFF;
@@ -534,6 +592,447 @@ TEST_F(CPUTest, LSR_ACC_Zero)
     nes.cpu.LSR_ACC();
     
     EXPECT_EQ(0x0, nes.cpu.registers.A);
+    EXPECT_TRUE(nes.cpu.Get<Cpu::Flags::C>());
+    EXPECT_TRUE(nes.cpu.Get<Cpu::Flags::Z>());
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::S>());
+}
+
+TEST_F(CPUTest, ORA_Zero)
+{
+    nes.cpu.registers.A = 0;
+    nes.cpu.ORA(0);
+    
+    EXPECT_EQ(0, nes.cpu.registers.A);
+    EXPECT_TRUE(nes.cpu.Get<Cpu::Flags::Z>());
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::S>());
+}
+
+TEST_F(CPUTest, ORA_One)
+{
+    nes.cpu.registers.A = 1;
+    nes.cpu.ORA(1);
+    
+    EXPECT_EQ(1, nes.cpu.registers.A);
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::Z>());
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::S>());
+}
+
+TEST_F(CPUTest, ORA_Zero_One)
+{
+    nes.cpu.registers.A = 0;
+    nes.cpu.ORA(1);
+    
+    EXPECT_EQ(1, nes.cpu.registers.A);
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::Z>());
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::S>());
+}
+
+TEST_F(CPUTest, ORA_One_Zero)
+{
+    nes.cpu.registers.A = 1;
+    nes.cpu.ORA(0);
+    
+    EXPECT_EQ(1, nes.cpu.registers.A);
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::Z>());
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::S>());
+}
+
+TEST_F(CPUTest, ORA_MinusOne_Zero)
+{
+    nes.cpu.registers.A = 0xFF;
+    nes.cpu.ORA(0);
+    
+    EXPECT_EQ(0xFF, nes.cpu.registers.A);
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::Z>());
+    EXPECT_TRUE(nes.cpu.Get<Cpu::Flags::S>());
+}
+
+TEST_F(CPUTest, ORA_Zero_MinusOne)
+{
+    nes.cpu.registers.A = 0;
+    nes.cpu.ORA(0xFF);
+    
+    EXPECT_EQ(0xFF, nes.cpu.registers.A);
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::Z>());
+    EXPECT_TRUE(nes.cpu.Get<Cpu::Flags::S>());
+}
+
+TEST_F(CPUTest, ORA_MinusOne_MinusOne)
+{
+    nes.cpu.registers.A = 0xFF;
+    nes.cpu.ORA(0xFF);
+    
+    EXPECT_EQ(0xFF, nes.cpu.registers.A);
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::Z>());
+    EXPECT_TRUE(nes.cpu.Get<Cpu::Flags::S>());
+}
+
+TEST_F(CPUTest, AND_Zero)
+{
+    nes.cpu.registers.A = 0;
+    nes.cpu.AND(0);
+    
+    EXPECT_EQ(0, nes.cpu.registers.A);
+    EXPECT_TRUE(nes.cpu.Get<Cpu::Flags::Z>());
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::S>());
+}
+
+TEST_F(CPUTest, AND_One)
+{
+    nes.cpu.registers.A = 1;
+    nes.cpu.AND(1);
+    
+    EXPECT_EQ(1, nes.cpu.registers.A);
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::Z>());
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::S>());
+}
+
+TEST_F(CPUTest, AND_Zero_One)
+{
+    nes.cpu.registers.A = 0;
+    nes.cpu.AND(1);
+    
+    EXPECT_EQ(0, nes.cpu.registers.A);
+    EXPECT_TRUE(nes.cpu.Get<Cpu::Flags::Z>());
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::S>());
+}
+
+TEST_F(CPUTest, AND_One_Zero)
+{
+    nes.cpu.registers.A = 1;
+    nes.cpu.AND(0);
+    
+    EXPECT_EQ(0, nes.cpu.registers.A);
+    EXPECT_TRUE(nes.cpu.Get<Cpu::Flags::Z>());
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::S>());
+}
+
+TEST_F(CPUTest, AND_MinusOne_Zero)
+{
+    nes.cpu.registers.A = 0xFF;
+    nes.cpu.AND(0);
+    
+    EXPECT_EQ(0, nes.cpu.registers.A);
+    EXPECT_TRUE(nes.cpu.Get<Cpu::Flags::Z>());
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::S>());
+}
+
+TEST_F(CPUTest, AND_Zero_MinusOne)
+{
+    nes.cpu.registers.A = 0;
+    nes.cpu.AND(0xFF);
+    
+    EXPECT_EQ(0, nes.cpu.registers.A);
+    EXPECT_TRUE(nes.cpu.Get<Cpu::Flags::Z>());
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::S>());
+}
+
+TEST_F(CPUTest, AND_MinusOne_MinusOne)
+{
+    nes.cpu.registers.A = 0xFF;
+    nes.cpu.AND(0xFF);
+    
+    EXPECT_EQ(0xFF, nes.cpu.registers.A);
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::Z>());
+    EXPECT_TRUE(nes.cpu.Get<Cpu::Flags::S>());
+}
+
+TEST_F(CPUTest, EOR_Zero)
+{
+    nes.cpu.registers.A = 0;
+    nes.cpu.EOR(0);
+    
+    EXPECT_EQ(0, nes.cpu.registers.A);
+    EXPECT_TRUE(nes.cpu.Get<Cpu::Flags::Z>());
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::S>());
+}
+
+TEST_F(CPUTest, EOR_One)
+{
+    nes.cpu.registers.A = 1;
+    nes.cpu.EOR(1);
+    
+    EXPECT_EQ(0, nes.cpu.registers.A);
+    EXPECT_TRUE(nes.cpu.Get<Cpu::Flags::Z>());
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::S>());
+}
+
+TEST_F(CPUTest, EOR_Zero_One)
+{
+    nes.cpu.registers.A = 0;
+    nes.cpu.EOR(1);
+    
+    EXPECT_EQ(1, nes.cpu.registers.A);
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::Z>());
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::S>());
+}
+
+TEST_F(CPUTest, EOR_One_Zero)
+{
+    nes.cpu.registers.A = 1;
+    nes.cpu.EOR(0);
+    
+    EXPECT_EQ(1, nes.cpu.registers.A);
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::Z>());
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::S>());
+}
+
+TEST_F(CPUTest, EOR_MinusOne_Zero)
+{
+    nes.cpu.registers.A = 0xFF;
+    nes.cpu.EOR(0);
+    
+    EXPECT_EQ(0xFF, nes.cpu.registers.A);
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::Z>());
+    EXPECT_TRUE(nes.cpu.Get<Cpu::Flags::S>());
+}
+
+TEST_F(CPUTest, EOR_Zero_MinusOne)
+{
+    nes.cpu.registers.A = 0;
+    nes.cpu.EOR(0xFF);
+    
+    EXPECT_EQ(0xFF, nes.cpu.registers.A);
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::Z>());
+    EXPECT_TRUE(nes.cpu.Get<Cpu::Flags::S>());
+}
+
+TEST_F(CPUTest, EOR_MinusOne_MinusOne)
+{
+    nes.cpu.registers.A = 0xFF;
+    nes.cpu.EOR(0xFF);
+    
+    EXPECT_EQ(0, nes.cpu.registers.A);
+    EXPECT_TRUE(nes.cpu.Get<Cpu::Flags::Z>());
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::S>());
+}
+
+TEST_F(CPUTest, CMP_Zero)
+{
+    nes.cpu.registers.A = 0;
+    nes.cpu.CMP(0);
+    
+    EXPECT_EQ(0, nes.cpu.registers.A);
+    EXPECT_TRUE(nes.cpu.Get<Cpu::Flags::C>());
+    EXPECT_TRUE(nes.cpu.Get<Cpu::Flags::Z>());
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::S>());
+}
+
+TEST_F(CPUTest, CMP_One)
+{
+    nes.cpu.registers.A = 1;
+    nes.cpu.CMP(1);
+    
+    EXPECT_EQ(1, nes.cpu.registers.A);
+    EXPECT_TRUE(nes.cpu.Get<Cpu::Flags::C>());
+    EXPECT_TRUE(nes.cpu.Get<Cpu::Flags::Z>());
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::S>());
+}
+
+TEST_F(CPUTest, CMP_Zero_One)
+{
+    nes.cpu.registers.A = 0;
+    nes.cpu.CMP(1);
+    
+    EXPECT_EQ(0, nes.cpu.registers.A);
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::C>());
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::Z>());
+    EXPECT_TRUE(nes.cpu.Get<Cpu::Flags::S>());
+}
+
+TEST_F(CPUTest, CMP_One_Zero)
+{
+    nes.cpu.registers.A = 1;
+    nes.cpu.CMP(0);
+    
+    EXPECT_EQ(1, nes.cpu.registers.A);
+    EXPECT_TRUE(nes.cpu.Get<Cpu::Flags::C>());
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::Z>());
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::S>());
+}
+
+TEST_F(CPUTest, CMP_MinusOne_Zero)
+{
+    nes.cpu.registers.A = 0xFF;
+    nes.cpu.CMP(0);
+    
+    EXPECT_EQ(0xFF, nes.cpu.registers.A);
+    EXPECT_TRUE(nes.cpu.Get<Cpu::Flags::C>());
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::Z>());
+    EXPECT_TRUE(nes.cpu.Get<Cpu::Flags::S>());
+}
+
+TEST_F(CPUTest, CMP_Zero_MinusOne)
+{
+    nes.cpu.registers.A = 0;
+    nes.cpu.CMP(0xFF);
+    
+    EXPECT_EQ(0, nes.cpu.registers.A);
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::C>());
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::Z>());
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::S>());
+}
+
+TEST_F(CPUTest, CMP_MinusOne_MinusOne)
+{
+    nes.cpu.registers.A = 0xFF;
+    nes.cpu.CMP(0xFF);
+    
+    EXPECT_EQ(0xFF, nes.cpu.registers.A);
+    EXPECT_TRUE(nes.cpu.Get<Cpu::Flags::C>());
+    EXPECT_TRUE(nes.cpu.Get<Cpu::Flags::Z>());
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::S>());
+}
+
+TEST_F(CPUTest, CPX_Zero)
+{
+    nes.cpu.registers.X = 0;
+    nes.cpu.CPX(0);
+    
+    EXPECT_EQ(0, nes.cpu.registers.X);
+    EXPECT_TRUE(nes.cpu.Get<Cpu::Flags::C>());
+    EXPECT_TRUE(nes.cpu.Get<Cpu::Flags::Z>());
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::S>());
+}
+
+TEST_F(CPUTest, CPX_One)
+{
+    nes.cpu.registers.X = 1;
+    nes.cpu.CPX(1);
+    
+    EXPECT_EQ(1, nes.cpu.registers.X);
+    EXPECT_TRUE(nes.cpu.Get<Cpu::Flags::C>());
+    EXPECT_TRUE(nes.cpu.Get<Cpu::Flags::Z>());
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::S>());
+}
+
+TEST_F(CPUTest, CPX_Zero_One)
+{
+    nes.cpu.registers.X = 0;
+    nes.cpu.CPX(1);
+    
+    EXPECT_EQ(0, nes.cpu.registers.X);
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::C>());
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::Z>());
+    EXPECT_TRUE(nes.cpu.Get<Cpu::Flags::S>());
+}
+
+TEST_F(CPUTest, CPX_One_Zero)
+{
+    nes.cpu.registers.X = 1;
+    nes.cpu.CPX(0);
+    
+    EXPECT_EQ(1, nes.cpu.registers.X);
+    EXPECT_TRUE(nes.cpu.Get<Cpu::Flags::C>());
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::Z>());
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::S>());
+}
+
+TEST_F(CPUTest, CPX_MinusOne_Zero)
+{
+    nes.cpu.registers.X = 0xFF;
+    nes.cpu.CPX(0);
+    
+    EXPECT_EQ(0xFF, nes.cpu.registers.X);
+    EXPECT_TRUE(nes.cpu.Get<Cpu::Flags::C>());
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::Z>());
+    EXPECT_TRUE(nes.cpu.Get<Cpu::Flags::S>());
+}
+
+TEST_F(CPUTest, CPX_Zero_MinusOne)
+{
+    nes.cpu.registers.X = 0;
+    nes.cpu.CPX(0xFF);
+    
+    EXPECT_EQ(0, nes.cpu.registers.X);
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::C>());
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::Z>());
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::S>());
+}
+
+TEST_F(CPUTest, CPX_MinusOne_MinusOne)
+{
+    nes.cpu.registers.X = 0xFF;
+    nes.cpu.CPX(0xFF);
+    
+    EXPECT_EQ(0xFF, nes.cpu.registers.X);
+    EXPECT_TRUE(nes.cpu.Get<Cpu::Flags::C>());
+    EXPECT_TRUE(nes.cpu.Get<Cpu::Flags::Z>());
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::S>());
+}
+
+TEST_F(CPUTest, CPY_Zero)
+{
+    nes.cpu.registers.Y = 0;
+    nes.cpu.CPY(0);
+    
+    EXPECT_EQ(0, nes.cpu.registers.Y);
+    EXPECT_TRUE(nes.cpu.Get<Cpu::Flags::C>());
+    EXPECT_TRUE(nes.cpu.Get<Cpu::Flags::Z>());
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::S>());
+}
+
+TEST_F(CPUTest, CPY_One)
+{
+    nes.cpu.registers.Y = 1;
+    nes.cpu.CPY(1);
+    
+    EXPECT_EQ(1, nes.cpu.registers.Y);
+    EXPECT_TRUE(nes.cpu.Get<Cpu::Flags::C>());
+    EXPECT_TRUE(nes.cpu.Get<Cpu::Flags::Z>());
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::S>());
+}
+
+TEST_F(CPUTest, CPY_Zero_One)
+{
+    nes.cpu.registers.Y = 0;
+    nes.cpu.CPY(1);
+    
+    EXPECT_EQ(0, nes.cpu.registers.Y);
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::C>());
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::Z>());
+    EXPECT_TRUE(nes.cpu.Get<Cpu::Flags::S>());
+}
+
+TEST_F(CPUTest, CPY_One_Zero)
+{
+    nes.cpu.registers.Y = 1;
+    nes.cpu.CPY(0);
+    
+    EXPECT_EQ(1, nes.cpu.registers.Y);
+    EXPECT_TRUE(nes.cpu.Get<Cpu::Flags::C>());
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::Z>());
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::S>());
+}
+
+TEST_F(CPUTest, CPY_MinusOne_Zero)
+{
+    nes.cpu.registers.Y = 0xFF;
+    nes.cpu.CPY(0);
+    
+    EXPECT_EQ(0xFF, nes.cpu.registers.Y);
+    EXPECT_TRUE(nes.cpu.Get<Cpu::Flags::C>());
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::Z>());
+    EXPECT_TRUE(nes.cpu.Get<Cpu::Flags::S>());
+}
+
+TEST_F(CPUTest, CPY_Zero_MinusOne)
+{
+    nes.cpu.registers.Y = 0;
+    nes.cpu.CPY(0xFF);
+    
+    EXPECT_EQ(0, nes.cpu.registers.Y);
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::C>());
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::Z>());
+    EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::S>());
+}
+
+TEST_F(CPUTest, CPY_MinusOne_MinusOne)
+{
+    nes.cpu.registers.Y = 0xFF;
+    nes.cpu.CPY(0xFF);
+    
+    EXPECT_EQ(0xFF, nes.cpu.registers.Y);
     EXPECT_TRUE(nes.cpu.Get<Cpu::Flags::C>());
     EXPECT_TRUE(nes.cpu.Get<Cpu::Flags::Z>());
     EXPECT_FALSE(nes.cpu.Get<Cpu::Flags::S>());

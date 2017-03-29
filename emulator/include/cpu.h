@@ -234,9 +234,9 @@ public:
 	{"LDY_ABS_X", &Cpu::LDY_ABS_X, 3},	//0xBC
 	{"LDA_ABS_X", &Cpu::LDA_ABS_X, 3},	//0xBD
 	{"LDX_ABS_Y", &Cpu::LDX_ABS_Y, 3},	//0xBE
-	{"CPY_IMM",   &Cpu::CPY_IMM,   1},	//0xBF
-	{"CMP_IND_X", &Cpu::CMP_IND_X, 2},	//0xC0
-	{"UNIMP",     &Cpu::UNIMP,     2},	//0xC1
+	{"UNIMP",     &Cpu::UNIMP,     1},	//0xBF
+	{"CPY_IMM",   &Cpu::CPY_IMM,   2},	//0xC0
+	{"CMP_IND_X", &Cpu::CMP_IND_X, 2},	//0xC1
 	{"UNIMP",     &Cpu::UNIMP,     1},	//0xC2
 	{"UNIMP",     &Cpu::UNIMP,     1},	//0xC3
 	{"CPY_ZP",    &Cpu::CPY_ZP,    2},	//0xC4

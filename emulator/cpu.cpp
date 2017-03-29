@@ -230,12 +230,12 @@ void Cpu::INC(const Memory value)
 
 void Cpu::SBC(const u8 value)
 {
-    u16 result = this->registers.A - value - (1 - Get<Flags::C>());
+    s16 result = this->registers.A - value - (1 - Get<Flags::C>());
     u8 truncResult = static_cast<u8>(result);
 
     Set<Flags::Z>(CheckZero(truncResult));
     Set<Flags::S>(CheckSign(truncResult));
-    Set<Flags::C>(s16(result) >= 0);
+    Set<Flags::C>(result >= 0);
     Set<Flags::V>(CheckOverflow<>(this->registers.A, value, truncResult, false));
     this->registers.A = truncResult;
 }
@@ -578,7 +578,7 @@ void Cpu::CMP(const u8 value)
     u16 result = this->registers.A - value;
     Set<Flags::C>(this->registers.A >= value);
     Set<Flags::S>(CheckSign(result));
-    Set<Flags::Z>(CheckZero(result));
+    Set<Flags::Z>(this->registers.A == value);
 }
 
 void Cpu::CPX(const u8 value)
@@ -586,7 +586,7 @@ void Cpu::CPX(const u8 value)
     u16 result = this->registers.X - value;
     Set<Flags::C>(this->registers.X >= value);
     Set<Flags::S>(CheckSign(result));
-    Set<Flags::Z>(CheckZero(result));
+    Set<Flags::Z>(this->registers.X == value);
 }
 
 void Cpu::CPY(const u8 value)
@@ -594,7 +594,7 @@ void Cpu::CPY(const u8 value)
     u16 result = this->registers.Y - value;
     Set<Flags::C>(this->registers.Y >= value);
     Set<Flags::S>(CheckSign(result));
-    Set<Flags::Z>(CheckZero(result));
+    Set<Flags::Z>(this->registers.Y == value);
 }
 
 u8 Cpu::CLC()

@@ -71,7 +71,7 @@ int main(int argc, char* argv[])
             int i = 0;
             char c;
             do {
-                c = nes.ram[0x6005+i];
+                c = nes.ram[0x6004+i];
                 out << c;
                 i++;
             }
