@@ -542,6 +542,7 @@ public:
     void LoadRom(const IRom& rom);
 
     u8 cycles;
+    u16 stall;
     bool nmiOccurred;
     u16 previousPC;
     u8 currentOpcode;

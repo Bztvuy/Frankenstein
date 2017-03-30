@@ -141,8 +141,8 @@ public:
     };
     Nes& nes;
 
-    RGBColor** front;
-    RGBColor** back;
+    RGBColor* front;
+    RGBColor* back;
     
     u32 Cycle;      // 0-340
     u32 ScanLine;   // 0-261, 0-239=visible, 240=post, 241-260=vblank, 261=pre

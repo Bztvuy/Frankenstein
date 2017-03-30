@@ -41,9 +41,14 @@ void Cpu::Reset()
 
 void Cpu::Step()
 {
+    if (this->stall > 0) {
+	this->stall--;
+	this->cycles = 1;
+	return;
+    }
     if (nmiOccurred) {
         this->cycles = NMI();
-        nmiOccurred = false;
+        this->nmiOccurred = false;
     }
     else {
         this->currentOpcode = OpCode();

@@ -5,17 +5,14 @@
 using namespace Frankenstein;
 
 Ppu::Ppu(Nes& pNes) : nes(pNes){
-    front = new RGBColor*[256];
-    back = new RGBColor*[256];
+    front = new RGBColor[256 * 240];
+    back = new RGBColor[256 * 240];
 
     for (int i = 0; i < 256; ++i)
     {
-        front[i] = new RGBColor[240];
-        back[i] = new RGBColor[240];
-
         for(int j = 0; j < 240; j++) {
-            front[i][j] = {0, 0, 0};
-            back[i][j] = {0, 0, 0};
+            front[i + 256 * j] = RGBColor();
+            back[i + 256 * j] = RGBColor();
         }
     }
 
@@ -277,9 +274,9 @@ void Ppu::writeDMA(u8 value) {
      * it pauses the CPU for an additional 513 cycles, otherwise 514 cycles. 
      * We can use this aspect to partially compensate for NMI's variable delay.
      */
-    nes.cpu.cycles += 513;
+    nes.cpu.stall += 513;
     if (nes.cpu.cycles%2 == 1) {
-         nes.cpu.cycles++;
+         nes.cpu.stall++;
     }
 }
 
@@ -350,9 +347,9 @@ void Ppu::nmiChange() {
 }
 
 void Ppu::setVerticalBlank() {
-    auto temp = front;
-    front = back;
-    back = temp;
+    auto temp = back;
+    back = front;
+    front = temp;
     nmiOccurred = true;
     nmiChange();
 }
@@ -467,7 +464,7 @@ void Ppu::renderPixel() {
         }
     }
     RGBColor c = systemPalette[readPalette(u16(color)) % 64];
-    back[x][y] = c;
+    back[x + 256 * y] = c;
 }
 
 u32 Ppu::fetchSpritePattern(u8 i, u32 row) {
