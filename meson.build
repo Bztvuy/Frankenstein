@@ -5,6 +5,7 @@ project('frankenstein', 'cpp',
                     'cpp_std=c++11']
 )
 
+thread = dependency('threads', native: true)
 gtest = subproject('gtest', native: true, main: false)
 gtest_inc = gtest.get_variable('incdir')
 gtest_lib_src = gtest.get_variable('libsources')
@@ -37,5 +38,6 @@ else
     libcircle_include = circle.get_variable('circle_include')
     
     subdir('emulator')
+    subdir('application')
     subdir('kernel')
 endif
