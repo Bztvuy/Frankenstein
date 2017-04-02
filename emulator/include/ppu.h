@@ -167,6 +167,7 @@ public:
     bool nmiOccurred;
     bool nmiOutput;
     bool nmiPrevious;
+    bool vblankOccured;
     u8 nmiDelay;
 
     // background temporary variables

@@ -4,7 +4,7 @@
 
 using namespace Frankenstein;
 
-Ppu::Ppu(Nes& pNes) : nes(pNes){
+Ppu::Ppu(Nes& pNes) : nes(pNes), vblankOccured(false){
     front = new RGBColor[256 * 240];
     back = new RGBColor[256 * 240];
 
@@ -352,11 +352,14 @@ void Ppu::setVerticalBlank() {
     front = temp;
     nmiOccurred = true;
     nmiChange();
+    
+    vblankOccured = true;
 }
 
 void Ppu::clearVerticalBlank() {
     nmiOccurred = false;
     nmiChange();
+    vblankOccured = false;
 }
 
 void Ppu::fetchNameTableByte() {
