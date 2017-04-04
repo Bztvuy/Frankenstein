@@ -3,7 +3,6 @@
 #include "util.h"
 
 namespace Frankenstein {
-class Nes;
 
 static constexpr u16 ADDR_ZERO_PAGE = 0x0000;
 static constexpr u16 ADDR_STACK = 0x0100;
@@ -17,13 +16,25 @@ static constexpr u16 ADDR_SRAM = 0x6000;
 static constexpr u16 ADDR_PRG_ROM_LOWER_BANK = 0x8000;
 static constexpr u16 ADDR_PRG_ROM_UPPER_BANK = 0xC000;
 
+enum class Addressing {
+    Absolute,
+    ZeroPage,
+    Indexed,
+    ZeroPageIndexed,
+    Indirect,
+    PreIndexedIndirect,
+    PostIndexedIndirect,
+};
+
+class Nes;
+
 template <typename DataType, typename AddressingType, unsigned int Size>
 class Memory {
 private:
     DataType raw[Size];
     Nes& nes;
 
-    const DataType Read(const AddressingType address);
+    DataType Read(const AddressingType address);
     void Write(const AddressingType address, const DataType val);
 
 public:
@@ -51,30 +62,20 @@ public:
         }
     };
 
-    enum class Addressing {
-        Absolute,
-        ZeroPage,
-        Indexed,
-        ZeroPageIndexed,
-        Indirect,
-        PreIndexedIndirect,
-        PostIndexedIndirect,
-    };
-    
     explicit Memory(Nes& nes);
 
-    const Ref operator[](const AddressingType);
+    Ref operator[](const AddressingType);
 
     void Copy(const DataType* source, const AddressingType destination, const unsigned int size);
 
-    template <Memory::Addressing N>
-    const Ref Get(const DataType);
+    template <Addressing N>
+    Ref Get(const DataType);
 
-    template <Memory::Addressing N>
-    const Ref Get(const DataType, const DataType);
+    template <Addressing N>
+    Ref Get(const DataType, const DataType);
 
-    template <Memory::Addressing N>
-    const Ref Get(const DataType, const DataType, const DataType);
+    template <Addressing N>
+    Ref Get(const DataType, const DataType, const DataType);
 
     /**
      * Detects if two addresses are on the same page
@@ -165,7 +166,5 @@ public:
     //u16 Accumulator();
     //u16 Relative();
 };
-
-using NesMemory = Memory<u8, u16, 0x10000>;
 
 }

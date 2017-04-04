@@ -1,20 +1,25 @@
 #include "dependencies.h"
+#include "memory_nes.h"
 #include "nes.h"
 
 namespace Frankenstein {
-    
-template<>
-NesMemory::Memory(Nes& pNes) : nes(pNes) {}
 
 template <>
-const NesMemory::Ref NesMemory::operator[](const u16 addr)
+NesMemory::Memory(Nes& pNes)
+    : raw{ 0 }
+    , nes(pNes)
+{
+}
+
+template <>
+NesMemory::Ref NesMemory::operator[](const u16 addr)
 {
     return Ref(addr, this);
 }
 
 template <>
-const u8 NesMemory::Read(const u16 address)
-{ 
+u8 NesMemory::Read(const u16 address)
+{
     // $0000-$07FF; With mirrors $0800-$0FFF, $1000-$17FF, $1800-$1FFF; Internal RAM
     if (address < 0x2000) {
         return raw[address & 0x07FF];
@@ -24,16 +29,15 @@ const u8 NesMemory::Read(const u16 address)
         return nes.ppu.readRegister(address & 0x2007);
     }
     // $4014; PPU DMA
-    else if (address == 0x4014){
-	nes.ppu.readRegister(address);
+    else if (address == 0x4014) {
+        nes.ppu.readRegister(address);
     }
     // $4000-$4017; NES APU and I/O registers
     else if (address < 0x4018) {
-        if(address == 0x4016) {
+        if (address == 0x4016) {
             return nes.pad1.Read(raw[address], raw[address]);
-        }
-        else if (address == 0x4017) {
-            return nes.pad2.Read(raw[address], raw[address-1]);
+        } else if (address == 0x4017) {
+            return nes.pad2.Read(raw[address], raw[address - 1]);
         }
     }
     // $4018-$401F; APU and I/O functionality that is normally disabled.
@@ -59,20 +63,18 @@ void NesMemory::Write(const u16 address, const u8 val)
         nes.ppu.writeRegister(address & 0x2007, val);
     }
     // $4014; PPU DMA
-    else if (address == 0x4014){
-	nes.ppu.writeRegister(address, val);
+    else if (address == 0x4014) {
+        nes.ppu.writeRegister(address, val);
     }
     // $4000-$4017; NES APU and I/O registers
     else if (address < 0x4017) {
-        if(address == 0x4016) {
+        if (address == 0x4016) {
             nes.pad1.Write(raw[address]);
             nes.pad2.Write(raw[address]);
-        }
-        else if (address == 0x4017) {
+        } else if (address == 0x4017) {
             // ignore?
         }
-    }
-    else {
+    } else {
         raw[address] = val;
     }
 }
@@ -150,24 +152,24 @@ u16 NesMemory::PostIndexedIndirect(const u8 low, const u8 index)
 }
 
 template <>
-template <NesMemory::Addressing N>
-const NesMemory::Ref NesMemory::Get(const u8)
+template <Addressing N>
+NesMemory::Ref NesMemory::Get(const u8)
 {
     static_assert(sizeof(N) >= 0, "failure to specialize template: please use a valid Addressing mode");
     return this->operator[](0);
 }
 
 template <>
-template <NesMemory::Addressing N>
-const NesMemory::Ref NesMemory::Get(const u8, const u8)
+template <Addressing N>
+NesMemory::Ref NesMemory::Get(const u8, const u8)
 {
     static_assert(sizeof(N) >= 0, "failure to specialize template: please use a valid Addressing mode");
     return this->operator[](0);
 }
 
 template <>
-template <NesMemory::Addressing N>
-const NesMemory::Ref NesMemory::Get(const u8, const u8, const u8)
+template <Addressing N>
+NesMemory::Ref NesMemory::Get(const u8, const u8, const u8)
 {
     static_assert(sizeof(N) >= 0, "failure to specialize template: please use a valid Addressing mode");
     return this->operator[](0);
@@ -175,50 +177,51 @@ const NesMemory::Ref NesMemory::Get(const u8, const u8, const u8)
 
 template <>
 template <>
-const NesMemory::Ref NesMemory::Get<NesMemory::Addressing::Absolute>(const u8 low, const u8 high)
+NesMemory::Ref NesMemory::Get<Addressing::Absolute>(const u8 low, const u8 high)
 {
     return this->operator[](Absolute(low, high));
 }
 
 template <>
 template <>
-const NesMemory::Ref NesMemory::Get<NesMemory::Addressing::ZeroPage>(const u8 low)
+NesMemory::Ref NesMemory::Get<Addressing::ZeroPage>(const u8 low)
 {
     return this->operator[](ZeroPage(low));
 }
 
 template <>
 template <>
-const NesMemory::Ref NesMemory::Get<NesMemory::Addressing::Indexed>(const u8 low, const u8 high, const u8 index)
+NesMemory::Ref NesMemory::Get<Addressing::Indexed>(const u8 low, const u8 high, const u8 index)
 {
     return this->operator[](Indexed(low, high, index));
 }
 
 template <>
 template <>
-const NesMemory::Ref NesMemory::Get<NesMemory::Addressing::ZeroPageIndexed>(const u8 low, const u8 index)
+NesMemory::Ref NesMemory::Get<Addressing::ZeroPageIndexed>(const u8 low, const u8 index)
 {
     return this->operator[](ZeroPageIndexed(low, index));
 }
 
 template <>
 template <>
-const NesMemory::Ref NesMemory::Get<NesMemory::Addressing::Indirect>(const u8 low, const u8 high)
+NesMemory::Ref NesMemory::Get<Addressing::Indirect>(const u8 low, const u8 high)
 {
     return this->operator[](Indirect(low, high));
 }
 
 template <>
 template <>
-const NesMemory::Ref NesMemory::Get<NesMemory::Addressing::PreIndexedIndirect>(const u8 low, const u8 index)
+NesMemory::Ref NesMemory::Get<Addressing::PreIndexedIndirect>(const u8 low, const u8 index)
 {
     return this->operator[](NesMemory::PreIndexedIndirect(low, index));
 }
 
 template <>
 template <>
-const NesMemory::Ref NesMemory::Get<NesMemory::Addressing::PostIndexedIndirect>(const u8 low, const u8 index)
+NesMemory::Ref NesMemory::Get<Addressing::PostIndexedIndirect>(const u8 low, const u8 index)
 {
     return this->operator[](PostIndexedIndirect(low, index));
 }
+
 }

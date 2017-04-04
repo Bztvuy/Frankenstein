@@ -3,7 +3,7 @@
 #include "rom.h"
 #include "cpu.h"
 #include "ppu.h"
-#include "memory.h"
+#include "memory_nes.h"
 #include "gamepad.h"
 
 namespace Frankenstein {

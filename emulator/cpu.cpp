@@ -3,7 +3,7 @@
 
 using namespace Frankenstein;
 
-using Mode = Frankenstein::NesMemory::Addressing;
+using Mode = Frankenstein::Addressing;
 
 Cpu::Cpu(Nes& pNes)
     : nes(pNes)
