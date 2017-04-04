@@ -12,6 +12,10 @@ typedef signed long long    s64;
 
 #define KILOBYTE 1024
 
+/**
+ * Check whether the bit Position is set in src.
+ * Position is 1-based.
+ */
 template <unsigned int Position, typename T = u8>
 inline bool CheckBit(T src) {
     static_assert((Position-1) <= (sizeof(T) * 8) && Position >= 1,
@@ -21,12 +25,20 @@ inline bool CheckBit(T src) {
     return (src & (1 << position )) >> position;
 }
 
+/**
+ * Check whether the bit pos is set.
+ * pos is 1-based.
+ */
 template<typename T = u8>
 inline bool CheckBit(T src, u8 pos) {
     int position = pos - 1;
     return (src & (1 << position )) >> position;
 }
 
+/**
+ * Set the Position bit in src.
+ * Position is 1-based.
+ */
 template <unsigned int Position, typename T = u8>
 inline void SetBit(T& src) {
     static_assert((Position-1) <= (sizeof(T) * 8) && Position >= 1,
@@ -36,12 +48,20 @@ inline void SetBit(T& src) {
     src |= (1 << position);
 }
 
+/**
+ * Set the pos bit in src.
+ * pos is 1-based.
+ */
 template<typename T = u8>
 inline void SetBit(T src, u8 pos) {
     int position = pos - 1;
     src |= (1 << position);
 }
 
+/**
+ * Clear the Position bit in src.
+ * Position is 1-based.
+ */
 template <unsigned int Position, typename T = u8>
 inline void ClearBit(T& src) {
     static_assert((Position-1) <= (sizeof(T) * 8) && Position >= 1,
@@ -51,12 +71,20 @@ inline void ClearBit(T& src) {
     src &= ~(1 << position);
 }
 
+/**
+ * Clear the pos bit in src.
+ * pos is 1-based.
+ */
 template<typename T = u8>
 inline void ClearBit(T src, u8 pos) {
     int position = pos - 1;
     src &= ~(1 << position);
 }
 
+/**
+ * Set or clear the Position bit in src based on value.
+ * Position is 1-based.
+ */
 template <unsigned int Position, typename T = u8>
 inline void AssignBit(T& src, bool value) {
     static_assert((Position-1) <= (sizeof(T) * 8) && Position >= 1,
@@ -66,21 +94,27 @@ inline void AssignBit(T& src, bool value) {
     src ^= (-((int)value) ^ src) & (1 << position);
 }
 
+
 template <typename T = u8>
 inline bool CheckOverflow(T src, T value, T result, bool adc) {
-    if (adc){
-	return !((src ^ value) & 0x80) && ((src ^ result) & 0x80);
+    if (adc) {
+        return !((src ^ value) & 0x80) && ((src ^ result) & 0x80);
     } else {
-	return ((src ^ value) & 0x80) && ((src ^ result) & 0x80);
+        return ((src ^ value) & 0x80) && ((src ^ result) & 0x80);
     }
-    
 }
 
+/**
+ * Return true when src is negative (has bit 8 set)
+ */
 template <typename T = u8>
 inline bool CheckSign(T& src){
     return CheckBit<8, T>(src);
 }
 
+/**
+ * Return true when src is zero.
+ */
 template <typename T = u8>
 inline bool CheckZero(T src){
     return src == 0;

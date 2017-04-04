@@ -3,7 +3,9 @@
 #include "rom.h"
 
 namespace Frankenstein {
+
 class Nes;
+
 class Ppu
 {
 public:
