@@ -8,7 +8,7 @@ const u8 * FileRom::GetRaw() const {
     return this->raw.data();
 }
 
-unsigned int FileRom::GetLength() const {
+u32 FileRom::GetLength() const {
     return this->raw.size();
 }
 

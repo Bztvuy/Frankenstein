@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rom.h"
+#include "util.h"
 
 #include <string>
 #include <vector>
@@ -9,8 +10,8 @@ namespace Frankenstein {
 
 class FileRom : public IRom {
 public:
-    virtual const u8* GetRaw() const override;
-    virtual unsigned int GetLength() const override;
+    virtual const u8 * GetRaw() const override;
+    virtual u32 GetLength() const override;
     virtual const iNesHeader GetHeader() const override;
 
     virtual ~FileRom();
@@ -20,7 +21,7 @@ public:
 
 private:
     std::vector<u8> raw;
-    int raw_size;
+    u32 raw_size;
     std::string filename;
     iNesHeader header;
 };

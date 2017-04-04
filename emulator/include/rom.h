@@ -6,30 +6,30 @@ namespace Frankenstein {
 
 union iNesHeader {
     struct {
-        char magicWord[4];
-        char prgRomBanks;
-        char vRomBanks;
-        char controlByte1;
-        char controlByte2;
-        char prgRamSize;
-        char flags9;
-        char flags10;
-        char zeros[5];
+        u8 magicWord[4];
+        u8 prgRomBanks;
+        u8 vRomBanks;
+        u8 controlByte1;
+        u8 controlByte2;
+        u8 prgRamSize;
+        u8 flags9;
+        u8 flags10;
+        u8 zeros[5];
     };
-    char raw[16];
+    u8 raw[16];
 };
 
 class IRom {
 public:
     //sizes related to rom file format (in bytes) :
-    static constexpr int HeaderSize = 16;
-    static constexpr int TrainerSize = 512;
+    static constexpr u32 HeaderSize = 16;
+    static constexpr u32 TrainerSize = 512;
 
-    unsigned int GetTrainerOffset() const;
+    u32 GetTrainerOffset() const;
 
     virtual const iNesHeader GetHeader() const = 0;
-    virtual const u8* GetRaw() const = 0;
-    virtual unsigned int GetLength() const = 0;
+    virtual const u8 * GetRaw() const = 0;
+    virtual u32 GetLength() const = 0;
     virtual ~IRom(){}
 
 protected:

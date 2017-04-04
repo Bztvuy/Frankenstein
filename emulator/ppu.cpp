@@ -1,4 +1,5 @@
 #include "ppu.h"
+#include "rom.h"
 #include "dependencies.h"
 #include "nes.h"
 
@@ -17,11 +18,11 @@ Ppu::Ppu(Nes& pNes) : nes(pNes), vblankOccured(false){
     }
 
     const iNesHeader header = nes.rom.GetHeader();
-    int prgRomBanks = header.prgRomBanks;
-    int trainerOffset = nes.rom.GetTrainerOffset();
-    int vRomBanksLocation = IRom::HeaderSize + trainerOffset + prgRomBanks * PRGROM_BANK_SIZE;
+    u32 prgRomBanks = header.prgRomBanks;
+    u32 trainerOffset = nes.rom.GetTrainerOffset();
+    u32 vRomBanksLocation = IRom::HeaderSize + trainerOffset + prgRomBanks * PRGROM_BANK_SIZE;
 
-    for (int i = 0; i < 0x2000; ++i){
+    for (u32 i = 0; i < 0x2000; ++i){
         chrData[i] = nes.rom.GetRaw()[vRomBanksLocation + i];
     }
 

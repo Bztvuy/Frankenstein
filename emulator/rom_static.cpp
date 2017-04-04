@@ -9,11 +9,11 @@ StaticRom::StaticRom() {
 StaticRom::~StaticRom() {
 }
 
-const u8* StaticRom::GetRaw() const{
+const u8 * StaticRom::GetRaw() const{
     return raw;
 }
 
-unsigned int StaticRom::GetLength() const{
+u32 StaticRom::GetLength() const{
     return length;
 }
 
