@@ -8,7 +8,7 @@ class Gamepad{
 public:
     u8 index;
     
-    Gamepad();
+    explicit Gamepad();
     
     u8 Read(u8 read, u8 write);
     void Write(u8 write);

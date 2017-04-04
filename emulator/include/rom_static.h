@@ -11,7 +11,7 @@ public:
     virtual const iNesHeader GetHeader() const override;
 
     virtual ~StaticRom();
-    StaticRom();
+    explicit StaticRom();
 
 private:
     iNesHeader header;

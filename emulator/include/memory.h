@@ -61,7 +61,7 @@ public:
         PostIndexedIndirect,
     };
     
-    Memory(Nes& nes);
+    explicit Memory(Nes& nes);
 
     const Ref operator[](const AddressingType);
 

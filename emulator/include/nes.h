@@ -18,7 +18,7 @@ public:
     Cpu cpu;
     Ppu ppu;
 
-    Nes(IRom &rom);
+    explicit Nes(IRom &rom);
     void Step();
 };
 

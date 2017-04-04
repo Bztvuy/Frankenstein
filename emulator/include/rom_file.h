@@ -14,8 +14,8 @@ public:
     virtual const iNesHeader GetHeader() const override;
 
     virtual ~FileRom();
-    FileRom();
-    FileRom(std::string file);
+    explicit FileRom();
+    explicit FileRom(std::string file);
     void load(std::string file);
 
 private:

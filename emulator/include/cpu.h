@@ -537,7 +537,7 @@ public:
         return CheckBit<static_cast<int>(f)>(this->registers.P);
     }
 
-    Cpu(Nes& pNes);
+    explicit Cpu(Nes& pNes);
 
     void LoadRom(const IRom& rom);
 

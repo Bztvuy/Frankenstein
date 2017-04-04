@@ -212,7 +212,7 @@ public:
     // $2007 PPUDATA
     u8 bufferedData;  // for buffered reads
 
-    Ppu(Nes& pNes);
+    explicit Ppu(Nes& pNes);
 
     void Reset();
     u8 Read(u16 address);
