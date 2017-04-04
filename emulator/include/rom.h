@@ -33,10 +33,10 @@ public:
     virtual u8* GetPRG() const = 0;
     virtual u8* GetCHR() const = 0;
     virtual u8* GetSRAM() const = 0;
-    virtual ~IRom(){}
+    virtual ~IRom();
 
 protected:
-    const iNesHeader MakeHeader() const;
+    iNesHeader MakeHeader() const;
     u8* MakePRG() const;
     u8* MakeCHR() const;
     u8* MakeSRAM() const;

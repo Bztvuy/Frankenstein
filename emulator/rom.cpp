@@ -2,6 +2,8 @@
 
 using namespace Frankenstein;
 
+IRom::~IRom() {}
+
 u8* IRom::MakePRG() const {
     iNesHeader header = GetHeader();
     u8 prgRomBanks = header.prgRomBanks;
@@ -31,7 +33,7 @@ u8* IRom::MakeSRAM() const {
     return new u8[0x2000];
 }
 
-const iNesHeader IRom::MakeHeader() const {
+iNesHeader IRom::MakeHeader() const {
     iNesHeader header;
     u8 const *const raw = this->GetRaw();
     for (u32 i = 0; i < sizeof(iNesHeader); ++i){
