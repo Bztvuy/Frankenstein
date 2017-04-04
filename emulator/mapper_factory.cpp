@@ -7,7 +7,7 @@ Mapper* MapperFactory::MakeMapper(u8 mapper, IRom& rom){
 	case 0:
 		return new Mapper2(rom);
 	case 1:
-		return new Mapper1();
+		return new Mapper1(rom);
 	case 2:
 		return new Mapper2(rom);
 	case 3:
