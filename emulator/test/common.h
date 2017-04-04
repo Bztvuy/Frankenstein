@@ -3,12 +3,13 @@
 #include <gtest/gtest.h>
 #include <nes.h>
 #include <rom_static.h>
+#include <rom_loader.h>
 
 struct MemoryTest : testing::Test {
-    Frankenstein::StaticRom rom;
+    Frankenstein::Rom rom;
     Frankenstein::Nes nes;
 
-    MemoryTest() : rom(), nes(rom)
+    MemoryTest() : rom(Frankenstein::RomLoader::GetRom("roms/01-basics.nes")), nes(rom)
     {
     }
 
@@ -18,10 +19,10 @@ struct MemoryTest : testing::Test {
 };
 
 struct CPUTest : MemoryTest {
-    Frankenstein::StaticRom rom;
+    Frankenstein::Rom rom;
     Frankenstein::Nes nes = Frankenstein::Nes(rom);
 
-    CPUTest() : rom(), nes(rom)
+    CPUTest() : rom(Frankenstein::RomLoader::GetRom("roms/01-basics.nes")), nes(rom)
     {
     }
 

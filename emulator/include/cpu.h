@@ -539,7 +539,7 @@ public:
 
     explicit Cpu(Nes& pNes);
 
-    void LoadRom(const IRom& rom);
+    void LoadRom(const Rom& rom);
 
     u8 cycles;
     u16 stall;

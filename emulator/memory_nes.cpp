@@ -223,5 +223,4 @@ NesMemory::Ref NesMemory::Get<Addressing::PostIndexedIndirect>(const u8 low, con
 {
     return this->operator[](PostIndexedIndirect(low, index));
 }
-
 }

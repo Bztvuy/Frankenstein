@@ -7,12 +7,12 @@
 #include "nes.h"
 #include "cpu.h"
 #include "memory.h"
-#include "rom_file.h"
+#include "rom_loader.h"
 
 int main(int argc, char* argv[])
 {
     std::string file(argv[1]);
-    Frankenstein::FileRom rom(file);
+    Frankenstein::Rom rom(Frankenstein::RomLoader::GetRom(file));
     Frankenstein::Nes nes(rom);
 
     std::ofstream out("debug2.txt", std::ios::out | std::ios::binary);
@@ -80,6 +80,8 @@ int main(int argc, char* argv[])
             isTestDone = true;
         }
     }
+    
+    delete[] rom.GetRaw();
 
     return 0;
 }

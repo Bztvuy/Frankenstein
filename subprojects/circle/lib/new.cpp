@@ -34,6 +34,11 @@ void operator delete (void *pBlock) noexcept
 	free (pBlock);
 }
 
+void operator delete (void *pBlock, unsigned int size) noexcept
+{
+	free (pBlock);
+}
+
 void operator delete[] (void *pBlock) noexcept
 {
 	free (pBlock);

@@ -12,12 +12,12 @@ Cpu::Cpu(Nes& pNes)
     this->Reset();
 }
 
-void Cpu::LoadRom(const IRom& rom)
+void Cpu::LoadRom(const Rom& rom)
 {
     const iNesHeader header = rom.GetHeader();
     int prgRomBanks = header.prgRomBanks;
     int trainerOffset = rom.GetTrainerOffset();
-    int prgRomBanksLocation = IRom::HeaderSize + trainerOffset;
+    int prgRomBanksLocation = Rom::HeaderSize + trainerOffset;
 
     switch (prgRomBanks) {
     case 1:

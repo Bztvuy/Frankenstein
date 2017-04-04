@@ -20,7 +20,7 @@ Ppu::Ppu(Nes& pNes) : nes(pNes), vblankOccured(false){
     const iNesHeader header = nes.rom.GetHeader();
     u32 prgRomBanks = header.prgRomBanks;
     u32 trainerOffset = nes.rom.GetTrainerOffset();
-    u32 vRomBanksLocation = IRom::HeaderSize + trainerOffset + prgRomBanks * PRGROM_BANK_SIZE;
+    u32 vRomBanksLocation = Rom::HeaderSize + trainerOffset + prgRomBanks * PRGROM_BANK_SIZE;
 
     for (u32 i = 0; i < 0x2000; ++i){
         chrData[i] = nes.rom.GetRaw()[vRomBanksLocation + i];

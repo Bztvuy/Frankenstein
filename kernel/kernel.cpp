@@ -11,7 +11,7 @@ CKernel::CKernel (void)
     m_Timer (&m_Interrupt),
     m_Logger (m_Options.GetLogLevel (), &m_Timer),
     // TODO: add more member initializers here
-    embedded_rom(),
+    embedded_rom(Frankenstein::StaticRom::raw, Frankenstein::StaticRom::length),
     nes(embedded_rom)
 {
 }

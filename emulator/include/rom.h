@@ -19,27 +19,34 @@ union iNesHeader {
     u8 raw[16];
 };
 
-class IRom {
+class Rom {
 public:
     //sizes related to rom file format (in bytes) :
     static constexpr u32 HeaderSize = 16;
     static constexpr u32 TrainerSize = 512;
 
     u32 GetTrainerOffset() const;
+    const iNesHeader GetHeader() const;
+    const u8* const GetRaw() const;
+    u32 GetLength() const;
+    u8* GetPRG() const;
+    u8* GetCHR() const;
+    u8* GetSRAM() const;
 
-    virtual const iNesHeader GetHeader() const = 0;
-    virtual const u8* GetRaw() const = 0;
-    virtual u32 GetLength() const = 0;
-    virtual u8* GetPRG() const = 0;
-    virtual u8* GetCHR() const = 0;
-    virtual u8* GetSRAM() const = 0;
-    virtual ~IRom();
+    Rom(const u8* const data, u64 size);
+    
+private:
+    const u8* const raw;
+    const u64 length;
 
-protected:
+    iNesHeader header;
+    u8* PRG;
+    u8* CHR;
+    u8* SRAM;
+
     iNesHeader MakeHeader() const;
     u8* MakePRG() const;
     u8* MakeCHR() const;
     u8* MakeSRAM() const;
 };
-
 }

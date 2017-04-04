@@ -7,7 +7,7 @@ namespace Frankenstein {
 
 class MapperFactory{
 public:
-    static Mapper* MakeMapper(u8 mapper, IRom& rom);
+    static Mapper* MakeMapper(u8 mapper, Rom& rom);
 };
 
 }

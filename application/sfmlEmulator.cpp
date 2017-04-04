@@ -13,7 +13,7 @@
 
 #include "cpu.h"
 #include "nes.h"
-#include "rom_file.h"
+#include "rom_loader.h"
 
 std::mutex imageMutex;
 sf::Image img;
@@ -21,7 +21,8 @@ bool isRunning = true;
 
 void emulatorMain(std::string filename)
 {
-    Frankenstein::FileRom rom(filename);
+    Frankenstein::RomLoader loader;
+    Frankenstein::Rom rom = loader.GetRom(filename);
     Frankenstein::Nes nes(rom);
 
     std::ofstream out("debug2.txt", std::ios::out | std::ios::binary);

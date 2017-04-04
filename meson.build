@@ -28,8 +28,8 @@ if meson.is_cross_build()
 
     cpp_args += rpi_version_arg
     cpp_cross_args = cpp_args + ['-fno-builtin', '-nostdinc', '-nostdlib', '-ffreestanding', 
-                                 '-D__circle__', '-fno-exceptions', '-fno-non-call-exceptions', 
-                                 '-fno-rtti']
+                                 '-D__circle__', '-fno-exceptions', '-fno-unwind-tables', 
+                                 '-fno-non-call-exceptions', '-fno-rtti']
 endif
 
 #-------------------------------------------------------------------------------
