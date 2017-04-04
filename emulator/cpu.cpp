@@ -2,9 +2,11 @@
 #include "nes.h"
 
 using namespace Frankenstein;
+
 using Mode = Frankenstein::NesMemory::Addressing;
 
-Cpu::Cpu(Nes& pNes) : nes(pNes)
+Cpu::Cpu(Nes& pNes)
+    : nes(pNes)
 {
     this->LoadRom(nes.rom);
     this->Reset();
@@ -37,20 +39,20 @@ void Cpu::Reset()
     this->registers.PC = (nes.ram[0xFFFC] | nes.ram[0xFFFD] << 8);
     this->registers.P = 0b00100100;
     this->registers.SP = 0xFF;
+    this->stall = 0;
 }
 
 void Cpu::Step()
 {
     if (this->stall > 0) {
-	this->stall--;
-	this->cycles = 1;
-	return;
+        this->stall--;
+        this->cycles = 1;
+        return;
     }
     if (nmiOccurred) {
         this->cycles = NMI();
         this->nmiOccurred = false;
-    }
-    else {
+    } else {
         this->currentOpcode = OpCode();
         this->previousPC = this->registers.PC;
         auto instruction = this->instructions[this->currentOpcode];
@@ -78,7 +80,7 @@ u8 Cpu::PopFromStack()
 */
 u8 Cpu::OpCode()
 {
-   return nes.ram[this->registers.PC];
+    return nes.ram[this->registers.PC];
 }
 
 /**
@@ -86,7 +88,7 @@ u8 Cpu::OpCode()
 */
 u8 Cpu::Operand(int number)
 {
-   return nes.ram[this->registers.PC + number];
+    return nes.ram[this->registers.PC + number];
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -293,7 +295,7 @@ void Cpu::STY(const Memory value)
 u8 Cpu::BPL()
 {
     if (!Get<Flags::S>()) {
-	s8 offset = Operand(1);
+        s8 offset = Operand(1);
         auto pageCrossed = NesMemory::IsPageCrossed(this->registers.PC + 2, this->registers.PC + offset);
         this->registers.PC += offset;
         return 3 + pageCrossed;
