@@ -16,6 +16,18 @@ const iNesHeader FileRom::GetHeader() const {
     return this->header;
 }
 
+u8* FileRom::GetCHR() const {
+    return this->CHR;
+}
+
+u8* FileRom::GetPRG() const {
+    return this->PRG;
+}
+
+u8* FileRom::GetSRAM() const {
+    return this->SRAM;
+}
+
 FileRom::~FileRom() {
 }
 
@@ -42,4 +54,7 @@ void FileRom::load(std::string file) {
     }
 
     this->header = MakeHeader();
+    this->PRG = MakePRG();
+    this->CHR = MakeCHR();
+    this->SRAM = MakeSRAM();
 }

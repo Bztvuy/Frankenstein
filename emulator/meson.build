@@ -1,5 +1,6 @@
 emulator_src = ['memory_nes.cpp', 'rom.cpp', 'cpu.cpp', 'ppu.cpp', 'nes.cpp',
-                'gamepad.cpp', 'rom_static.cpp', 'rom_static_data.cpp']
+                'gamepad.cpp', 'rom_static.cpp', 'rom_static_data.cpp',
+                'mapper_factory.cpp', 'mapper.cpp']
 
 emulator_include = include_directories('include')
 

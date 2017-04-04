@@ -4,6 +4,9 @@ using namespace Frankenstein;
 
 StaticRom::StaticRom() {
     header = MakeHeader();
+    PRG = MakePRG();
+    CHR = MakeCHR();
+    SRAM = MakeSRAM();
 }
 
 StaticRom::~StaticRom() {
@@ -19,4 +22,16 @@ u32 StaticRom::GetLength() const{
 
 const iNesHeader StaticRom::GetHeader() const {
     return this->header;
+}
+
+u8* StaticRom::GetCHR() const {
+    return this->CHR;
+}
+
+u8* StaticRom::GetPRG() const {
+    return this->PRG;
+}
+
+u8* StaticRom::GetSRAM() const {
+    return this->SRAM;
 }

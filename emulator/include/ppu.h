@@ -50,23 +50,13 @@ public:
         FlipHorizontal = 6,     //Indicates whether to flip the sprite horizontally. 
         FlipVertical = 7        //Indicates whether to flip the sprite vertically.
     };
-    
-    // Mirroring Modes
-
-    enum MirrorMode {
-	    MirrorHorizontal = 0,
-	    MirrorVertical   = 1,
-	    MirrorSingle0    = 2,
-	    MirrorSingle1    = 3,
-	    MirrorFour       = 4
-    };
 
     const u16 MirrorLookup[5][4] {
-	    {0, 0, 1, 1},
-	    {0, 1, 0, 1},
-	    {0, 0, 0, 0},
-	    {1, 1, 1, 1},
-	    {0, 1, 2, 3},
+	{0, 0, 1, 1},
+	{0, 1, 0, 1},
+	{0, 0, 0, 0},
+	{1, 1, 1, 1},
+	{0, 1, 2, 3},
     };
 
     struct RGBColor{
