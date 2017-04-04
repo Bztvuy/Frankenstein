@@ -2,7 +2,7 @@ project('frankenstein', 'cpp',
   version: '0.1.0',
   meson_version: '>= 0.36.0',
   default_options: ['buildtype=debugoptimized',
-                    'cpp_std=c++11']
+                    'cpp_std=c++14']
 )
 
 thread = dependency('threads', native: true)
@@ -14,7 +14,13 @@ gtest_main_src = gtest.get_variable('mainsources')
 #-------------------------------------------------------------------------------
 # compilation variables
 #-------------------------------------------------------------------------------
-cpp_args = ['-Wall', '-Wno-psabi', '-fsigned-char']
+cpp_args = ['-fsigned-char']
+
+compiler = meson.get_compiler('cpp')
+
+if compiler.get_id() == 'gcc'
+    cpp_args += ['-Wno-psabi']
+endif
 
 if meson.is_cross_build()
     rpi_version = meson.get_cross_property('rpi_version')
@@ -36,8 +42,9 @@ else
 
     libcircle_dep = circle.get_variable('libcircle_dep')
     libcircle_include = circle.get_variable('circle_include')
-    
+
     subdir('emulator')
-    subdir('application')
     subdir('kernel')
 endif
+
+subdir('application')
