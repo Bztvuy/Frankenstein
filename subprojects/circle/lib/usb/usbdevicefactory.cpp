@@ -39,7 +39,7 @@ CUSBFunction *CUSBDeviceFactory::GetDevice (CUSBFunction *pParent, CString *pNam
 	if (   pName->Compare ("int9-0-0") == 0
 	    || pName->Compare ("int9-0-2") == 0)
 	{
-        pResult = 0; //new CUSBStandardHub (pParent);
+	    pResult = new CUSBStandardHub (pParent);
     }
 	else if (pName->Compare ("int8-6-50") == 0)
 	{

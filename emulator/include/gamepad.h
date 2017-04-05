@@ -7,11 +7,11 @@ namespace Frankenstein {
 class Gamepad{
 public:
     u8 index;
+    u8 strobe;
+    bool buttons[8];
     
-    explicit Gamepad();
-    
-    u8 Read(u8 read, u8 write);
-    void Write(u8 write);
+    u8 Read();
+    void Write(u8 value);
 };
 
 }

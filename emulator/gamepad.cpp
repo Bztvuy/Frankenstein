@@ -2,21 +2,23 @@
 
 namespace Frankenstein {
 
-Gamepad::Gamepad(){
-    index = 1;
-}
-
-u8 Gamepad::Read(u8 read, u8 write){
-    u8 value = index < 9 && CheckBit<>(read, index);
-    ++index;
-    if (CheckBit<1>(write)) 
-        index = 1;
+u8 Gamepad::Read(){
+    u8 value = 0;
+    if (index < 8 && buttons[index]) {
+	    value = 1;
+    }
+    index++;
+    if ((strobe&1) == 1) {
+	    index = 0;
+    }
     return value;
 }
 
-void Gamepad::Write(u8 write){
-    if (CheckBit<1>(write)) 
-        index = 1;
+void Gamepad::Write(u8 value){
+    strobe = value;
+	if ((strobe&1) == 1) {
+		index = 0;
+	}
 }
 
 }

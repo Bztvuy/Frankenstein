@@ -35,9 +35,9 @@ u8 NesMemory::Read(const u16 address)
     // $4000-$4017; NES APU and I/O registers
     else if (address < 0x4018) {
         if (address == 0x4016) {
-            return nes.pad1.Read(raw[address], raw[address]);
+            return nes.pad1.Read();
         } else if (address == 0x4017) {
-            return nes.pad2.Read(raw[address], raw[address - 1]);
+            return nes.pad2.Read();
         }
     }
     // $4018-$401F; APU and I/O functionality that is normally disabled.
@@ -67,13 +67,9 @@ void NesMemory::Write(const u16 address, const u8 val)
         nes.ppu.writeRegister(address, val);
     }
     // $4000-$4017; NES APU and I/O registers
-    else if (address < 0x4017) {
-        if (address == 0x4016) {
+    else if (address == 0x4016) {
             nes.pad1.Write(raw[address]);
             nes.pad2.Write(raw[address]);
-        } else if (address == 0x4017) {
-            // ignore?
-        }
     } else {
         raw[address] = val;
     }
