@@ -12,8 +12,8 @@ Gamepad::Gamepad()
 u8 Gamepad::Read()
 {
     u8 value = 0;
-    if (index > 8) {
-        value = 0;
+    if (index >= 8) {
+        index = 0;
     }
     else if (buttons[index]) {
         value = 1;
