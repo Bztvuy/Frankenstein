@@ -46,6 +46,7 @@ private:
     static CLogger* s_logger;
     static Nes* s_nes;
     static TGamePadState s_input;
+    static CInterruptSystem* s_interrupt;
 
 private:
     // do not change this order

@@ -6,6 +6,7 @@ static const char FromKernel[] = "kernel";
 
 Nes* CKernel::s_nes = nullptr;
 CLogger* CKernel::s_logger = nullptr;
+CInterruptSystem* CKernel::s_interrupt = nullptr;
 TGamePadState CKernel::s_input;
 
 CKernel::CKernel(void)
@@ -17,6 +18,7 @@ CKernel::CKernel(void)
     , nes(embedded_rom)
 {
     CKernel::s_logger = &m_Logger;
+    CKernel::s_interrupt = &m_Interrupt;
 
     CKernel::s_input.axes[0].value = 0;
     CKernel::s_input.axes[1].value = 0;
@@ -114,7 +116,6 @@ TShutdownMode CKernel::Run(void)
     while (true) {
         nes.Step();
         if (nes.cpu.nmiOccurred) {
-            m_Interrupt.DisableIRQ(ARM_IRQ_USB);
             for (unsigned int i = 0; i < 256; ++i) {
                 for (unsigned int j = 0; j < 240; ++j) {
                     auto color = COLOR32(nes.ppu.front[i + 256 * j].red, nes.ppu.front[i + 256 * j].green, nes.ppu.front[i + 256 * j].blue, 0);
@@ -136,25 +137,16 @@ TShutdownMode CKernel::Run(void)
                     m_Screen.SetPixel(i * 4 + 3, j * 4 + 3, color);
                 }
             }
-            if(i == 125) {
-                m_Interrupt.EnableIRQ(ARM_IRQ_USB);
-            }
-        }
-        else if(i == 125) {
+            nes.pad1.buttons[Gamepad::ButtonIndex::A]      = s_input.buttons & 0x80;
+            nes.pad1.buttons[Gamepad::ButtonIndex::B]      = s_input.buttons & 0x40;
+            nes.pad1.buttons[Gamepad::ButtonIndex::Select] = s_input.buttons & 0x10;
+            nes.pad1.buttons[Gamepad::ButtonIndex::Start]  = s_input.buttons & 0x20;
+            nes.pad1.buttons[Gamepad::ButtonIndex::Up]     = !s_input.axes[1].value;
+            nes.pad1.buttons[Gamepad::ButtonIndex::Down]   = s_input.axes[1].value == 255;
+            nes.pad1.buttons[Gamepad::ButtonIndex::Left]   = !s_input.axes[0].value;
+            nes.pad1.buttons[Gamepad::ButtonIndex::Right]  = s_input.axes[0].value == 255;
             m_Interrupt.EnableIRQ(ARM_IRQ_USB);
         }
-        else if (i == 126) {
-            m_Interrupt.DisableIRQ(ARM_IRQ_USB);
-        }
-        i++;
-        nes.pad1.buttons[Gamepad::ButtonIndex::A] = s_input.buttons & 0x80;
-        nes.pad1.buttons[Gamepad::ButtonIndex::B] = s_input.buttons & 0x40;
-        nes.pad1.buttons[Gamepad::ButtonIndex::Select] = s_input.buttons & 0x10;
-        nes.pad1.buttons[Gamepad::ButtonIndex::Start] = s_input.buttons & 0x20;
-        nes.pad1.buttons[Gamepad::ButtonIndex::Up] = !s_input.axes[1].value;
-        nes.pad1.buttons[Gamepad::ButtonIndex::Down] = s_input.axes[1].value == 255;
-        nes.pad1.buttons[Gamepad::ButtonIndex::Left] = !s_input.axes[0].value;
-        nes.pad1.buttons[Gamepad::ButtonIndex::Right] = s_input.axes[0].value == 255;
     }
     return ShutdownHalt;
 }
@@ -162,4 +154,5 @@ TShutdownMode CKernel::Run(void)
 void CKernel::GamePadStatusHandler(unsigned nDeviceIndex, const TGamePadState* pState)
 {
     s_input = *pState;
+    s_interrupt->DisableIRQ(ARM_IRQ_USB);
 }
