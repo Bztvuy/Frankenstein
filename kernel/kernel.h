@@ -45,7 +45,7 @@ private:
     static void GamePadStatusHandler (unsigned nDeviceIndex, const TGamePadState *pState);
     static CLogger* s_logger;
     static Nes* s_nes;
-    static TGamePadState s_oldInput;
+    static TGamePadState s_input;
 
 private:
     // do not change this order

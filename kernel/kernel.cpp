@@ -6,7 +6,7 @@ static const char FromKernel[] = "kernel";
 
 Nes* CKernel::s_nes = nullptr;
 CLogger* CKernel::s_logger = nullptr;
-TGamePadState CKernel::s_oldInput;
+TGamePadState CKernel::s_input;
 
 CKernel::CKernel(void)
     : m_Screen(m_Options.GetWidth(), m_Options.GetHeight())
@@ -18,9 +18,9 @@ CKernel::CKernel(void)
 {
     CKernel::s_logger = &m_Logger;
 
-    CKernel::s_oldInput.axes[0].value = 0;
-    CKernel::s_oldInput.axes[1].value = 0;
-    CKernel::s_oldInput.buttons = 0;
+    CKernel::s_input.axes[0].value = 0;
+    CKernel::s_input.axes[1].value = 0;
+    CKernel::s_input.buttons = 0;
 }
 
 CKernel::~CKernel(void)
@@ -73,15 +73,18 @@ TShutdownMode CKernel::Run(void)
     boolean bFound = FALSE;
 
     for (unsigned nDevice = 1; 1; nDevice++) {
+        CUSBGamePadDevice* pGamePad = nullptr;
+        const TGamePadState* pState = nullptr;
+        
         CString DeviceName;
         DeviceName.Format("upad%u", nDevice);
 
-        CUSBGamePadDevice* pGamePad = (CUSBGamePadDevice*)m_DeviceNameService.GetDevice(DeviceName, FALSE);
-        if (pGamePad == 0) {
+        pGamePad = (CUSBGamePadDevice*)m_DeviceNameService.GetDevice(DeviceName, FALSE);
+        if (pGamePad == nullptr) {
             break;
         }
 
-        const TGamePadState* pState = pGamePad->GetReport();
+        pState = pGamePad->GetReport();
         if (pState == 0) {
             m_Logger.Write(FromKernel, LogError, "Cannot get report from %s",
                 (const char*)DeviceName);
@@ -98,7 +101,6 @@ TShutdownMode CKernel::Run(void)
         }
 
         pGamePad->RegisterStatusHandler(GamePadStatusHandler);
-
         bFound = TRUE;
     }
 
@@ -107,7 +109,8 @@ TShutdownMode CKernel::Run(void)
     }
 
     m_Logger.Write(FromKernel, LogNotice, "Use your gamepad controls!");
-
+    
+    unsigned char i = 0;
     while (true) {
         nes.Step();
         if (nes.cpu.nmiOccurred) {
@@ -133,51 +136,30 @@ TShutdownMode CKernel::Run(void)
                     m_Screen.SetPixel(i * 4 + 3, j * 4 + 3, color);
                 }
             }
+            if(i == 125) {
+                m_Interrupt.EnableIRQ(ARM_IRQ_USB);
+            }
+        }
+        else if(i == 125) {
             m_Interrupt.EnableIRQ(ARM_IRQ_USB);
         }
+        else if (i == 126) {
+            m_Interrupt.DisableIRQ(ARM_IRQ_USB);
+        }
+        i++;
+        nes.pad1.buttons[Gamepad::ButtonIndex::A] = s_input.buttons & 0x80;
+        nes.pad1.buttons[Gamepad::ButtonIndex::B] = s_input.buttons & 0x40;
+        nes.pad1.buttons[Gamepad::ButtonIndex::Select] = s_input.buttons & 0x10;
+        nes.pad1.buttons[Gamepad::ButtonIndex::Start] = s_input.buttons & 0x20;
+        nes.pad1.buttons[Gamepad::ButtonIndex::Up] = !s_input.axes[1].value;
+        nes.pad1.buttons[Gamepad::ButtonIndex::Down] = s_input.axes[1].value == 255;
+        nes.pad1.buttons[Gamepad::ButtonIndex::Left] = !s_input.axes[0].value;
+        nes.pad1.buttons[Gamepad::ButtonIndex::Right] = s_input.axes[0].value == 255;
     }
     return ShutdownHalt;
 }
 
 void CKernel::GamePadStatusHandler(unsigned nDeviceIndex, const TGamePadState* pState)
 {
-    // A: pState->buttons & 0x80
-    // B: pState->buttons & 0x40
-    // Select: pState->buttons & 0x10
-    // Start: pState->buttons & 0x20
-    // Up: !pState->axes[1].value
-    // Down: pState->axes[1].value & 255
-    // Left: !pState->axes[0].value
-    // Right: pState->axes[0].value & 255
-
-    if (s_oldInput.axes[0].value != pState->axes[0].value 
-        || s_oldInput.axes[1].value != pState->axes[1].value 
-        || s_oldInput.buttons != pState->buttons) {
-
-        s_nes->pad1.buttons[Gamepad::ButtonIndex::A] = pState->buttons & 0x80;
-        s_nes->pad1.buttons[Gamepad::ButtonIndex::B] = pState->buttons & 0x40;
-        s_nes->pad1.buttons[Gamepad::ButtonIndex::Select] = pState->buttons & 0x10;
-        s_nes->pad1.buttons[Gamepad::ButtonIndex::Start] = pState->buttons & 0x20;
-        s_nes->pad1.buttons[Gamepad::ButtonIndex::Up] = !pState->axes[1].value;
-        s_nes->pad1.buttons[Gamepad::ButtonIndex::Down] = pState->axes[1].value == 255;
-        s_nes->pad1.buttons[Gamepad::ButtonIndex::Left] = !pState->axes[0].value;
-        s_nes->pad1.buttons[Gamepad::ButtonIndex::Right] = pState->axes[0].value == 255;
-
-//         CString msg;
-//         msg.Format("%c %c %c %c %c %c %c %c",
-//             s_nes->pad1.buttons[0] ? 'A' : ' ',
-//             s_nes->pad1.buttons[1] ? 'B' : ' ',
-//             s_nes->pad1.buttons[2] ? 'S' : ' ',
-//             s_nes->pad1.buttons[3] ? 'L' : ' ',
-//             s_nes->pad1.buttons[4] ? 'u' : ' ',
-//             s_nes->pad1.buttons[5] ? 'd' : ' ',
-//             s_nes->pad1.buttons[6] ? 'l' : ' ',
-//             s_nes->pad1.buttons[7] ? 'r' : ' ');
-
-//         CKernel::s_logger->Write(FromKernel, LogNotice, msg);
-
-        CKernel::s_oldInput.axes[0].value = pState->axes[0].value;
-        CKernel::s_oldInput.axes[1].value = pState->axes[1].value;
-        CKernel::s_oldInput.buttons = pState->buttons;
-    }
+    s_input = *pState;
 }
