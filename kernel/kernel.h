@@ -43,6 +43,9 @@ public:
     
 private:
     static void GamePadStatusHandler (unsigned nDeviceIndex, const TGamePadState *pState);
+    static CLogger* s_logger;
+    static Nes* s_nes;
+    static TGamePadState s_oldInput;
 
 private:
     // do not change this order
@@ -61,6 +64,7 @@ private:
     // TODO: add more members here
     Rom embedded_rom;
     Nes nes;
+    
 };
 
 #endif
