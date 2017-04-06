@@ -118,22 +118,24 @@ TShutdownMode CKernel::Run(void)
             for (unsigned int i = 0; i < 256; ++i) {
                 for (unsigned int j = 0; j < 240; ++j) {
                     auto color = *(u32*)&nes.ppu.front[i + 256 * j];
-                    m_Screen.SetPixel(i * 4, j * 4, color);
-                    m_Screen.SetPixel(i * 4 + 1, j * 4, color);
-                    m_Screen.SetPixel(i * 4 + 2, j * 4, color);
-                    m_Screen.SetPixel(i * 4 + 3, j * 4, color);
-                    m_Screen.SetPixel(i * 4, j * 4 + 1, color);
-                    m_Screen.SetPixel(i * 4 + 1, j * 4 + 1, color);
-                    m_Screen.SetPixel(i * 4 + 2, j * 4 + 1, color);
-                    m_Screen.SetPixel(i * 4 + 3, j * 4 + 1, color);
-                    m_Screen.SetPixel(i * 4, j * 4 + 2, color);
-                    m_Screen.SetPixel(i * 4 + 1, j * 4 + 2, color);
-                    m_Screen.SetPixel(i * 4 + 2, j * 4 + 2, color);
-                    m_Screen.SetPixel(i * 4 + 3, j * 4 + 2, color);
-                    m_Screen.SetPixel(i * 4, j * 4 + 3, color);
-                    m_Screen.SetPixel(i * 4 + 1, j * 4 + 3, color);
-                    m_Screen.SetPixel(i * 4 + 2, j * 4 + 3, color);
-                    m_Screen.SetPixel(i * 4 + 3, j * 4 + 3, color);
+		    if (m_Screen.GetPixel(i * 4, j * 4) != color){
+			m_Screen.SetPixel(i * 4, j * 4, color);
+			m_Screen.SetPixel(i * 4 + 1, j * 4, color);
+			m_Screen.SetPixel(i * 4 + 2, j * 4, color);
+			m_Screen.SetPixel(i * 4 + 3, j * 4, color);
+			m_Screen.SetPixel(i * 4, j * 4 + 1, color);
+			m_Screen.SetPixel(i * 4 + 1, j * 4 + 1, color);
+			m_Screen.SetPixel(i * 4 + 2, j * 4 + 1, color);
+			m_Screen.SetPixel(i * 4 + 3, j * 4 + 1, color);
+			m_Screen.SetPixel(i * 4, j * 4 + 2, color);
+			m_Screen.SetPixel(i * 4 + 1, j * 4 + 2, color);
+			m_Screen.SetPixel(i * 4 + 2, j * 4 + 2, color);
+			m_Screen.SetPixel(i * 4 + 3, j * 4 + 2, color);
+			m_Screen.SetPixel(i * 4, j * 4 + 3, color);
+			m_Screen.SetPixel(i * 4 + 1, j * 4 + 3, color);
+			m_Screen.SetPixel(i * 4 + 2, j * 4 + 3, color);
+			m_Screen.SetPixel(i * 4 + 3, j * 4 + 3, color);
+		    }
                 }
             }
             nes.pad1.buttons[Gamepad::ButtonIndex::A]      = s_input.buttons & 0x80;
