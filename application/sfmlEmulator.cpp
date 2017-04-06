@@ -13,18 +13,19 @@
 
 #include "cpu.h"
 #include "nes.h"
+#include "gamepad.h"
 #include "rom_loader.h"
+#include "rom_static.h"
+
+using Controller = Frankenstein::Gamepad::ButtonIndex;
 
 std::mutex imageMutex;
-sf::Image img;
+sf::Texture screen;
+
 bool isRunning = true;
 
-void emulatorMain(std::string filename)
+void emulatorMain(Frankenstein::Nes &nes)
 {
-    Frankenstein::RomLoader loader;
-    Frankenstein::Rom rom = loader.GetRom(filename);
-    Frankenstein::Nes nes(rom);
-
     std::ofstream out("debug2.txt", std::ios::out | std::ios::binary);
     out << "EX.TIME|PPU|PC  |SVABDIZC|A |X |Y |Instruction| Hex data" << std::endl;
 
@@ -62,63 +63,104 @@ void emulatorMain(std::string filename)
 
         if (nes.ppu.vblankOccured) {
             std::lock_guard<std::mutex> guard(imageMutex);
-            img.create(1024, 960, sf::Color::Black);
-            for (unsigned int i = 0; i < 256; ++i) {
-                for (unsigned int j = 0; j < 240; ++j) {
-                    sf::Color color(nes.ppu.front[i + 256 * j].red, nes.ppu.front[i + 256 * j].green, nes.ppu.front[i + 256 * j].blue);
-                    img.setPixel(i * 4 + 0, j * 4 + 0, color);
-                    img.setPixel(i * 4 + 1, j * 4 + 0, color);
-                    img.setPixel(i * 4 + 2, j * 4 + 0, color);
-                    img.setPixel(i * 4 + 3, j * 4 + 0, color);
-                    img.setPixel(i * 4 + 0, j * 4 + 1, color);
-                    img.setPixel(i * 4 + 1, j * 4 + 1, color);
-                    img.setPixel(i * 4 + 2, j * 4 + 1, color);
-                    img.setPixel(i * 4 + 3, j * 4 + 1, color);
-                    img.setPixel(i * 4 + 0, j * 4 + 2, color);
-                    img.setPixel(i * 4 + 1, j * 4 + 2, color);
-                    img.setPixel(i * 4 + 2, j * 4 + 2, color);
-                    img.setPixel(i * 4 + 3, j * 4 + 2, color);
-                    img.setPixel(i * 4 + 0, j * 4 + 3, color);
-                    img.setPixel(i * 4 + 1, j * 4 + 3, color);
-                    img.setPixel(i * 4 + 2, j * 4 + 3, color);
-                    img.setPixel(i * 4 + 3, j * 4 + 3, color);
-                }
-            }
+            screen.update((const sf::Uint8*)nes.ppu.front);
         }
     }
 }
 
 int main(int argc, char* argv[])
 {
-    sf::RenderWindow window(sf::VideoMode(1024, 960), "Frankenstein NES Emulator");
-    window.setFramerateLimit(30);
-    sf::Texture screen;
+    sf::RenderWindow window(sf::VideoMode(256, 240), "Frankenstein NES Emulator");
+    window.setFramerateLimit(120);
     sf::Sprite tmp;
-    sf::Text text;
-    screen.create(1024, 960);
-    img.create(1024, 960, sf::Color::Black);
+
+    tmp.setScale(1.f, 1.f);
+    screen.create(256, 240);
 
     std::string file(argv[1]);
-    std::thread emulatorThr(emulatorMain, file);
+    //Frankenstein::Rom rom(Frankenstein::StaticRom::raw, Frankenstein::StaticRom::length);// Frankenstein::RomLoader::GetRom(file));
+    Frankenstein::Rom rom(Frankenstein::RomLoader::GetRom(file));
+    Frankenstein::Nes nes(rom);
+    std::thread emulatorThr(emulatorMain, std::ref(nes));
 
     while (window.isOpen()) {
         // check all the window's events that were triggered since the last iteration of the loop
         sf::Event event;
         while (window.pollEvent(event)) {
-            // "close requested" event: we close the window
-            if (event.type == sf::Event::Closed) {
-                isRunning = false;
-                window.close();
+            switch(event.type) {
+                case sf::Event::Closed:
+                    isRunning = false;
+                    window.close();
+                    break;
+                case sf::Event::KeyPressed: 
+                    switch (event.key.code) {
+                        case sf::Keyboard::Left:
+                            nes.pad1.buttons[Controller::Left] = true;
+                            break;
+                        case sf::Keyboard::Right:
+                            nes.pad1.buttons[Controller::Right] = true;
+                            break;
+                        case sf::Keyboard::Up:
+                            nes.pad1.buttons[Controller::Up] = true;
+                            break;
+                        case sf::Keyboard::Down:
+                            nes.pad1.buttons[Controller::Down] = true;
+                            break;
+                        case sf::Keyboard::D:
+                            nes.pad1.buttons[Controller::B] = true;
+                            break;
+                        case sf::Keyboard::F:
+                            nes.pad1.buttons[Controller::A] = true;
+                            break;
+                        case sf::Keyboard::S:
+                            nes.pad1.buttons[Controller::Select] = true;
+                            break;
+                        case sf::Keyboard::Return:
+                            nes.pad1.buttons[Controller::Start] = true;
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case sf::Event::KeyReleased: 
+                    switch (event.key.code) {
+                        case sf::Keyboard::Left:
+                            nes.pad1.buttons[Controller::Left] = false;
+                            break;
+                        case sf::Keyboard::Right:
+                            nes.pad1.buttons[Controller::Right] = false;
+                            break;
+                        case sf::Keyboard::Up:
+                            nes.pad1.buttons[Controller::Up] = false;
+                            break;
+                        case sf::Keyboard::Down:
+                            nes.pad1.buttons[Controller::Down] = false;
+                            break;
+                        case sf::Keyboard::D:
+                            nes.pad1.buttons[Controller::B] = false;
+                            break;
+                        case sf::Keyboard::F:
+                            nes.pad1.buttons[Controller::A] = false;
+                            break;
+                        case sf::Keyboard::S:
+                            nes.pad1.buttons[Controller::Select] = false;
+                            break;
+                        case sf::Keyboard::Return:
+                            nes.pad1.buttons[Controller::Start] = false;
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
             }
-
-            {
-                std::lock_guard<std::mutex> guard(imageMutex);
-                screen.loadFromImage(img);
-            }
-            tmp.setTexture(screen, false);
-            window.draw(tmp);
-            window.display();
         }
+
+        {
+            std::lock_guard<std::mutex> guard(imageMutex);
+            tmp.setTexture(screen, true);
+            window.draw(tmp);
+        }
+        window.display();
     }
 
     emulatorThr.join();

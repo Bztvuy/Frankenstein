@@ -1,17 +1,19 @@
-#include "ppu.h"
-#include "rom.h"
 #include "dependencies.h"
 #include "nes.h"
+#include "ppu.h"
+#include "rom.h"
 
 using namespace Frankenstein;
 
-Ppu::Ppu(Nes& pNes) : nes(pNes), vblankOccured(false){
+Ppu::Ppu(Nes& pNes)
+    : nes(pNes)
+    , vblankOccured(false)
+{
     front = new RGBColor[256 * 240];
     back = new RGBColor[256 * 240];
 
-    for (int i = 0; i < 256; ++i)
-    {
-        for(int j = 0; j < 240; j++) {
+    for (int i = 0; i < 256; ++i) {
+        for (int j = 0; j < 240; j++) {
             front[i + 256 * j] = RGBColor();
             back[i + 256 * j] = RGBColor();
         }
@@ -22,14 +24,15 @@ Ppu::Ppu(Nes& pNes) : nes(pNes), vblankOccured(false){
     u32 trainerOffset = nes.rom.GetTrainerOffset();
     u32 vRomBanksLocation = Rom::HeaderSize + trainerOffset + prgRomBanks * PRGROM_BANK_SIZE;
 
-    for (u32 i = 0; i < 0x2000; ++i){
+    for (u32 i = 0; i < 0x2000; ++i) {
         chrData[i] = nes.rom.GetRaw()[vRomBanksLocation + i];
     }
 
     Reset();
 }
 
-void Ppu::Reset() {
+void Ppu::Reset()
+{
     Cycle = 340;
     ScanLine = 240;
     Frame = 0;
@@ -38,104 +41,112 @@ void Ppu::Reset() {
     writeOAMAddress(0);
 }
 
-u8 Ppu::Read(u16 address) {
-    u16 temp = address % 0x4000;
-    if (temp < 0x2000){
+u8 Ppu::Read(u16 address)
+{
+    u16 temp = address & 0x3FFF; // TODO CONFIRM % 0x4000;
+    if (temp < 0x2000) {
         return chrData[temp];
     } else if (temp < 0x3F00) {
         u8 mode = CheckBit<1>(nes.rom.GetHeader().controlByte1);
-        return nameTableData[MirrorAddress(mode, temp)%2048];
+        return nameTableData[MirrorAddress(mode, temp) & 0x7FF]; // % 2048
     } else if (temp < 0x4000) {
-        return readPalette(temp % 32);
+        return readPalette(temp & 0x1F); // % 20
     }
     return 0;
 }
 
-void Ppu::Write(u16 address, u8 value) {
-    u16 temp = address % 0x4000;
+void Ppu::Write(u16 address, u8 value)
+{
+    u16 temp = address & 0x3FFF; // TODO CONFIRM % 0x4000;
     if (temp < 0x2000) {
         chrData[temp] = value;
     } else if (temp < 0x3F00) {
         u8 mode = CheckBit<1>(nes.rom.GetHeader().controlByte1);
-        nameTableData[MirrorAddress(mode, temp)%2048] = value;
+        nameTableData[MirrorAddress(mode, temp) & 0x7FF] = value;
     } else if (temp < 0x4000) {
-        writePalette(temp%32, value);
+        writePalette(temp & 0x1F, value);
     }
 }
 
-u16 Ppu::MirrorAddress(u8 mode, u16 address) {
-    u16 temp = (address - 0x2000) % 0x1000;
-    u16 table = temp / 0x0400;
-    u16 offset = temp % 0x0400;
-    return 0x2000 + MirrorLookup[mode][table]*0x0400 + offset;
+u16 Ppu::MirrorAddress(u8 mode, u16 address)
+{
+    u16 temp = (address - 0x2000) & 0x0FFF; //  % 0x1000
+    u16 table = temp >> 10; // / 0x0400;
+    u16 offset = temp & 0x03FF;
+    return 0x2000 + MirrorLookup[mode][table] * 0x0400 + offset;
 }
 
-u8 Ppu::readPalette(u16 address) {
-    if (address >= 16 && address % 4 == 0) {
+u8 Ppu::readPalette(u16 address)
+{
+    if (address >= 16 && (address & 0x03) == 0) { // (address % 4) == 0
         address -= 16;
     }
     return paletteData[address];
 }
 
-void Ppu::writePalette(u16 address, u8 value) {
-    if (address >= 16 && address % 4 == 0) {
+void Ppu::writePalette(u16 address, u8 value)
+{
+    if (address >= 16 && (address & 0x03) == 0) {
         address -= 16;
     }
     paletteData[address] = value;
 }
 
-u8 Ppu::readRegister(u16 address) {
+u8 Ppu::readRegister(u16 address)
+{
     switch (address) {
-        case 0x2002:
-            return readStatus();
-        case 0x2004:
-            return readOAMData();
-        case 0x2007:
-            return readData();
+    case 0x2002:
+        return readStatus();
+    case 0x2004:
+        return readOAMData();
+    case 0x2007:
+        return readData();
     }
     return 0;
 }
 
-void Ppu::writeRegister(u16 address, u8 value) {
+void Ppu::writeRegister(u16 address, u8 value)
+{
     reg = value;
     switch (address) {
-        case 0x2000:
-            writeControl(value);
+    case 0x2000:
+        writeControl(value);
         break;
-        case 0x2001:
-            writeMask(value);
+    case 0x2001:
+        writeMask(value);
         break;
-        case 0x2003:
-            writeOAMAddress(value);
+    case 0x2003:
+        writeOAMAddress(value);
         break;
-        case 0x2004:
-            writeOAMData(value);
+    case 0x2004:
+        writeOAMData(value);
         break;
-        case 0x2005:
-            writeScroll(value);
+    case 0x2005:
+        writeScroll(value);
         break;
-        case 0x2006:
-            writeAddress(value);
+    case 0x2006:
+        writeAddress(value);
         break;
-        case 0x2007:
-            writeData(value);
+    case 0x2007:
+        writeData(value);
         break;
-        case 0x4014:
-            writeDMA(value);
+    case 0x4014:
+        writeDMA(value);
         break;
     }
 }
 
 // $2000: PPUCTRL
 
-void Ppu::writeControl(u8 value) {
+void Ppu::writeControl(u8 value)
+{
     flagNameTable = (value >> 0) & 3;
     flagIncrement = (value >> 2) & 1;
     flagSpriteTable = (value >> 3) & 1;
     flagBackgroundTable = (value >> 4) & 1;
     flagSpriteSize = (value >> 5) & 1;
     flagMasterSlave = (value >> 6) & 1;
-    nmiOutput = ((value >> 7)&1) == 1;
+    nmiOutput = ((value >> 7) & 1) == 1;
     nmiChange();
     // t: ....BA.. ........ = d: ......BA
     t = (t & 0xF3FF) | ((u16(value) & 0x03) << 10);
@@ -143,7 +154,8 @@ void Ppu::writeControl(u8 value) {
 
 // $2001: PPUMASK
 
-void Ppu::writeMask(u8 value) {
+void Ppu::writeMask(u8 value)
+{
     flagGrayscale = (value >> 0) & 1;
     flagShowLeftBackground = (value >> 1) & 1;
     flagShowLeftSprites = (value >> 2) & 1;
@@ -156,7 +168,8 @@ void Ppu::writeMask(u8 value) {
 
 // $2002: PPUSTATUS
 
-u8 Ppu::readStatus() {
+u8 Ppu::readStatus()
+{
     u8 result = reg & 0x1F;
     result |= flagSpriteOverflow << 5;
     result |= flagSpriteZeroHit << 6;
@@ -165,33 +178,36 @@ u8 Ppu::readStatus() {
     }
     nmiOccurred = false;
     nmiChange();
-    // w:                   = 0
     w = 0;
     return result;
 }
 
 // $2003: OAMADDR
 
-void Ppu::writeOAMAddress(u8 value) {
+void Ppu::writeOAMAddress(u8 value)
+{
     oamAddress = value;
 }
 
 // $2004: OAMDATA (read)
 
-u8 Ppu::readOAMData() {
+u8 Ppu::readOAMData()
+{
     return oamData[oamAddress];
 }
 
 // $2004: OAMDATA (write)
 
-void Ppu::writeOAMData(u8 value) {
+void Ppu::writeOAMData(u8 value)
+{
     oamData[oamAddress] = value;
     oamAddress++;
 }
 
 // $2005: PPUSCROLL
 
-void Ppu::writeScroll(u8 value) {
+void Ppu::writeScroll(u8 value)
+{
     if (w == 0) {
         // t: ........ ...HGFED = d: HGFED...
         // x:               CBA = d: .....CBA
@@ -210,7 +226,8 @@ void Ppu::writeScroll(u8 value) {
 
 // $2006: PPUADDR
 
-void Ppu::writeAddress(u8 value) {
+void Ppu::writeAddress(u8 value)
+{
     if (w == 0) {
         // t: ..FEDCBA ........ = d: ..FEDCBA
         // t: .X...... ........ = 0
@@ -229,10 +246,11 @@ void Ppu::writeAddress(u8 value) {
 
 // $2007: PPUDATA (read)
 
-u8 Ppu::readData() {
+u8 Ppu::readData()
+{
     u8 value = Read(v);
     // emulate buffered reads
-    if (v % 0x4000 < 0x3F00) {
+    if ((v & 0x3FFF) < 0x3F00) { // % 0x4000
         u8 buffered = bufferedData;
         bufferedData = value;
         value = buffered;
@@ -250,7 +268,8 @@ u8 Ppu::readData() {
 
 // $2007: PPUDATA (write)
 
-void Ppu::writeData(u8 value) {
+void Ppu::writeData(u8 value)
+{
     Write(v, value);
     if (flagIncrement == 0) {
         v += 1;
@@ -261,7 +280,8 @@ void Ppu::writeData(u8 value) {
 
 // $4014: OAMDMA
 
-void Ppu::writeDMA(u8 value) {
+void Ppu::writeDMA(u8 value)
+{
     u16 address = u16(value) << 8;
     for (u16 i = 0; i < 256; i++) {
         oamData[oamAddress] = nes.ram[address];
@@ -276,14 +296,15 @@ void Ppu::writeDMA(u8 value) {
      * We can use this aspect to partially compensate for NMI's variable delay.
      */
     nes.cpu.stall += 513;
-    if (nes.cpu.cycles%2 == 1) {
-         nes.cpu.stall++;
+    if (nes.cpu.cycles & 1) {
+        nes.cpu.stall++;
     }
 }
 
 // NTSC Timing Helper Functions
 
-void Ppu::incrementX() {
+void Ppu::incrementX()
+{
     // increment hori(v)
     // if coarse X == 31
     if ((v & 0x001F) == 31) {
@@ -297,7 +318,8 @@ void Ppu::incrementX() {
     }
 }
 
-void Ppu::incrementY() {
+void Ppu::incrementY()
+{
     // increment vert(v)
     // if fine Y < 7
     if ((v & 0x7000) != 0x7000) {
@@ -325,19 +347,22 @@ void Ppu::incrementY() {
     }
 }
 
-void Ppu::copyX() {
+void Ppu::copyX()
+{
     // hori(v) = hori(t)
     // v: .....F.. ...EDCBA = t: .....F.. ...EDCBA
     v = (v & 0xFBE0) | (t & 0x041F);
 }
 
-void Ppu::copyY() {
+void Ppu::copyY()
+{
     // vert(v) = vert(t)
     // v: .IHGF.ED CBA..... = t: .IHGF.ED CBA.....
     v = (v & 0x841F) | (t & 0x7BE0);
 }
 
-void Ppu::nmiChange() {
+void Ppu::nmiChange()
+{
     bool nmi = nmiOutput && nmiOccurred;
     if (nmi && !nmiPrevious) {
         // TODO: this fixes some games but the delay shouldn't have to be so
@@ -347,50 +372,57 @@ void Ppu::nmiChange() {
     nmiPrevious = nmi;
 }
 
-void Ppu::setVerticalBlank() {
+void Ppu::setVerticalBlank()
+{
     auto temp = back;
     back = front;
     front = temp;
     nmiOccurred = true;
     nmiChange();
-    
+
     vblankOccured = true;
 }
 
-void Ppu::clearVerticalBlank() {
+void Ppu::clearVerticalBlank()
+{
     nmiOccurred = false;
     nmiChange();
     vblankOccured = false;
 }
 
-void Ppu::fetchNameTableByte() {
+void Ppu::fetchNameTableByte()
+{
     u16 address = 0x2000 | (v & 0x0FFF);
     nameTableByte = Read(address);
 }
 
-void Ppu::fetchAttributeTableByte() {
+void Ppu::fetchAttributeTableByte()
+{
     u16 address = 0x23C0 | (v & 0x0C00) | ((v >> 4) & 0x38) | ((v >> 2) & 0x07);
     u16 shift = ((v >> 4) & 4) | (v & 2);
     attributeTableByte = ((Read(address) >> shift) & 3) << 2;
 }
 
-void Ppu::fetchLowTileByte() {
+void Ppu::fetchLowTileByte()
+{
     u16 fineY = (v >> 12) & 7;
     u8 table = flagBackgroundTable;
     u8 tile = nameTableByte;
-    u16 address = 0x1000 * u16(table) + u16(tile)*16 + fineY;
+    u16 address = 0x1000 * u16(table) + u16(tile) * 16 + fineY;
     lowTileByte = Read(address);
 }
 
-void Ppu::fetchHighTileByte() {
+void Ppu::fetchHighTileByte()
+{
     u16 fineY = (v >> 12) & 7;
     u8 table = flagBackgroundTable;
     u8 tile = nameTableByte;
-    u16 address = 0x1000 * u16(table) + u16(tile)*16 + fineY;
+    u16 address = 0x1000 * u16(table) + u16(tile) * 16 + fineY;
     highTileByte = Read(address + 8);
 }
 
-void Ppu::storeTileData() {
+void Ppu::storeTileData()
+{
     u32 data = 0;
     for (u8 i = 0; i < 8; i++) {
         u8 a = attributeTableByte;
@@ -404,11 +436,13 @@ void Ppu::storeTileData() {
     tileData |= u64(data);
 }
 
-u32 Ppu::fetchTileData() {
+u32 Ppu::fetchTileData()
+{
     return u32(tileData >> 32);
 }
 
-u8 Ppu::backgroundPixel() {
+u8 Ppu::backgroundPixel()
+{
     if (flagShowBackground == 0) {
         return 0;
     }
@@ -416,9 +450,10 @@ u8 Ppu::backgroundPixel() {
     return u8(data & 0x0F);
 }
 
-Ppu::BytePair Ppu::spritePixel() {
+Ppu::BytePair Ppu::spritePixel()
+{
     if (flagShowSprites == 0) {
-        return BytePair{0, 0};
+        return BytePair{ 0, 0 };
     }
     for (u32 i = 0; i < spriteCount; i++) {
         u32 offset = (Cycle - 1) - u32(spritePositions[i]);
@@ -427,15 +462,16 @@ Ppu::BytePair Ppu::spritePixel() {
         }
         offset = 7 - offset;
         u8 color = u8((spritePatterns[i] >> u8(offset * 4)) & 0x0F);
-        if (color % 4 == 0) {
+        if ((color & 0x03) == 0) {
             continue;
         }
-        return BytePair{u8(i), color};
+        return BytePair{ u8(i), color };
     }
-    return BytePair{0, 0};
+    return BytePair{ 0, 0 };
 }
 
-void Ppu::renderPixel() {
+void Ppu::renderPixel()
+{
     u32 x = Cycle - 1;
     u32 y = ScanLine;
     u8 background = backgroundPixel();
@@ -448,8 +484,8 @@ void Ppu::renderPixel() {
     if (x < 8 && flagShowLeftSprites == 0) {
         sprite = 0;
     }
-    bool b = background % 4 != 0;
-    bool s = sprite % 4 != 0;
+    bool b = (background & 0x03) != 0; // % 4 != 0
+    bool s = (sprite & 0x03) != 0;
     u8 color;
     if (!b && !s) {
         color = 0;
@@ -467,11 +503,12 @@ void Ppu::renderPixel() {
             color = background;
         }
     }
-    RGBColor c = systemPalette[readPalette(u16(color)) % 64];
+    RGBColor c = systemPalette[readPalette(u16(color)) & 0x3F]; // % 64
     back[x + 256 * y] = c;
 }
 
-u32 Ppu::fetchSpritePattern(u8 i, u32 row) {
+u32 Ppu::fetchSpritePattern(u8 i, u32 row)
+{
     u8 tile = oamData[i * 4 + 1];
     u8 attributes = oamData[i * 4 + 2];
     u16 address = 0;
@@ -480,7 +517,7 @@ u32 Ppu::fetchSpritePattern(u8 i, u32 row) {
             row = 7 - row;
         }
         u8 table = flagSpriteTable;
-        address = 0x1000 * u16(table) + u16(tile)*16 + u16(row);
+        address = 0x1000 * u16(table) + u16(tile) * 16 + u16(row);
     } else {
         if ((attributes & 0x80) == 0x80) {
             row = 15 - row;
@@ -491,7 +528,7 @@ u32 Ppu::fetchSpritePattern(u8 i, u32 row) {
             tile++;
             row -= 8;
         }
-        address = 0x1000 * u16(table) + u16(tile)*16 + u16(row);
+        address = 0x1000 * u16(table) + u16(tile) * 16 + u16(row);
     }
     u8 a = (attributes & 3) << 2;
     lowTileByte = Read(address);
@@ -516,7 +553,8 @@ u32 Ppu::fetchSpritePattern(u8 i, u32 row) {
     return data;
 }
 
-void Ppu::evaluateSprites() {
+void Ppu::evaluateSprites()
+{
     u32 h;
     if (flagSpriteSize == 0) {
         h = 8;
@@ -549,7 +587,8 @@ void Ppu::evaluateSprites() {
 
 // tick updates Cycle, ScanLine and Frame counters
 
-void Ppu::tick() {
+void Ppu::tick()
+{
     if (nmiDelay > 0) {
         nmiDelay--;
         if (nmiDelay == 0 && nmiOutput && nmiOccurred) {
@@ -557,14 +596,12 @@ void Ppu::tick() {
         }
     }
 
-    if (flagShowBackground != 0 || flagShowSprites != 0) {
-        if (f == 1 && ScanLine == 261 && Cycle == 339) {
-            Cycle = 0;
-            ScanLine = 0;
-            Frame++;
-            f ^= 1;
-            return;
-        }
+    if (f == 1 && ScanLine == 261 && Cycle == 339 && (flagShowBackground != 0 || flagShowSprites != 0)) {
+        Cycle = 0;
+        ScanLine = 0;
+        Frame++;
+        f ^= 1;
+        return;
     }
     Cycle++;
     if (Cycle > 340) {
@@ -580,7 +617,8 @@ void Ppu::tick() {
 
 // Step executes a single PPU cycle
 
-void Ppu::Step() {
+void Ppu::Step()
+{
     tick();
 
     bool renderingEnabled = flagShowBackground != 0 || flagShowSprites != 0;
@@ -599,29 +637,29 @@ void Ppu::Step() {
         }
         if (renderLine && fetchCycle) {
             tileData <<= 4;
-            switch (Cycle % 8) {
-                case 1:
-                    fetchNameTableByte();
-            break;
-                case 3:
-                    fetchAttributeTableByte();
-            break;
-                case 5:
-                    fetchLowTileByte();
-            break;
-                case 7:
-                    fetchHighTileByte();
-            break;
-                case 0:
-                    storeTileData();
-            break;
+            switch (Cycle & 0x07) { // % 8
+            case 1:
+                fetchNameTableByte();
+                break;
+            case 3:
+                fetchAttributeTableByte();
+                break;
+            case 5:
+                fetchLowTileByte();
+                break;
+            case 7:
+                fetchHighTileByte();
+                break;
+            case 0:
+                storeTileData();
+                break;
             }
         }
         if (preLine && Cycle >= 280 && Cycle <= 304) {
             copyY();
         }
         if (renderLine) {
-            if (fetchCycle && Cycle % 8 == 0) {
+            if (fetchCycle && (Cycle & 0x07) == 0) { // % 8
                 incrementX();
             }
             if (Cycle == 256) {
@@ -634,13 +672,11 @@ void Ppu::Step() {
     }
 
     // sprite logic
-    if (renderingEnabled) {
-        if (Cycle == 257) {
-            if (visibleLine) {
-                evaluateSprites();
-            } else {
-                spriteCount = 0;
-            }
+    if (Cycle == 257 && renderingEnabled) {
+        if (visibleLine) {
+            evaluateSprites();
+        } else {
+            spriteCount = 0;
         }
     }
 
@@ -654,4 +690,3 @@ void Ppu::Step() {
         flagSpriteOverflow = 0;
     }
 }
-

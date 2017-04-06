@@ -134,7 +134,6 @@ TShutdownMode CKernel::Run(void)
                 }
             }
             m_Interrupt.EnableIRQ(ARM_IRQ_USB);
-            m_Logger.Write(FromKernel, LogNotice, "Render");
         }
     }
     return ShutdownHalt;
@@ -151,29 +150,31 @@ void CKernel::GamePadStatusHandler(unsigned nDeviceIndex, const TGamePadState* p
     // Left: !pState->axes[0].value
     // Right: pState->axes[0].value & 255
 
-    if (s_oldInput.axes[0].value != pState->axes[0].value || s_oldInput.axes[1].value != pState->axes[1].value || s_oldInput.buttons != pState->buttons) {
+    if (s_oldInput.axes[0].value != pState->axes[0].value 
+        || s_oldInput.axes[1].value != pState->axes[1].value 
+        || s_oldInput.buttons != pState->buttons) {
 
-        s_nes->pad1.buttons[0] = pState->axes[1].value == 255;
-        s_nes->pad1.buttons[1] = !pState->axes[1].value;
-        s_nes->pad1.buttons[2] = pState->axes[0].value == 255;
-        s_nes->pad1.buttons[3] = !pState->axes[0].value;
-        s_nes->pad1.buttons[4] = pState->buttons & 0x20;
-        s_nes->pad1.buttons[5] = pState->buttons & 0x10;
-        s_nes->pad1.buttons[6] = pState->buttons & 0x40;
-        s_nes->pad1.buttons[7] = pState->buttons & 0x80;
+        s_nes->pad1.buttons[Gamepad::ButtonIndex::A] = pState->buttons & 0x80;
+        s_nes->pad1.buttons[Gamepad::ButtonIndex::B] = pState->buttons & 0x40;
+        s_nes->pad1.buttons[Gamepad::ButtonIndex::Select] = pState->buttons & 0x10;
+        s_nes->pad1.buttons[Gamepad::ButtonIndex::Start] = pState->buttons & 0x20;
+        s_nes->pad1.buttons[Gamepad::ButtonIndex::Up] = !pState->axes[1].value;
+        s_nes->pad1.buttons[Gamepad::ButtonIndex::Down] = pState->axes[1].value == 255;
+        s_nes->pad1.buttons[Gamepad::ButtonIndex::Left] = !pState->axes[0].value;
+        s_nes->pad1.buttons[Gamepad::ButtonIndex::Right] = pState->axes[0].value == 255;
 
-        CString msg;
-        msg.Format("%c %c %c %c %c %c %c %c",
-            s_nes->pad1.buttons[0] ? 'd' : ' ',
-            s_nes->pad1.buttons[1] ? 'u' : ' ',
-            s_nes->pad1.buttons[2] ? 'r' : ' ',
-            s_nes->pad1.buttons[3] ? 'l' : ' ',
-            s_nes->pad1.buttons[4] ? 'S' : ' ',
-            s_nes->pad1.buttons[5] ? 'L' : ' ',
-            s_nes->pad1.buttons[6] ? 'B' : ' ',
-            s_nes->pad1.buttons[7] ? 'A' : ' ');
+//         CString msg;
+//         msg.Format("%c %c %c %c %c %c %c %c",
+//             s_nes->pad1.buttons[0] ? 'A' : ' ',
+//             s_nes->pad1.buttons[1] ? 'B' : ' ',
+//             s_nes->pad1.buttons[2] ? 'S' : ' ',
+//             s_nes->pad1.buttons[3] ? 'L' : ' ',
+//             s_nes->pad1.buttons[4] ? 'u' : ' ',
+//             s_nes->pad1.buttons[5] ? 'd' : ' ',
+//             s_nes->pad1.buttons[6] ? 'l' : ' ',
+//             s_nes->pad1.buttons[7] ? 'r' : ' ');
 
-        CKernel::s_logger->Write(FromKernel, LogNotice, msg);
+//         CKernel::s_logger->Write(FromKernel, LogNotice, msg);
 
         CKernel::s_oldInput.axes[0].value = pState->axes[0].value;
         CKernel::s_oldInput.axes[1].value = pState->axes[1].value;

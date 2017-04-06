@@ -59,9 +59,16 @@ public:
     };
 
     struct RGBColor {
-        u8 red;
-        u8 green;
-        u8 blue;
+        u32 red : 8, 
+            green : 8, 
+            blue : 8, 
+            alpha : 8;
+        
+        RGBColor(): red(0), green(0), blue(0), alpha(0xFF) {
+        }
+        
+        RGBColor(u8 red, u8 green, u8 blue) : red(red), green(green), blue(blue), alpha(0xFF) {
+        }
     };
 
     const RGBColor systemPalette[0x40] = {
