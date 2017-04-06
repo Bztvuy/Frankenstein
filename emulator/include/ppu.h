@@ -58,6 +58,7 @@ public:
         { 0, 1, 2, 3 },
     };
 
+#ifndef NotNative
     struct RGBColor {
         u32 red : 8, 
             green : 8, 
@@ -70,6 +71,21 @@ public:
         RGBColor(u8 red, u8 green, u8 blue) : red(red), green(green), blue(blue), alpha(0xFF) {
         }
     };
+#else
+    struct RGBColor {
+        u32 blue : 8,
+            green : 8,
+            red : 8, 
+            alpha : 8;
+            
+        
+        RGBColor(): blue(0), green(0), red(0), alpha(0) {
+        }
+        
+        RGBColor(u8 red, u8 green, u8 blue) : blue(blue), green(green), red(red),  alpha(0) {
+        }
+    };
+#endif
 
     const RGBColor systemPalette[0x40] = {
         { 0x80, 0x80, 0x80 },

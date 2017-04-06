@@ -111,14 +111,13 @@ TShutdownMode CKernel::Run(void)
     }
 
     m_Logger.Write(FromKernel, LogNotice, "Use your gamepad controls!");
-    
-    unsigned char i = 0;
+
     while (true) {
         nes.Step();
         if (nes.cpu.nmiOccurred) {
             for (unsigned int i = 0; i < 256; ++i) {
                 for (unsigned int j = 0; j < 240; ++j) {
-                    auto color = COLOR32(nes.ppu.front[i + 256 * j].red, nes.ppu.front[i + 256 * j].green, nes.ppu.front[i + 256 * j].blue, 0);
+                    auto color = *(u32*)&nes.ppu.front[i + 256 * j];
                     m_Screen.SetPixel(i * 4, j * 4, color);
                     m_Screen.SetPixel(i * 4 + 1, j * 4, color);
                     m_Screen.SetPixel(i * 4 + 2, j * 4, color);
