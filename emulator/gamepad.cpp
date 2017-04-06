@@ -11,14 +11,11 @@ Gamepad::Gamepad()
 
 u8 Gamepad::Read()
 {
-    u8 value = 0;
+    u8 value = buttons[index];
+    index++;
     if (index >= 8) {
         index = 0;
     }
-    else if (buttons[index]) {
-        value = 1;
-    }
-    index++;
     if ((strobe & 1) == 1) {
         index = 0;
     }
