@@ -15,7 +15,7 @@ CKernel::CKernel(void)
     , m_Logger(m_Options.GetLogLevel(), &m_Timer)
     , m_DWHCI(&m_Interrupt, &m_Timer)
     , embedded_rom(Frankenstein::StaticRom::raw, Frankenstein::StaticRom::length)
-    , nes(embedded_rom)
+    , nes(embedded_rom, &m_Screen)
 {
     CKernel::s_logger = &m_Logger;
     CKernel::s_interrupt = &m_Interrupt;
@@ -115,29 +115,6 @@ TShutdownMode CKernel::Run(void)
     while (true) {
         nes.Step();
         if (nes.cpu.nmiOccurred) {
-            for (unsigned int i = 0; i < 256; ++i) {
-                for (unsigned int j = 0; j < 240; ++j) {
-                    auto color = *(u32*)&nes.ppu.front[i + 256 * j];
-		    if (m_Screen.GetPixel(i * 4, j * 4) != color){
-			m_Screen.SetPixel(i * 4, j * 4, color);
-			m_Screen.SetPixel(i * 4 + 1, j * 4, color);
-			m_Screen.SetPixel(i * 4 + 2, j * 4, color);
-			m_Screen.SetPixel(i * 4 + 3, j * 4, color);
-			m_Screen.SetPixel(i * 4, j * 4 + 1, color);
-			m_Screen.SetPixel(i * 4 + 1, j * 4 + 1, color);
-			m_Screen.SetPixel(i * 4 + 2, j * 4 + 1, color);
-			m_Screen.SetPixel(i * 4 + 3, j * 4 + 1, color);
-			m_Screen.SetPixel(i * 4, j * 4 + 2, color);
-			m_Screen.SetPixel(i * 4 + 1, j * 4 + 2, color);
-			m_Screen.SetPixel(i * 4 + 2, j * 4 + 2, color);
-			m_Screen.SetPixel(i * 4 + 3, j * 4 + 2, color);
-			m_Screen.SetPixel(i * 4, j * 4 + 3, color);
-			m_Screen.SetPixel(i * 4 + 1, j * 4 + 3, color);
-			m_Screen.SetPixel(i * 4 + 2, j * 4 + 3, color);
-			m_Screen.SetPixel(i * 4 + 3, j * 4 + 3, color);
-		    }
-                }
-            }
             nes.pad1.buttons[Gamepad::ButtonIndex::A]      = s_input.buttons & 0x80;
             nes.pad1.buttons[Gamepad::ButtonIndex::B]      = s_input.buttons & 0x40;
             nes.pad1.buttons[Gamepad::ButtonIndex::Select] = s_input.buttons & 0x10;

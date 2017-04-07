@@ -6,6 +6,8 @@
 #include "memory_nes.h"
 #include "gamepad.h"
 
+class CScreenDevice;
+
 namespace Frankenstein {
 
 class Nes
@@ -17,8 +19,12 @@ public:
     const Rom &rom;
     Cpu cpu;
     Ppu ppu;
-
+    
+    CScreenDevice* screen;
+    
     explicit Nes(Rom &rom);
+    explicit Nes(Rom &rom, CScreenDevice* pScreen);
+    
     void Step();
 };
 

@@ -9,15 +9,18 @@ Ppu::Ppu(Nes& pNes)
     : nes(pNes)
     , vblankOccured(false)
 {
+    
+#ifndef NotNative
     front = new RGBColor[256 * 240];
     back = new RGBColor[256 * 240];
 
     for (int i = 0; i < 256; ++i) {
-        for (int j = 0; j < 240; j++) {
-            front[i + 256 * j] = RGBColor();
-            back[i + 256 * j] = RGBColor();
-        }
+	for (int j = 0; j < 240; j++) {
+	    front[i + 256 * j] = RGBColor();
+	    back[i + 256 * j] = RGBColor();
+	}
     }
+#endif
 
     const iNesHeader header = nes.rom.GetHeader();
     u32 prgRomBanks = header.prgRomBanks;
@@ -374,9 +377,11 @@ void Ppu::nmiChange()
 
 void Ppu::setVerticalBlank()
 {
-    auto temp = back;
-    back = front;
-    front = temp;
+#ifndef NotNative
+	auto temp = back;
+	back = front;
+	front = temp;
+#endif
     nmiOccurred = true;
     nmiChange();
 
@@ -504,7 +509,17 @@ void Ppu::renderPixel()
         }
     }
     RGBColor c = systemPalette[readPalette(u16(color)) & 0x3F]; // % 64
+#ifndef NotNative
     back[x + 256 * y] = c;
+#else
+    auto col = *(u32*)&c;
+    if (nes.screen->GetPixel(x * 2, y * 2) != col){
+	nes.screen->SetPixel(x * 2, y * 2, col);
+	nes.screen->SetPixel(x * 2 + 1, y * 2, col);
+	nes.screen->SetPixel(x * 2, y * 2 + 1, col);
+	nes.screen->SetPixel(x * 2 + 1, y * 2 + 1, col);
+    }
+#endif
 }
 
 u32 Ppu::fetchSpritePattern(u8 i, u32 row)
