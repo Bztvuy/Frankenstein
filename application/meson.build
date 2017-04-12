@@ -7,12 +7,14 @@ if sfmlGraphic.found() and sfmlWindow.found()
         dependencies: [sfmlGraphic, sfmlWindow, thread],
         include_directories: [emulator_include],
         cpp_args: cpp_args,
-        native: true)
+        native: true,
+        install:true)
 endif
 
 termEmulator = executable('term_emulator', 'termEmulator.cpp',
     link_with: [emulator_native],
     include_directories: [emulator_include],
     cpp_args: cpp_args,
-    native: true)
+    native: true,
+    install:true)
 

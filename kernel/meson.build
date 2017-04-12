@@ -16,4 +16,4 @@ custom_target('kernel7.img',
     output: '@0@.img'.format(target),
     command: [objcopy, '@INPUT@', '-O', 'binary', '@OUTPUT@'],
     install: true,
-    install_dir: '')
+    install_dir: 'kernel')

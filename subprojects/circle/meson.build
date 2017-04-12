@@ -26,5 +26,5 @@ circle_include = include_directories('include')
 ld_script =  files('circle.ld')
 ld_script_location = '@0@/circle.ld'.format(meson.current_source_dir())
 
-#subdir('boot')
+subdir('boot')
 subdir('lib')
