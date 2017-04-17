@@ -1,0 +1,9 @@
+sdtv_aspect=1
+hdmi_cvt=512 480 60 1 0 1 1
+hdmi_group=2
+hdmi_mode=86
+hdmi_drive=1
+disable_overscan=1
+framebuffer_width=512
+framebuffer_height=480
+force_turbo=1

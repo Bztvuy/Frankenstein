@@ -17,3 +17,6 @@ custom_target('kernel7.img',
     command: [objcopy, '@INPUT@', '-O', 'binary', '@OUTPUT@'],
     install: true,
     install_dir: 'kernel')
+
+
+install_data(sources: 'config.txt', install_dir: 'kernel')
