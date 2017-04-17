@@ -45,7 +45,8 @@ private:
     static void GamePadStatusHandler (unsigned nDeviceIndex, const TGamePadState *pState);
     static CLogger* s_logger;
     static Nes* s_nes;
-    static TGamePadState s_input;
+    static TGamePadState s_input_player1;
+    static TGamePadState s_input_player2;
     static CInterruptSystem* s_interrupt;
 
 private:

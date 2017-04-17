@@ -7,7 +7,8 @@ static const char FromKernel[] = "kernel";
 Nes* CKernel::s_nes = nullptr;
 CLogger* CKernel::s_logger = nullptr;
 CInterruptSystem* CKernel::s_interrupt = nullptr;
-TGamePadState CKernel::s_input;
+TGamePadState CKernel::s_input_player1;
+TGamePadState CKernel::s_input_player2;
 
 CKernel::CKernel(void)
     : m_Screen(m_Options.GetWidth(), m_Options.GetHeight())
@@ -20,9 +21,13 @@ CKernel::CKernel(void)
     CKernel::s_logger = &m_Logger;
     CKernel::s_interrupt = &m_Interrupt;
 
-    CKernel::s_input.axes[0].value = 0;
-    CKernel::s_input.axes[1].value = 0;
-    CKernel::s_input.buttons = 0;
+    CKernel::s_input_player1.axes[0].value = 0;
+    CKernel::s_input_player1.axes[1].value = 0;
+    CKernel::s_input_player1.buttons = 0;
+
+    CKernel::s_input_player2.axes[0].value = 0;
+    CKernel::s_input_player2.axes[1].value = 0;
+    CKernel::s_input_player2.buttons = 0;
 }
 
 CKernel::~CKernel(void)
@@ -115,14 +120,24 @@ TShutdownMode CKernel::Run(void)
     while (true) {
         nes.Step();
         if (nes.cpu.nmiOccurred) {
-            nes.pad1.buttons[Gamepad::ButtonIndex::A]      = s_input.buttons & 0x80;
-            nes.pad1.buttons[Gamepad::ButtonIndex::B]      = s_input.buttons & 0x40;
-            nes.pad1.buttons[Gamepad::ButtonIndex::Select] = s_input.buttons & 0x10;
-            nes.pad1.buttons[Gamepad::ButtonIndex::Start]  = s_input.buttons & 0x20;
-            nes.pad1.buttons[Gamepad::ButtonIndex::Up]     = !s_input.axes[1].value;
-            nes.pad1.buttons[Gamepad::ButtonIndex::Down]   = s_input.axes[1].value == 255;
-            nes.pad1.buttons[Gamepad::ButtonIndex::Left]   = !s_input.axes[0].value;
-            nes.pad1.buttons[Gamepad::ButtonIndex::Right]  = s_input.axes[0].value == 255;
+            nes.pad1.buttons[Gamepad::ButtonIndex::A]      = s_input_player1.buttons & 0x80;
+            nes.pad1.buttons[Gamepad::ButtonIndex::B]      = s_input_player1.buttons & 0x40;
+            nes.pad1.buttons[Gamepad::ButtonIndex::Select] = s_input_player1.buttons & 0x10;
+            nes.pad1.buttons[Gamepad::ButtonIndex::Start]  = s_input_player1.buttons & 0x20;
+            nes.pad1.buttons[Gamepad::ButtonIndex::Up]     = !s_input_player1.axes[1].value;
+            nes.pad1.buttons[Gamepad::ButtonIndex::Down]   = s_input_player1.axes[1].value == 255;
+            nes.pad1.buttons[Gamepad::ButtonIndex::Left]   = !s_input_player1.axes[0].value;
+            nes.pad1.buttons[Gamepad::ButtonIndex::Right]  = s_input_player1.axes[0].value == 255;
+
+            nes.pad2.buttons[Gamepad::ButtonIndex::A]      = s_input_player2.buttons & 0x80;
+            nes.pad2.buttons[Gamepad::ButtonIndex::B]      = s_input_player2.buttons & 0x40;
+            nes.pad2.buttons[Gamepad::ButtonIndex::Select] = s_input_player2.buttons & 0x10;
+            nes.pad2.buttons[Gamepad::ButtonIndex::Start]  = s_input_player2.buttons & 0x20;
+            nes.pad2.buttons[Gamepad::ButtonIndex::Up]     = !s_input_player2.axes[1].value;
+            nes.pad2.buttons[Gamepad::ButtonIndex::Down]   = s_input_player2.axes[1].value == 255;
+            nes.pad2.buttons[Gamepad::ButtonIndex::Left]   = !s_input_player2.axes[0].value;
+            nes.pad2.buttons[Gamepad::ButtonIndex::Right]  = s_input_player2.axes[0].value == 255;
+
             m_Interrupt.EnableIRQ(ARM_IRQ_USB);
         }
     }
@@ -131,6 +146,12 @@ TShutdownMode CKernel::Run(void)
 
 void CKernel::GamePadStatusHandler(unsigned nDeviceIndex, const TGamePadState* pState)
 {
-    s_input = *pState;
+    if(nDeviceIndex == 0) {
+        s_input_player1 = *pState;
+    }
+    else if (nDeviceIndex == 1) {
+        s_input_player2 = *pState;
+    }
     s_interrupt->DisableIRQ(ARM_IRQ_USB);
 }
+
