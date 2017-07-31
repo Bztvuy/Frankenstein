@@ -2,6 +2,10 @@
 
 This is a bare metal NES emulator for the Raspberry Pi 3 Model B originally developed as an academic project at Sherbrooke University in Quebec, Canada
 
+## Download
+
+See the latest release for more information
+
 ## Building
 
 ### Required software (for any build)
